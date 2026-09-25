@@ -14,7 +14,6 @@
 <body class="bg-gray-50 text-gray-800">
     <div id="app" class="max-w-5xl mx-auto p-4 pb-32">
 
-        <!-- ========== 顶部 ========== -->
         <header class="mb-6 bg-white p-4 rounded-2xl shadow-sm">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                 <div>
@@ -23,6 +22,7 @@
                         项目：<span class="font-semibold text-blue-600">{{ currentProject }}</span> ·
                         进度：<span class="font-semibold">{{ doneCount }}/{{ totalCount }}</span> ·
                         不合格：<span class="font-semibold text-red-600">{{ unqualifiedItems.length }}</span>
+                        <span v-if="loading" class="ml-2 text-orange-500">（云端加载中…）</span>
                     </p>
                 </div>
                 <div class="flex gap-2 flex-wrap">
@@ -37,7 +37,6 @@
             </div>
         </header>
 
-        <!-- ========== 检查项分组 ========== -->
         <div class="space-y-4">
             <div v-for="(group, stageName) in groupedChecks" :key="stageName" class="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div class="group-header bg-gray-100 px-4 py-3 flex items-center justify-between hover:bg-gray-200 transition"
@@ -69,7 +68,6 @@
                                 <p class="text-sm md:text-base font-medium text-gray-900">{{ item.item }}</p>
                                 <p class="text-xs text-gray-500 mt-1">📖 {{ item.standard }}</p>
 
-                                <!-- 负责人下拉 -->
                                 <div class="mt-1 flex items-center gap-1">
                                     <span class="text-xs text-gray-400">👤</span>
                                     <select v-model="item.owner" @change="saveData" class="text-xs border rounded p-0.5 bg-white text-gray-600 cursor-pointer">
@@ -78,7 +76,6 @@
                                     </select>
                                 </div>
 
-                                <!-- 备注 -->
                                 <div class="mt-2">
                                     <button v-if="!item.showNote" @click="item.showNote = true"
                                             class="text-xs text-blue-600 hover:text-blue-800">
@@ -91,7 +88,6 @@
                                     </div>
                                 </div>
 
-                                <!-- 图片 -->
                                 <div class="mt-2">
                                     <div class="flex items-center gap-2 flex-wrap">
                                         <div v-for="(img, idx) in item.images" :key="idx" class="relative">
@@ -108,7 +104,6 @@
                                 </div>
                             </div>
 
-                            <!-- 状态下拉 -->
                             <div class="flex md:flex-col items-center gap-2">
                                 <select v-model="item.status" @change="saveData"
                                         class="border rounded-lg p-2 text-sm bg-white min-w-[100px]"
@@ -130,7 +125,6 @@
             </div>
         </div>
 
-        <!-- ========== 底部问题汇总 ========== -->
         <div v-if="unqualifiedItems.length > 0" class="fixed bottom-0 left-0 w-full bg-white border-t-2 border-red-200 shadow-2xl p-4 max-w-5xl mx-auto rounded-t-2xl">
             <div class="flex items-center justify-between mb-2">
                 <h3 class="font-bold text-red-600 text-sm">⚠️ 不合格项汇总 ({{ unqualifiedItems.length }})</h3>
@@ -146,7 +140,6 @@
             </ul>
         </div>
 
-        <!-- 图片预览 -->
         <div v-if="previewImage" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4" @click="previewImage = null">
             <img :src="previewImage" class="max-w-full max-h-full rounded-lg">
         </div>
@@ -154,12 +147,10 @@
     </div>
 
     <script>
-        const { createApp, ref, computed, watch, onMounted } = Vue;
+        const { createApp, ref, computed, onMounted } = Vue;
 
-        // ========== 工作室成员名单 ==========
         const members = ['刘文辉', '谢启欣', '欧阳琳', '梁婷玉', '黄建敏', '梁富成'];
 
-        // ========== 项目名称映射 ==========
         const projectNameMap = {
             'proj-a': '项目A · 厂房总部',
             'proj-b': '项目B · 商业街区',
@@ -167,9 +158,7 @@
             'proj-d': '项目D · 宿舍楼'
         };
 
-        // ========== 检查数据 ==========
         const seedData = [
-            // 一、前期资料收集与规划条件
             { id: 'CHK-PRE-001', stage: '一、前期资料收集与规划条件', item: '机动车出入口设置要求', standard: '结合规划条件，核实与路口距离', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-PRE-002', stage: '一、前期资料收集与规划条件', item: '室外地坪标高（国家高程）', standard: '结合周边路网与市政标高', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-PRE-003', stage: '一、前期资料收集与规划条件', item: '附属绿地、公园绿地是否可纳入绿化率', standard: '按规划条件核实', level: 'P1', owner: '刘文辉' },
@@ -188,7 +177,6 @@
             { id: 'CHK-PRE-016', stage: '一、前期资料收集与规划条件', item: '与甲方确认市政路灯灯光预留', standard: '确认是否需要预留', level: 'P1', owner: '谢启欣' },
             { id: 'CHK-PRE-017', stage: '一、前期资料收集与规划条件', item: '与甲方确认围墙与门卫室设置', standard: '验收前还是后做；门卫室面积<15㎡', level: 'P1', owner: '谢启欣' },
 
-            // 二、方案强排
             { id: 'CHK-AR-001', stage: '二、方案强排', item: '民用建筑、民用非居住、非民用建筑三者遮挡/被遮挡关系', standard: '理清日照关系', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-AR-002', stage: '二、方案强排', item: '板式低层/多层短边间距', standard: '14m', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-AR-003', stage: '二、方案强排', item: '高层建筑消防扑救面宽度', standard: '15.5m / 16m', level: 'P0', owner: '刘文辉' },
@@ -202,7 +190,6 @@
             { id: 'CHK-AR-011', stage: '二、方案强排', item: '室内外高差', standard: '通常150mm，i=12%', level: 'P1', owner: '刘文辉' },
             { id: 'CHK-AR-012', stage: '二、方案强排', item: '场地内外高差核实', standard: '明确排水方向', level: 'P0', owner: '刘文辉' },
 
-            // 三、报建与工规证
             { id: 'CHK-REP-001', stage: '三、报建与工规证', item: '设计单位与规整单位项目诚信编号', standard: '网上提交申请给甲方', level: 'P0', owner: '欧阳琳' },
             { id: 'CHK-REP-002', stage: '三、报建与工规证', item: '甲方提供广东省企业投资项目备案证', standard: '核对一致性', level: 'P0', owner: '欧阳琳' },
             { id: 'CHK-REP-003', stage: '三、报建与工规证', item: '佛山市建设工程规划许可证核发申请表（甲方填写，三方盖章）', standard: '逐项核对', level: 'P0', owner: '欧阳琳' },
@@ -233,7 +220,6 @@
             { id: 'CHK-REP-028', stage: '三、报建与工规证', item: '建筑高度计算分类', standard: '低层1-3层且≤10m；多层3-9层且≤27m；高层>10层或>27m', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-REP-029', stage: '三、报建与工规证', item: '厂房层数分类', standard: '高层厂房/甲乙丙多层厂房按楼层间或室外楼梯；>32m且任一层>10人应防烟楼梯', level: 'P0', owner: '刘文辉' },
 
-            // 四、报建图与施工图分工
             { id: 'CHK-DIV-001', stage: '四、报建图与施工图分工', item: '与设计室分清责任', standard: '涉及施工图部分分工尽量由施工图室负责', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-DIV-002', stage: '四、报建图与施工图分工', item: '水土保持（甲方任务）', standard: '需甲方提前找第三方，过会之后施工图才能进入审图程序', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-DIV-003', stage: '四、报建图与施工图分工', item: '基坑支护（甲方任务）', standard: '放坡或垂直需设计，提前找第三方，可与土地勘察单位同一家', level: 'P0', owner: '刘文辉' },
@@ -245,14 +231,12 @@
             { id: 'CHK-DIV-009', stage: '四、报建图与施工图分工', item: '水电——弱电光纤到户、室外照明、给排水、电房探测器', standard: '相关图纸要有', level: 'P0', owner: '黄建敏' },
             { id: 'CHK-DIV-010', stage: '四、报建图与施工图分工', item: '施工图通过审图中心后报送住建局消防科备案', standard: '甲方提前准备', level: 'P0', owner: '刘文辉' },
 
-            // 五、合同进度
             { id: 'CHK-CON-001', stage: '五、合同进度', item: '前期拟定合同', standard: '确认范围、工期、付款、变更、知识产权、签章、附件', level: 'P0', owner: '梁婷玉' },
             { id: 'CHK-CON-002', stage: '五、合同进度', item: '合同正在走流程', standard: '跟踪签章进度，确认双方盖章', level: 'P0', owner: '梁婷玉' },
             { id: 'CHK-CON-003', stage: '五、合同进度', item: '合同节点提醒——快到付款节点时请款', standard: '提前7天提醒，准备请款材料', level: 'P0', owner: '梁婷玉' },
             { id: 'CHK-CON-004', stage: '五、合同进度', item: '合同附件齐全', standard: '技术指标、图纸目录、进度计划等附件完整', level: 'P1', owner: '梁婷玉' },
             { id: 'CHK-CON-005', stage: '五、合同进度', item: '合同签章完成', standard: '双方盖章，扫描留底', level: 'P0', owner: '梁婷玉' },
 
-            // 六、施工图各专业进度
             { id: 'CHK-SD-001', stage: '六、施工图各专业进度', item: '建筑专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-SD-002', stage: '六、施工图各专业进度', item: '结构专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '梁富成' },
             { id: 'CHK-SD-003', stage: '六、施工图各专业进度', item: '给排水专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '黄建敏' },
@@ -267,7 +251,6 @@
             { id: 'CHK-SD-012', stage: '六、施工图各专业进度', item: '设计院出图坏习惯——空调机位/百叶/雨水管', standard: '位置合理，不影响立面', level: 'P1', owner: '刘文辉' },
             { id: 'CHK-SD-013', stage: '六、施工图各专业进度', item: '设计院出图坏习惯——节点大样可施工性', standard: '表达清楚，可施工', level: 'P1', owner: '刘文辉' },
 
-            // 七、幕墙设计进度
             { id: 'CHK-CW-001', stage: '七、幕墙设计进度', item: '幕墙施工图是否按我们意图画节点', standard: '与SU深化模型对照', level: 'P0', owner: '谢启欣' },
             { id: 'CHK-CW-002', stage: '七、幕墙设计进度', item: '材料尺寸和分缝是否合理', standard: '核对材料表与图纸', level: 'P0', owner: '谢启欣' },
             { id: 'CHK-CW-003', stage: '七、幕墙设计进度', item: '分缝是否对缝', standard: '与建筑立面图核对', level: 'P0', owner: '谢启欣' },
@@ -276,7 +259,6 @@
             { id: 'CHK-CW-006', stage: '七、幕墙设计进度', item: '幕墙与建筑立面图核对', standard: '分格与立面一致', level: 'P0', owner: '谢启欣' },
             { id: 'CHK-CW-007', stage: '七、幕墙设计进度', item: '幕墙节点与SU深化模型对照', standard: '节点符合我们意图', level: 'P0', owner: '谢启欣' },
 
-            // 八、室内设计进度
             { id: 'CHK-ID-001', stage: '八、室内设计进度', item: '室内方案模型是否齐全', standard: '核对模型完整性', level: 'P0', owner: '梁婷玉' },
             { id: 'CHK-ID-002', stage: '八、室内设计进度', item: '还差什么内容未完成', standard: '逐项核对，记录待补内容', level: 'P0', owner: '梁婷玉' },
             { id: 'CHK-ID-003', stage: '八、室内设计进度', item: '最近会议纪要有没有要补充修改的', standard: '核对会议确认信息与待确认事项', level: 'P0', owner: '梁婷玉' },
@@ -325,10 +307,39 @@
                 const previewImage = ref(null);
                 const showUnqualified = ref(false);
                 const fileInput = ref(null);
+                const loading = ref(true);
+                const checks = ref(initData());
 
-                const storageKey = 'checklist_' + projectKey;
-                const savedData = localStorage.getItem(storageKey);
-                const checks = ref(savedData ? JSON.parse(savedData) : initData());
+                // ========== 云端读取 ==========
+                const loadFromCloud = async () => {
+                    try {
+                        const res = await fetch(`/api/sync?project=${projectKey}`);
+                        const data = await res.json();
+                        if (Array.isArray(data) && data.length) {
+                            checks.value = data;
+                        }
+                    } catch (e) {
+                        console.warn('云端读取失败，使用默认数据', e);
+                    }
+                    loading.value = false;
+                };
+
+                // ========== 云端保存 ==========
+                const saveToCloud = async () => {
+                    try {
+                        await fetch(`/api/sync?project=${projectKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(checks.value)
+                        });
+                    } catch (e) {
+                        console.warn('云端保存失败', e);
+                    }
+                };
+
+                const saveData = () => {
+                    saveToCloud();
+                };
 
                 const groupedChecks = computed(() => {
                     const groups = {};
@@ -346,10 +357,6 @@
 
                 const toggleGroup = (name) => {
                     openGroups.value[name] = !openGroups.value[name];
-                };
-
-                const saveData = () => {
-                    localStorage.setItem(storageKey, JSON.stringify(checks.value));
                 };
 
                 const handleImageUpload = (event, item) => {
@@ -408,7 +415,8 @@
                     reader.readAsText(file);
                 };
 
-                onMounted(() => {
+                onMounted(async () => {
+                    await loadFromCloud();
                     Object.keys(groupedChecks.value).forEach(key => {
                         openGroups.value[key] = true;
                     });
@@ -421,6 +429,7 @@
                     previewImage,
                     showUnqualified,
                     fileInput,
+                    loading,
                     totalCount,
                     doneCount,
                     progressPercent,
