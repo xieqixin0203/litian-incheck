@@ -24,7 +24,7 @@
                     待办事项 <span class="text-red-600 font-bold">{{ pendingTodos.length }}</span> 条
                 </p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2 flex-wrap">
                 <button @click="showAddTodo = true" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">
                     + 新建待办
                 </button>
@@ -44,10 +44,9 @@
                 <span class="text-xs text-gray-500">点击勾选完成 · 点击项目名可跳转</span>
             </div>
             <div v-if="pendingTodos.length === 0 && doneTodos.length === 0" class="bg-white rounded-xl p-8 text-center text-gray-400 text-sm">
-                暂无待办。点击右上角“新建待办”添加。
+                暂无待办。点击右上角"新建待办"添加。
             </div>
             <div class="bg-white rounded-xl shadow-sm divide-y divide-gray-100">
-                <!-- 未完成待办 -->
                 <div v-for="todo in pendingTodos" :key="todo.id" class="p-4 flex items-start gap-3 hover:bg-gray-50 transition">
                     <input type="checkbox" @change="toggleTodo(todo)" class="mt-1 w-5 h-5 accent-blue-600 cursor-pointer">
                     <div class="flex-1">
@@ -64,7 +63,6 @@
                     </div>
                     <button @click="deleteTodo(todo)" class="text-gray-300 hover:text-red-500 text-sm">✕</button>
                 </div>
-                <!-- 已完成（折叠展示） -->
                 <div v-if="doneTodos.length > 0" class="p-3">
                     <button @click="showDone = !showDone" class="text-xs text-gray-500 hover:text-gray-700">
                         {{ showDone ? '▼' : '▶' }} 已完成 ({{ doneTodos.length }})
@@ -82,9 +80,9 @@
 
         <!-- ========== 第二板块：项目总览 ========== -->
         <section class="mb-8">
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <h2 class="text-lg font-bold text-gray-800">🗂️ 项目总览</h2>
-                <div class="flex gap-2 text-xs">
+                <div class="flex gap-2 text-xs flex-wrap">
                     <span v-for="(color, stage) in stageMap" :key="stage" class="flex items-center gap-1">
                         <span class="w-3 h-3 rounded-full" :class="color.dot"></span>
                         <span class="text-gray-600">{{ stage }}</span>
@@ -92,7 +90,7 @@
                 </div>
             </div>
             <div v-if="activeProjects.length === 0" class="bg-white rounded-xl p-8 text-center text-gray-400 text-sm">
-                暂无项目。点击右上角“新建项目”添加。
+                暂无项目。点击右上角"新建项目"添加。
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div v-for="proj in activeProjects" :key="proj.id"
@@ -145,7 +143,10 @@
                         <option value="">选择项目</option>
                         <option v-for="p in activeProjects" :key="p.id" :value="p.id">{{ p.name }}</option>
                     </select>
-                    <input v-model="newTodo.owner" placeholder="负责人" class="w-full border rounded-lg p-2 text-sm">
+                    <select v-model="newTodo.owner" class="w-full border rounded-lg p-2 text-sm">
+                        <option value="">选择负责人</option>
+                        <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
+                    </select>
                     <input v-model="newTodo.dueDate" type="date" class="w-full border rounded-lg p-2 text-sm">
                 </div>
                 <div class="flex justify-end gap-2 mt-5">
@@ -164,7 +165,10 @@
                     <select v-model="newProject.stage" class="w-full border rounded-lg p-2 text-sm">
                         <option v-for="(color, stage) in stageMap" :key="stage" :value="stage">{{ stage }}</option>
                     </select>
-                    <input v-model="newProject.owner" placeholder="负责人" class="w-full border rounded-lg p-2 text-sm">
+                    <select v-model="newProject.owner" class="w-full border rounded-lg p-2 text-sm">
+                        <option value="">选择负责人</option>
+                        <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
+                    </select>
                     <input v-model="newProject.note" placeholder="备注（如：待出强排方案）" class="w-full border rounded-lg p-2 text-sm">
                 </div>
                 <div class="flex justify-end gap-2 mt-5">
@@ -179,6 +183,9 @@
     <script>
         const { createApp, ref, computed, watch } = Vue;
 
+        // ========== 工作室成员名单 ==========
+        const members = ['刘文辉', '谢启欣', '欧阳琳', '梁婷玉', '黄建敏', '梁富成'];
+
         // ========== 阶段与颜色的映射 ==========
         const stageMap = {
             '前期强排': { bg: 'bg-yellow-100', border: 'border-yellow-400', text: 'text-yellow-800', dot: 'bg-yellow-400' },
@@ -188,19 +195,19 @@
             '室内阶段': { bg: 'bg-red-100',    border: 'border-red-400',    text: 'text-red-800',    dot: 'bg-red-400' }
         };
 
-        // ========== 默认示例数据（第一次打开时展示） ==========
+        // ========== 默认示例数据 ==========
         const defaultProjects = [
-            { id: 'proj-a', name: '项目A · 厂房总部', stage: '前期强排', owner: '张三', note: '方案还没出', progress: 30 },
-            { id: 'proj-b', name: '项目B · 商业街区', stage: '深化阶段', owner: '李四', note: '刚开完会，纪要待做', progress: 55 },
-            { id: 'proj-c', name: '项目C · 旧改',     stage: '报建阶段', owner: '王五', note: '待办事项待推进', progress: 70 },
-            { id: 'proj-d', name: '项目D · 宿舍楼',   stage: '施工图阶段', owner: '赵六', note: '合同待完成，方案需深化', progress: 80 }
+            { id: 'proj-a', name: '项目A · 厂房总部', stage: '前期强排', owner: '刘文辉', note: '方案还没出', progress: 30 },
+            { id: 'proj-b', name: '项目B · 商业街区', stage: '深化阶段', owner: '谢启欣', note: '刚开完会，纪要待做', progress: 55 },
+            { id: 'proj-c', name: '项目C · 旧改',     stage: '报建阶段', owner: '欧阳琳', note: '待办事项待推进', progress: 70 },
+            { id: 'proj-d', name: '项目D · 宿舍楼',   stage: '施工图阶段', owner: '梁婷玉', note: '合同待完成，方案需深化', progress: 80 }
         ];
 
         const defaultTodos = [
-            { id: 1, task: '项目A 强排方案还未出', projectId: 'proj-a', projectName: '项目A · 厂房总部', owner: '张三', dueDate: '2025-07-05', done: false },
-            { id: 2, task: '项目B 会议纪要未整理', projectId: 'proj-b', projectName: '项目B · 商业街区', owner: '李四', dueDate: '2025-07-01', done: false },
-            { id: 3, task: '项目C 会议纪要已出，待办事项推进', projectId: 'proj-c', projectName: '项目C · 旧改', owner: '王五', dueDate: '2025-07-10', done: false },
-            { id: 4, task: '项目D 合同流程 + 方案深化', projectId: 'proj-d', projectName: '项目D · 宿舍楼', owner: '赵六', dueDate: '2025-07-20', done: false }
+            { id: 1, task: '项目A 强排方案还未出', projectId: 'proj-a', projectName: '项目A · 厂房总部', owner: '刘文辉', dueDate: '2025-07-05', done: false },
+            { id: 2, task: '项目B 会议纪要未整理', projectId: 'proj-b', projectName: '项目B · 商业街区', owner: '谢启欣', dueDate: '2025-07-01', done: false },
+            { id: 3, task: '项目C 会议纪要已出，待办事项推进', projectId: 'proj-c', projectName: '项目C · 旧改', owner: '欧阳琳', dueDate: '2025-07-10', done: false },
+            { id: 4, task: '项目D 合同流程 + 方案深化', projectId: 'proj-d', projectName: '项目D · 宿舍楼', owner: '梁婷玉', dueDate: '2025-07-20', done: false }
         ];
 
         const defaultNotes = [
@@ -214,12 +221,10 @@
 
         createApp({
             setup() {
-                // ========== 状态 ==========
                 const showDone = ref(false);
                 const showAddTodo = ref(false);
                 const showAddProject = ref(false);
 
-                // 从 localStorage 读取，没有则用默认
                 const projects = ref(JSON.parse(localStorage.getItem('studio_projects')) || defaultProjects);
                 const todos = ref(JSON.parse(localStorage.getItem('studio_todos')) || defaultTodos);
                 const notes = ref(defaultNotes);
@@ -228,12 +233,10 @@
                 const newTodo = ref({ task: '', projectId: '', owner: '', dueDate: '' });
                 const newProject = ref({ name: '', stage: '前期强排', owner: '', note: '' });
 
-                // ========== 计算属性 ==========
                 const activeProjects = computed(() => projects.value);
                 const pendingTodos = computed(() => todos.value.filter(t => !t.done));
                 const doneTodos = computed(() => todos.value.filter(t => t.done));
 
-                // ========== 方法 ==========
                 const saveData = () => {
                     localStorage.setItem('studio_projects', JSON.stringify(projects.value));
                     localStorage.setItem('studio_todos', JSON.stringify(todos.value));
@@ -289,8 +292,7 @@
                 };
 
                 const goToProject = (projectId) => {
-                    // 跳转到检查清单页面，带上项目ID参数
-                    window.location.href = `checklist.html?project=${projectId}`;
+                    window.location.href = `./checklist.html?project=${projectId}`;
                 };
 
                 const isOverdue = (dateStr) => {
@@ -319,7 +321,8 @@
                     newTodo, newProject,
                     addTodo, toggleTodo, deleteTodo,
                     addProject, deleteProject, goToProject,
-                    isOverdue, exportAll
+                    isOverdue, exportAll,
+                    members
                 };
             }
         }).mount('#app');
