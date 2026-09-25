@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作室检查清单系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+    <div id="app" class="max-w-4xl mx-auto p-4 pb-20">
+        <!-- 头部 -->
+        <header class="mb-6 flex justify-between items-center bg-white p-4 rounded-xl shadow-sm">
+            <h1 class="text-xl font-bold text-blue-600">📋 项目检查清单</h1>
+            <div class="flex gap-2">
+                <select v-model="currentProject" class="border rounded p-1 text-sm bg-gray-50">
+                    <option value="项目A">项目A</option>
+                    <option value="项目B">项目B</option>
+                    <option value="新项目">+ 新建项目</option>
+                </select>
+                <button @click="exportData" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">导出数据</button>
+            </div>
+        </header>
+
+        <!-- 检查项列表 -->
+        <div class="space-y-4">
+            <div v-for="(group, stageName) in groupedChecks" :key="stageName" class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-gray-100 px-4 py-2 font-semibold text-gray-700 cursor-pointer flex justify-between" @click="toggleGroup(stageName)">
+                    <span>{{ stageName }} ({{ group.filter(i => i.status === '合格').length }}/{{ group.length }})</span>
+                    <span>{{ openGroups[stageName] ? '▼' : '▶' }}</span>
+                </div>
+                <div v-show="openGroups[stageName]" class="divide-y divide-gray-100">
+                    <div v-for="item in group" :key="item.id" class="p-4 flex flex-col md:flex-row md:items-center gap-2 hover:bg-gray-50">
+                        <div class="flex-1">
+                            <p class="font-medium text-sm md:text-base">{{ item.item }}</p>
+                            <p class="text-xs text-gray-500 mt-1">标准：{{ item.standard }} | 等级：<span :class="item.level === 'P0' ? 'text-red-500 font-bold' : 'text-orange-500'">{{ item.level }}</span></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select v-model="item.status" @change="saveData" :class="{'text-red-500 font-bold': item.status === '不合格', 'text-green-600': item.status === '合格'}" class="border rounded p-1 text-sm bg-white">
+                                <option value="待检">待检</option>
+                                <option value="合格">合格</option>
+                                <option value="不合格">不合格</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部问题汇总 -->
+        <div class="fixed bottom-0 left-0 w-full bg-white border-t shadow-lg p-4 max-w-4xl mx-auto rounded-t-xl">
+            <h3 class="font-bold text-red-600 text-sm mb-2">⚠️ 不合格项汇总 ({{ unqualifiedItems.length }})</h3>
+            <ul class="text-xs text-gray-600 max-h-24 overflow-y-auto list-disc pl-4">
+                <li v-for="item in unqualifiedItems" :key="item.id">{{ item.item }}</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, watch } = Vue;
+
+        // 这里是你导图里的数据种子
+        const seedData = [
+            // 方案强排
+            { id: 'CHK-AR-01-001', stage: '方案强排', item: '建筑间距：民用建筑、民用非居住、非民用建筑三者遮挡关系', standard: '理清日照关系，板式低层/多层短边14m', level: 'P0', status: '待检' },
+            { id: 'CHK-AR-01-002', stage: '方案强排', item: '高层建筑消防：消防扑救面宽度', standard: '15.5m/16m，另一侧长边也需设通道', level: 'P0', status: '待检' },
+            { id: 'CHK-AR-01-003', stage: '方案强排', item: '建筑退让用地红线：相邻地块建筑退让、地下室退让', standard: '注意特殊条件，工业仓储类单独核对', level: 'P0', status: '待检' },
+            { id: 'CHK-AR-01-004', stage: '方案强排', item: '建筑高度（规划高度）：平屋面/坡屋面计算', standard: '透空率>80%装饰构架不计入；坡屋面角度>45%算一半', level: 'P1', status: '待检' },
+            { id: 'CHK-AR-01-005', stage: '方案强排', item: '室内外高差与场地内外高差', standard: '通常150mm，i=12%，核实排水方向', level: 'P1', status: '待检' },
+            
+            // 报建-工规证
+            { id: 'CHK-AR-03-001', stage: '报建-工规证', item: '报建提交：设计单位与规整单位项目诚信编号', standard: '网上提交申请给甲方', level: 'P0', status: '待检' },
+            { id: 'CHK-AR-03-002', stage: '报建-工规证', item: 'CPI电子报建：提供CPI证书，指标表盖公章', standard: '报建图为主，图纸不可截图，PDF可结合', level: 'P0', status: '待检' },
+            { id: 'CHK-AR-03-003', stage: '报建-工规证', item: '海绵城市：2025年要求，水电室做，需提供绿化基本稳定', standard: '图纸需盖章双章，类似信息房等地方盖章审查意见表', level: 'P0', status: '待检' },
+            { id: 'CHK-AR-03-004', stage: '报建-工规证', item: '人防地下室：新建10层以上或基础埋深3米以上', standard: '按地面首层建筑面积修建6级以上防空地下室', level: 'P0', status: '待检' },
+            { id: 'CHK-AR-03-005', stage: '报建-工规证', item: '单体报建：图签证书编号为最新，工程号、建设单位一致', standard: '审定/项目负责/审核/校对等签名对应', level: 'P1', status: '待检' },
+            { id: 'CHK-AR-03-006', stage: '报建-工规证', item: '平面：各层标注建筑面积与计容面积；首层应标注基底面积', standard: '标高层/栏杆；屋面反边/女儿墙需注明；地下车库标注编号', level: 'P0', status: '待检' },
+            { id: 'CHK-AR-03-007', stage: '报建-工规证', item: '厂房单体中不再出现“研发车间/办公/仓库”中间等字样', standard: '应以“生产厂房”代替，首层标注“火灾厂房”与耐火等级', level: 'P0', status: '待检' }
+        ];
+
+        createApp({
+            setup() {
+                const currentProject = ref('项目A');
+                const openGroups = ref({ '方案强排': true, '报建-工规证': true });
+                
+                // 从本地存储加载数据，如果没有则用种子数据
+                const checks = ref(JSON.parse(localStorage.getItem('checks_' + currentProject.value)) || JSON.parse(JSON.stringify(seedData)));
+
+                const groupedChecks = computed(() => {
+                    const groups = {};
+                    checks.value.forEach(item => {
+                        if (!groups[item.stage]) groups[item.stage] = [];
+                        groups[item.stage].push(item);
+                    });
+                    return groups;
+                });
+
+                const unqualifiedItems = computed(() => checks.value.filter(i => i.status === '不合格'));
+
+                const toggleGroup = (name) => {
+                    openGroups.value[name] = !openGroups.value[name];
+                };
+
+                const saveData = () => {
+                    localStorage.setItem('checks_' + currentProject.value, JSON.stringify(checks.value));
+                };
+
+                const exportData = () => {
+                    const dataStr = JSON.stringify(checks.value, null, 2);
+                    const blob = new Blob([dataStr], {type: "application/json"});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `检查清单_${currentProject.value}.json`;
+                    a.click();
+                };
+
+                // 监听项目切换，重新加载数据
+                watch(currentProject, (newVal) => {
+                    const saved = localStorage.getItem('checks_' + newVal);
+                    if (saved) {
+                        checks.value = JSON.parse(saved);
+                    } else {
+                        checks.value = JSON.parse(JSON.stringify(seedData));
+                    }
+                });
+
+                return { currentProject, groupedChecks, openGroups, unqualifiedItems, toggleGroup, saveData, exportData };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
