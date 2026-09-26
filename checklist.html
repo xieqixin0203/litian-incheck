@@ -7,6 +7,10 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
 <style>
+html{font-size:16px}
+html[data-fontsize="small"]{font-size:14px}
+html[data-fontsize="large"]{font-size:18px}
+html[data-fontsize="xlarge"]{font-size:20px}
 :root{--bg:#eef1f6;--text:#2d3748;--card:#fff;--primary:#7b8bb8;--border:#d8dee9;--completed-bg:#c8d0dc;--future-bg:#5a6678;--future-text:#e8ecf4}
 .dark{--bg:#1a1f2e;--text:#e8ecf4;--card:#252b3d;--primary:#8fa3c8;--border:#3a4258;--completed-bg:#3a4258;--future-bg:#0f1320;--future-text:#6b7590}
 *{box-sizing:border-box}
@@ -18,10 +22,13 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 .dark select,.dark input,.dark textarea{background-color:#252b3d}
 .contract-section{border:2px solid var(--primary);border-radius:16px;overflow:hidden}
+.contract-locked{padding:20px;text-align:center;background:var(--card);cursor:pointer}
+.contract-locked:hover{background:var(--bg)}
 .tab-btn{padding:8px 18px;border-radius:10px 10px 0 0;font-size:14px;font-weight:500;cursor:pointer;border:1px solid transparent;border-bottom:none;background:transparent;color:var(--text);opacity:.6}
 .tab-btn.active{background:var(--card);border-color:var(--border);opacity:1;font-weight:bold;color:var(--primary)}
 .meeting-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px}
 .meeting-header{padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.meeting-header:hover{background:var(--bg)}
 .meeting-body{padding:0 16px 16px 16px}
 .section-title{font-size:12px;font-weight:bold;margin:12px 0 6px 0;padding-left:8px;border-left:3px solid var(--primary)}
 .section-title.green{border-left-color:#68b988}
@@ -39,7 +46,14 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 .form-input{width:100%;border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;background:transparent;color:var(--text)}
 .form-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
 .btn-sm{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer}
+.btn-sm:hover{background:var(--bg)}
 .btn-primary{font-size:12px;padding:6px 14px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer}
+.fontsize-bar{display:flex;gap:4px;align-items:center}
+.fontsize-bar button{font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer}
+.fontsize-bar button.active{background:var(--primary);color:#fff;font-weight:bold}
+.member-check{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:3px 8px;border-radius:9999px;border:1px solid var(--border);cursor:pointer;user-select:none}
+.member-check input{margin:0}
+.member-check.on{background:var(--primary);color:#fff;border-color:var(--primary)}
 </style>
 </head>
 <body>
@@ -51,11 +65,18 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
       <h1 class="text-xl font-bold">项目检查清单</h1>
       <p class="text-sm mt-0.5 opacity-80 font-medium">
         项目：<span class="font-bold" style="color:var(--primary)">{{ currentProject }}</span> ·
-        当前阶段：<span class="font-bold">{{ projectStage }}</span> ·
+        当前阶段：<span class="font-bold">{{ projectStages.join('、') }}</span> ·
         进度：<span class="font-bold">{{ doneCount }}/{{ totalCount }}</span>
       </p>
     </div>
-    <div class="flex gap-2 flex-wrap">
+    <div class="flex gap-2 flex-wrap items-center">
+      <div class="fontsize-bar">
+        <span style="font-size:11px;opacity:.6">字号</span>
+        <button @click="setFontSize('small')" :class="{active:fontSize==='small'}">小</button>
+        <button @click="setFontSize('medium')" :class="{active:fontSize==='medium'}">中</button>
+        <button @click="setFontSize('large')" :class="{active:fontSize==='large'}">大</button>
+        <button @click="setFontSize('xlarge')" :class="{active:fontSize==='xlarge'}">特大</button>
+      </div>
       <button @click="exportData" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs">导出</button>
       <button @click="importData" class="bg-gray-500 text-white px-3 py-1.5 rounded-lg text-xs">导入</button>
       <a href="./index.html" class="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-xs">返回首页</a>
@@ -68,16 +89,20 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
   </div>
 </header>
 
-<!-- ==================== 检查清单 TAB ==================== -->
+<!-- ============ 检查清单 TAB ============ -->
 <div v-if="activeTab==='checklist'">
 
-  <!-- 合同文书 -->
+  <!-- 合同文书（需密码） -->
   <div class="mb-4 contract-section">
     <div class="px-4 py-3 text-white flex items-center justify-between" style="background:var(--primary)">
       <span class="font-bold text-base">合同文书</span>
-      <span class="text-sm">{{ projContracted?'已入合同':'未入合同' }}</span>
+      <span class="text-sm">
+        <span v-if="contractUnlocked">{{ projContracted?'已入合同':'未入合同' }}</span>
+        <span v-else>🔒 已锁</span>
+      </span>
     </div>
-    <div class="p-4" style="background:var(--card)">
+
+    <div v-if="contractUnlocked" class="p-4" style="background:var(--card)">
       <div class="flex items-center justify-between p-2 rounded-lg mb-2" style="background:var(--bg)">
         <span class="text-sm">设计合同</span>
         <span class="text-xs px-2 py-1 rounded bg-green-100 text-green-700">已有</span>
@@ -86,6 +111,12 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
         <span class="text-sm">分包合同</span>
         <span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-500">待增加</span>
       </div>
+      <button @click="contractUnlocked=false" class="text-xs opacity-60 mt-3">🔒 锁定</button>
+    </div>
+
+    <div v-else class="contract-locked" @click="openContractLogin">
+      <div style="font-size:24px">🔒</div>
+      <div class="text-sm mt-2 opacity-70">点击解锁（需管理员密码）</div>
     </div>
   </div>
 
@@ -101,7 +132,7 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
           <span class="text-xs px-2 py-0.5 rounded-full font-medium stage-count" style="background:rgba(0,0,0,.06)">
             {{ group.filter(i=>i.status==='合格').length }}/{{ group.length }}
           </span>
-          <span v-if="stageName===projectStage" class="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-bold">当前阶段</span>
+          <span v-if="isCurrentStage(stageName)" class="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-bold">当前阶段</span>
           <span v-if="group.length===0" class="text-xs opacity-50">（暂无检查项）</span>
         </div>
         <span class="text-sm opacity-60">{{ openGroups[stageName] ? '▼' : '▶' }}</span>
@@ -143,20 +174,20 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 
 </div>
 
-<!-- ==================== 会议纪要 TAB ==================== -->
+<!-- ============ 会议纪要 TAB ============ -->
 <div v-if="activeTab==='meeting'">
 
   <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
     <h2 class="text-lg font-bold">会议纪要</h2>
-    <div class="flex gap-2">
+    <div class="flex gap-2 flex-wrap">
       <button @click="showConfirmSummary = !showConfirmSummary" class="btn-sm">
         {{ showConfirmSummary ? '查看历次会议' : '查看确认汇总' }}
       </button>
+      <button @click="showImportModal = true" class="btn-sm">📥 导入</button>
       <button @click="openAddMeeting" class="btn-primary">+ 新增会议纪要</button>
     </div>
   </div>
 
-  <!-- 历次会议列表 -->
   <div v-if="!showConfirmSummary">
     <div v-if="meetings.length === 0" class="p-8 text-center opacity-60 text-sm rounded-xl" style="background:var(--card);border:1px solid var(--border)">
       暂无会议纪要，点击右上角「+ 新增会议纪要」开始记录。
@@ -169,12 +200,13 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
             <span style="color:var(--primary)">{{ mt.date }}</span>
             <span v-if="mt.title" class="ml-2">{{ mt.title }}</span>
           </div>
-          <div class="text-xs opacity-60 mt-1">参与人：{{ mt.participants || '未填写' }}</div>
+          <div class="text-xs opacity-60 mt-1">参与人：{{ formatParticipants(mt) }}</div>
         </div>
-        <div class="flex items-center gap-2">
-          <button @click.stop="editMeeting(mt)" class="btn-sm">编辑</button>
-          <button @click.stop="deleteMeeting(mt)" class="btn-sm text-red-500">删除</button>
-          <span class="text-sm opacity-60">{{ mt.expanded ? '▼' : '▶' }}</span>
+        <div class="flex items-center gap-2" @click.stop>
+          <button @click="exportMeetingToWord(mt)" class="btn-sm" title="导出Word">📤</button>
+          <button @click="editMeeting(mt)" class="btn-sm">编辑</button>
+          <button @click="deleteMeeting(mt)" class="btn-sm text-red-500">删除</button>
+          <span class="text-sm opacity-60 cursor-pointer" @click="mt.expanded = !mt.expanded">{{ mt.expanded ? '▼' : '▶' }}</span>
         </div>
       </div>
 
@@ -203,7 +235,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
     </div>
   </div>
 
-  <!-- 确认汇总 -->
   <div v-if="showConfirmSummary" class="p-4 rounded-xl" style="background:var(--card);border:1px solid var(--border)">
     <h3 class="font-bold text-sm mb-3">已确认事项汇总（按时间倒序）</h3>
     <div v-if="allConfirmed.length === 0" class="text-xs opacity-50 text-center py-6">暂无已确认事项</div>
@@ -215,7 +246,7 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 
 </div>
 
-<!-- ==================== 会议编辑模态框 ==================== -->
+<!-- ============ 会议编辑模态框 ============ -->
 <div v-if="showMeetingModal" class="modal-mask" @click.self="closeMeetingModal">
   <div class="modal-box">
     <h3 class="font-bold text-lg mb-4">{{ editingMeetingId ? '编辑会议纪要' : '新增会议纪要' }}</h3>
@@ -231,8 +262,18 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
     </div>
 
     <div class="mb-3">
-      <label class="form-label">参与人</label>
-      <input v-model="draftMeeting.participants" placeholder="如：刘文辉、谢启欣、甲方陈总" class="form-input">
+      <label class="form-label">工作室参会人（可多选）</label>
+      <div class="flex flex-wrap gap-2">
+        <label v-for="m in members" :key="m" class="member-check" :class="{on: draftMeeting.memberParticipants.includes(m)}">
+          <input type="checkbox" :value="m" v-model="draftMeeting.memberParticipants" style="display:none">
+          <span>{{ m }}</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">其他参会人（甲方/顾问等）</label>
+      <input v-model="draftMeeting.otherParticipants" placeholder="如：甲方陈总、曲部、幕墙顾问李工" class="form-input">
     </div>
 
     <div class="mb-3">
@@ -281,6 +322,41 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
   </div>
 </div>
 
+<!-- ============ 导入会议模态框 ============ -->
+<div v-if="showImportModal" class="modal-mask" @click.self="showImportModal=false">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-2">从 Word / 微信粘贴导入</h3>
+    <p class="text-xs opacity-70 mb-3">按以下格式粘贴，可识别三种事项。格式不严格要求，只要每段开头出现「已确认 / 待确认 / 变更」即可。</p>
+    <pre class="text-xs p-2 rounded mb-3" style="background:var(--bg);white-space:pre-wrap">已确认：
+- 活动中心篮球场按方案A执行
+- 10个办公室门拓宽到1500mm
+
+待确认：
+- 堆货区改羽毛球场 | 梁婷玉 | 2026-10-05
+- 陈总办公室金属门是否拓宽 | 刘文辉 | 2026-10-01
+
+变更：
+- 门洞宽度 | 原1200mm | 新1500mm</pre>
+    <textarea v-model="importText" rows="12" placeholder="在此粘贴内容..." class="form-input" style="font-family:monospace"></textarea>
+    <div class="flex justify-end gap-2 mt-3">
+      <button @click="showImportModal=false" class="btn-sm">取消</button>
+      <button @click="doImport" class="btn-primary">解析并新建会议</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 合同解锁模态框 ============ -->
+<div v-if="showContractLogin" class="modal-mask" @click.self="showContractLogin=false">
+  <div class="modal-box" style="max-width:360px">
+    <h3 class="font-bold text-lg mb-4">合同文书解锁</h3>
+    <input v-model="contractPwd" type="password" placeholder="输入管理员密码" @keyup.enter="doContractUnlock" class="form-input mb-4">
+    <div class="flex justify-end gap-2">
+      <button @click="showContractLogin=false" class="btn-sm">取消</button>
+      <button @click="doContractUnlock" class="btn-primary">解锁</button>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -288,7 +364,25 @@ const {createApp,ref,computed,onMounted}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const projectNameMap={'sl4':'申菱四基地','slzb':'申菱总部改造','sl5':'申菱五基地','slgz':'申菱高州二期','prsp':'屏荣食品顺德新厂','yj':'远江幕墙南海新厂','whg':'顺德文化馆修缮活化','stc':'顺德糖厂','skwj':'顺控危旧房','spmy':'升平名扬里历史街区一期','fp':'方普','rk':'容控小地块厂房加商业','sq':'社-顺德本土文化策展'};
 const stageOrder=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
-const projectStageMap={'sl4':'三、方案深化','slzb':'八、施工中','sl5':'一、前期强排','slgz':'八、施工中','prsp':'四、报建图','yj':'八、施工中','whg':'四、报建图','stc':'四、报建图','skwj':'五、施工图（含幕墙深化）','spmy':'八、施工中','fp':'一、前期强排','rk':'一、前期强排','sq':'三、方案深化'};
+
+// 项目当前阶段（数组，可多阶段并行）
+const projectStageMap={
+  'sl4':['三、方案深化'],
+  'slzb':['六、室内设计','七、室内设计施工图','八、施工中'],
+  'sl5':['一、前期强排'],
+  'slgz':['八、施工中'],
+  'prsp':['四、报建图'],
+  'yj':['八、施工中'],
+  'whg':['四、报建图'],
+  'stc':['四、报建图'],
+  'skwj':['五、施工图（含幕墙深化）'],
+  'spmy':['八、施工中'],
+  'fp':['一、前期强排'],
+  'rk':['一、前期强排'],
+  'sq':['三、方案深化']
+};
+
+const ADMIN_PASSWORD='litian2024';
 
 const seedData=[
 {id:'CHK-PRE-001',stage:'一、前期强排',item:'机动车出入口设置要求',standard:'结合规划条件，核实与路口距离',level:'P0',owner:'刘文辉'},
@@ -411,192 +505,352 @@ const seedData=[
 const initData=()=>seedData.map(item=>({...item,status:'待检',note:'',showNote:false}));
 
 function makeEmptyMeeting(){
-  return {date:new Date().toISOString().slice(0,10),title:'',participants:'',confirmed:[{text:''}],pending:[],changes:[]};
+  return {
+    date:new Date().toISOString().slice(0,10),
+    title:'',
+    memberParticipants:[],
+    otherParticipants:'',
+    confirmed:[{text:''}],
+    pending:[],
+    changes:[]
+  };
 }
 
+const migrateMeetings=(arr)=>{
+  if(!Array.isArray(arr)) return [];
+  return arr.map(m=>{
+    let memberParticipants=m.memberParticipants||[];
+    let otherParticipants=m.otherParticipants||'';
+    if(!memberParticipants.length && !otherParticipants && m.participants){
+      otherParticipants=m.participants;
+    }
+    return {
+      ...m,
+      memberParticipants:Array.isArray(memberParticipants)?memberParticipants:[],
+      otherParticipants:otherParticipants||'',
+      confirmed:(m.confirmed||[]).map(c=>typeof c==='string'?{text:c}:c),
+      pending:m.pending||[],
+      changes:m.changes||[]
+    };
+  });
+};
+
 createApp({
-  setup(){
-    const urlParams=new URLSearchParams(window.location.search);
-    const urlProject=urlParams.get('project')||'sl4';
-    const currentProject=ref(projectNameMap[urlProject]||urlProject);
-    const projectKey=urlProject;
-    const projectStage=ref(projectStageMap[urlProject]||'一、前期强排');
+setup(){
+  const urlParams=new URLSearchParams(window.location.search);
+  const urlProject=urlParams.get('project')||'sl4';
+  const currentProject=ref(projectNameMap[urlProject]||urlProject);
+  const projectKey=urlProject;
+  const projectStages=ref(projectStageMap[urlProject]||['一、前期强排']);
 
-    const activeTab=ref('checklist');
-    const openGroups=ref({});
-    const fileInput=ref(null);
-    const checks=ref(initData());
-    const projContracted=ref(false);
+  const activeTab=ref('checklist');
+  const openGroups=ref({});
+  const fileInput=ref(null);
+  const checks=ref(initData());
+  const projContracted=ref(false);
 
-    const meetings=ref([]);
-    const showMeetingModal=ref(false);
-    const editingMeetingId=ref(null);
-    const showConfirmSummary=ref(false);
-    const draftMeeting=ref(makeEmptyMeeting());
+  // 合同解锁
+  const contractUnlocked=ref(false);
+  const showContractLogin=ref(false);
+  const contractPwd=ref('');
 
-    const loadFromCloud=async()=>{
-      try{
-        const res=await fetch(`/api/sync?project=${projectKey}`);
-        const data=await res.json();
-        if(Array.isArray(data)&&data.length)checks.value=data;
-      }catch(e){console.warn('检查清单读取失败',e)}
-    };
-    const saveToCloud=async()=>{
-      try{
-        await fetch(`/api/sync?project=${projectKey}`,{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify(checks.value)
-        });
-      }catch(e){console.warn('检查清单保存失败',e)}
-    };
-    const saveData=()=>{saveToCloud()};
+  // 字号
+  const fontSize=ref(localStorage.getItem('checklist_fontsize')||'medium');
+  const setFontSize=(s)=>{fontSize.value=s;localStorage.setItem('checklist_fontsize',s);document.documentElement.setAttribute('data-fontsize',s)};
 
-    const groupedChecks=computed(()=>{
-      const groups={};
-      checks.value.forEach(item=>{
-        if(!groups[item.stage])groups[item.stage]=[];
-        groups[item.stage].push(item);
+  // 会议
+  const meetings=ref([]);
+  const showMeetingModal=ref(false);
+  const editingMeetingId=ref(null);
+  const showConfirmSummary=ref(false);
+  const draftMeeting=ref(makeEmptyMeeting());
+
+  // 导入
+  const showImportModal=ref(false);
+  const importText=ref('');
+
+  // ============ 检查清单云同步 ============
+  const loadFromCloud=async()=>{
+    try{
+      const res=await fetch(`/api/sync?project=${projectKey}`);
+      const data=await res.json();
+      if(Array.isArray(data)&&data.length)checks.value=data;
+    }catch(e){console.warn('检查清单读取失败',e)}
+  };
+  const saveToCloud=async()=>{
+    try{
+      await fetch(`/api/sync?project=${projectKey}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(checks.value)
       });
-      const sorted={};
-      stageOrder.forEach(s=>{sorted[s]=groups[s]||[]});
-      return sorted;
+    }catch(e){console.warn('检查清单保存失败',e)}
+  };
+  const saveData=()=>{saveToCloud()};
+
+  const groupedChecks=computed(()=>{
+    const groups={};
+    checks.value.forEach(item=>{
+      if(!groups[item.stage])groups[item.stage]=[];
+      groups[item.stage].push(item);
     });
+    const sorted={};
+    stageOrder.forEach(s=>{sorted[s]=groups[s]||[]});
+    return sorted;
+  });
 
-    const initOpenGroups=()=>{
-      stageOrder.forEach(s=>{openGroups.value[s]=(s===projectStage.value)});
-    };
+  // 判断某阶段是否属于当前阶段（可能多个）
+  const isCurrentStage=(s)=>projectStages.value.includes(s);
 
-    const getStageClass=(s)=>{
-      const curIdx=stageOrder.indexOf(projectStage.value);
-      const thisIdx=stageOrder.indexOf(s);
-      if(thisIdx<curIdx)return 'stage-completed';
-      if(thisIdx>curIdx)return 'stage-future';
-      return 'stage-current';
-    };
+  // 阶段样式：已完成 / 当前（高亮）/ 未来
+  const getStageClass=(s)=>{
+    const thisIdx=stageOrder.indexOf(s);
+    const indices=projectStages.value.map(st=>stageOrder.indexOf(st)).filter(i=>i>=0);
+    if(thisIdx<0||indices.length===0) return '';
+    const minIdx=Math.min(...indices);
+    const maxIdx=Math.max(...indices);
+    if(indices.includes(thisIdx)) return 'stage-current';
+    if(thisIdx<minIdx) return 'stage-completed';
+    if(thisIdx>maxIdx) return 'stage-future';
+    return 'stage-future';
+  };
 
-    const totalCount=computed(()=>checks.value.length);
-    const doneCount=computed(()=>checks.value.filter(i=>i.status==='合格').length);
-    const toggleGroup=(name)=>{openGroups.value[name]=!openGroups.value[name]};
+  const initOpenGroups=()=>{
+    const indices=projectStages.value.map(st=>stageOrder.indexOf(st)).filter(i=>i>=0);
+    const firstIdx=indices.length?Math.min(...indices):0;
+    stageOrder.forEach((s,i)=>{
+      openGroups.value[s]=(i===firstIdx);
+    });
+  };
 
-    const loadMeetings=async()=>{
-      try{
-        const res=await fetch(`/api/sync?project=${projectKey}&type=meeting`);
-        const data=await res.json();
-        if(Array.isArray(data))meetings.value=data.map(m=>({...m,expanded:false}));
-      }catch(e){console.warn('会议纪要读取失败',e)}
-    };
-    const saveMeetings=async()=>{
-      try{
-        const toSave=meetings.value.map(m=>{const {expanded,...rest}=m;return rest});
-        await fetch(`/api/sync?project=${projectKey}&type=meeting`,{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify(toSave)
-        });
-      }catch(e){console.warn('会议纪要保存失败',e)}
-    };
+  const totalCount=computed(()=>checks.value.length);
+  const doneCount=computed(()=>checks.value.filter(i=>i.status==='合格').length);
+  const toggleGroup=(name)=>{openGroups.value[name]=!openGroups.value[name]};
 
-    const sortedMeetings=computed(()=>[...meetings.value].sort((a,b)=>(b.date||'').localeCompare(a.date||'')));
-
-    const allConfirmed=computed(()=>{
-      const list=[];
-      meetings.value.forEach(m=>{
-        (m.confirmed||[]).forEach(c=>{
-          if(c.text&&c.text.trim())list.push({date:m.date,text:c.text});
-        });
+  // ============ 会议云同步 ============
+  const loadMeetings=async()=>{
+    try{
+      const res=await fetch(`/api/sync?project=${projectKey}&type=meeting`);
+      const data=await res.json();
+      if(Array.isArray(data))meetings.value=migrateMeetings(data).map(m=>({...m,expanded:false}));
+    }catch(e){console.warn('会议读取失败',e)}
+  };
+  const saveMeetings=async()=>{
+    try{
+      const toSave=meetings.value.map(m=>{const {expanded,...rest}=m;return rest});
+      await fetch(`/api/sync?project=${projectKey}&type=meeting`,{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(toSave)
       });
-      return list.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-    });
+    }catch(e){console.warn('会议保存失败',e)}
+  };
 
-    const openAddMeeting=()=>{
-      draftMeeting.value=makeEmptyMeeting();
-      editingMeetingId.value=null;
-      showMeetingModal.value=true;
+  const sortedMeetings=computed(()=>[...meetings.value].sort((a,b)=>(b.date||'').localeCompare(a.date||'')));
+
+  const allConfirmed=computed(()=>{
+    const list=[];
+    meetings.value.forEach(m=>{
+      (m.confirmed||[]).forEach(c=>{
+        if(c.text&&c.text.trim())list.push({date:m.date,text:c.text});
+      });
+    });
+    return list.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  });
+
+  const formatParticipants=(mt)=>{
+    const arr=[...(mt.memberParticipants||[])];
+    if(mt.otherParticipants) arr.push(mt.otherParticipants);
+    return arr.length?arr.join('、'):'未填写';
+  };
+
+  // ============ 合同解锁 ============
+  const openContractLogin=()=>{
+    contractPwd.value='';
+    showContractLogin.value=true;
+  };
+  const doContractUnlock=()=>{
+    if(contractPwd.value===ADMIN_PASSWORD){
+      contractUnlocked.value=true;
+      showContractLogin.value=false;
+      contractPwd.value='';
+    }else{
+      alert('密码错误');
+    }
+  };
+
+  // ============ 会议增删改 ============
+  const openAddMeeting=()=>{
+    draftMeeting.value=makeEmptyMeeting();
+    editingMeetingId.value=null;
+    showMeetingModal.value=true;
+  };
+  const editMeeting=(mt)=>{
+    const copy=JSON.parse(JSON.stringify(mt));
+    delete copy.expanded;
+    draftMeeting.value=copy;
+    editingMeetingId.value=mt.id;
+    showMeetingModal.value=true;
+  };
+  const closeMeetingModal=()=>{
+    showMeetingModal.value=false;
+    editingMeetingId.value=null;
+  };
+  const saveMeeting=()=>{
+    if(!draftMeeting.value.date){alert('请填写会议日期');return}
+    const clean={
+      ...draftMeeting.value,
+      memberParticipants:(draftMeeting.value.memberParticipants||[]).slice(),
+      otherParticipants:(draftMeeting.value.otherParticipants||'').trim(),
+      confirmed:(draftMeeting.value.confirmed||[]).filter(c=>c.text&&c.text.trim()),
+      pending:(draftMeeting.value.pending||[]).filter(p=>p.text&&p.text.trim()),
+      changes:(draftMeeting.value.changes||[]).filter(c=>c.text&&c.text.trim())
     };
-    const editMeeting=(mt)=>{
-      const copy=JSON.parse(JSON.stringify(mt));
-      delete copy.expanded;
-      draftMeeting.value=copy;
-      editingMeetingId.value=mt.id;
-      showMeetingModal.value=true;
-    };
-    const closeMeetingModal=()=>{
-      showMeetingModal.value=false;
-      editingMeetingId.value=null;
-    };
-    const saveMeeting=()=>{
-      if(!draftMeeting.value.date){alert('请填写会议日期');return}
-      const clean={
-        ...draftMeeting.value,
-        confirmed:(draftMeeting.value.confirmed||[]).filter(c=>c.text&&c.text.trim()),
-        pending:(draftMeeting.value.pending||[]).filter(p=>p.text&&p.text.trim()),
-        changes:(draftMeeting.value.changes||[]).filter(c=>c.text&&c.text.trim())
-      };
-      if(editingMeetingId.value){
-        const idx=meetings.value.findIndex(m=>m.id===editingMeetingId.value);
-        if(idx>=0)meetings.value[idx]={...meetings.value[idx],...clean};
-      }else{
-        meetings.value.push({id:'m-'+Date.now(),...clean,expanded:false});
+    if(editingMeetingId.value){
+      const idx=meetings.value.findIndex(m=>m.id===editingMeetingId.value);
+      if(idx>=0)meetings.value[idx]={...meetings.value[idx],...clean};
+    }else{
+      meetings.value.push({id:'m-'+Date.now(),...clean,expanded:false});
+    }
+    saveMeetings();
+    closeMeetingModal();
+  };
+  const deleteMeeting=(mt)=>{
+    if(!confirm('确定删除此次会议纪要？'))return;
+    meetings.value=meetings.value.filter(m=>m.id!==mt.id);
+    saveMeetings();
+  };
+
+  // ============ Word 导出 ============
+  const exportMeetingToWord=(mt)=>{
+    const esc=(s)=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const participants=formatParticipants(mt);
+    const html=`
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='utf-8'><title>会议纪要</title>
+<style>
+body{font-family:"Microsoft YaHei",sans-serif;font-size:11pt;line-height:1.7;color:#333}
+h1{font-size:16pt;border-bottom:2px solid #7b8bb8;padding-bottom:8px}
+h2{font-size:13pt;color:#7b8bb8;margin-top:20px}
+li{margin-bottom:4px}
+.meta{color:#666;font-size:10pt;margin-bottom:14px}
+</style></head>
+<body>
+<h1>${esc(mt.title)||'会议纪要'}</h1>
+<div class="meta">
+<div><b>会议日期：</b>${esc(mt.date)}</div>
+<div><b>参与人：</b>${esc(participants)}</div>
+</div>
+<h2>一、已确认事项</h2>
+${(mt.confirmed||[]).length?`<ol>${mt.confirmed.map(c=>`<li>${esc(c.text)}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
+<h2>二、待确认事项</h2>
+${(mt.pending||[]).length?`<ol>${mt.pending.map(p=>`<li>${esc(p.text)} — 负责人：${esc(p.owner)||'未指定'}${p.dueDate?'，截止：'+esc(p.dueDate):''}（${esc(p.status)}）</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
+<h2>三、变更事项</h2>
+${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||c.to?'（'+esc(c.from)+' → '+esc(c.to)+'）':''}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
+</body></html>`;
+    const blob=new Blob(['\ufeff',html],{type:'application/msword'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`会议纪要_${mt.date}_${(mt.title||'未命名').replace(/[\\/:*?"<>|]/g,'_')}.doc`;
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+
+  // ============ 粘贴导入 ============
+  const doImport=()=>{
+    const text=importText.value||'';
+    if(!text.trim()){alert('请粘贴内容');return}
+    const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
+    const result={confirmed:[],pending:[],changes:[]};
+    let section=null;
+    for(const line of lines){
+      if(/已确认/.test(line)){section='confirmed';continue}
+      if(/待确认/.test(line)){section='pending';continue}
+      if(/变更/.test(line)){section='changes';continue}
+      if(!section)continue;
+      let content=line.replace(/^[-•·*\d\.、）)\s]+/,'').trim();
+      if(!content)continue;
+      if(section==='confirmed'){
+        result.confirmed.push({text:content});
+      }else if(section==='pending'){
+        const parts=content.split(/[|｜]/).map(s=>s.trim());
+        result.pending.push({text:parts[0]||'',owner:parts[1]||'',dueDate:parts[2]||'',status:'待确认'});
+      }else if(section==='changes'){
+        const parts=content.split(/[|｜]/).map(s=>s.trim());
+        result.changes.push({text:parts[0]||'',from:parts[1]||'',to:parts[2]||''});
       }
-      saveMeetings();
-      closeMeetingModal();
+    }
+    if(result.confirmed.length===0&&result.pending.length===0&&result.changes.length===0){
+      alert('未识别到内容，请检查格式（需要有「已确认」「待确认」「变更」字样）');
+      return;
+    }
+    draftMeeting.value={
+      date:new Date().toISOString().slice(0,10),
+      title:'',
+      memberParticipants:[],
+      otherParticipants:'',
+      confirmed:result.confirmed.length?result.confirmed:[{text:''}],
+      pending:result.pending,
+      changes:result.changes
     };
-    const deleteMeeting=(mt)=>{
-      if(!confirm('确定删除此次会议纪要？'))return;
-      meetings.value=meetings.value.filter(m=>m.id!==mt.id);
-      saveMeetings();
-    };
+    editingMeetingId.value=null;
+    showImportModal.value=false;
+    importText.value='';
+    showMeetingModal.value=true;
+  };
 
-    const exportData=()=>{
-      const data={project:currentProject.value,projectKey,checks:checks.value,meetings:meetings.value};
-      const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url;
-      a.download=`检查清单_${currentProject.value}.json`;
-      a.click();
-    };
-    const importData=()=>{fileInput.value.click()};
-    const handleImport=(e)=>{
-      const file=e.target.files[0];
-      if(!file)return;
-      const reader=new FileReader();
-      reader.onload=(ev)=>{
-        try{
-          const data=JSON.parse(ev.target.result);
-          if(data.checks&&Array.isArray(data.checks)){
-            if(confirm('确认导入？将覆盖当前数据。')){
-              checks.value=data.checks;
-              saveData();
-              if(data.meetings){
-                meetings.value=data.meetings.map(m=>({...m,expanded:false}));
-                saveMeetings();
-              }
+  // ============ 导出/导入整个项目 ============
+  const exportData=()=>{
+    const data={project:currentProject.value,projectKey,checks:checks.value,meetings:meetings.value};
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`检查清单_${currentProject.value}.json`;
+    a.click();
+  };
+  const importData=()=>{fileInput.value.click()};
+  const handleImport=(e)=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    const reader=new FileReader();
+    reader.onload=(ev)=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        if(data.checks&&Array.isArray(data.checks)){
+          if(confirm('确认导入？将覆盖当前数据。')){
+            checks.value=data.checks;
+            saveData();
+            if(data.meetings){
+              meetings.value=migrateMeetings(data.meetings).map(m=>({...m,expanded:false}));
+              saveMeetings();
             }
           }
-        }catch(err){alert('导入失败：'+err.message)}
-      };
-      reader.readAsText(file);
+        }
+      }catch(err){alert('导入失败：'+err.message)}
     };
+    reader.readAsText(file);
+  };
 
-    onMounted(async()=>{
-      await Promise.all([loadFromCloud(),loadMeetings()]);
-      initOpenGroups();
-    });
+  onMounted(async()=>{
+    document.documentElement.setAttribute('data-fontsize',fontSize.value);
+    await Promise.all([loadFromCloud(),loadMeetings()]);
+    initOpenGroups();
+  });
 
-    return{
-      currentProject,projectStage,activeTab,
-      groupedChecks,openGroups,fileInput,
-      totalCount,doneCount,
-      getStageClass,toggleGroup,saveData,
-      exportData,importData,handleImport,
-      members,projContracted,
-      meetings,sortedMeetings,showMeetingModal,editingMeetingId,draftMeeting,
-      showConfirmSummary,allConfirmed,
-      openAddMeeting,editMeeting,closeMeetingModal,saveMeeting,deleteMeeting
-    };
-  }
+  return{
+    currentProject,projectStages,activeTab,
+    groupedChecks,openGroups,fileInput,
+    totalCount,doneCount,
+    getStageClass,isCurrentStage,toggleGroup,saveData,
+    exportData,importData,handleImport,
+    members,
+    meetings,sortedMeetings,showMeetingModal,editingMeetingId,draftMeeting,
+    showConfirmSummary,allConfirmed,
+    openAddMeeting,editMeeting,closeMeetingModal,saveMeeting,deleteMeeting,
+    formatParticipants,exportMeetingToWord,
+    showImportModal,importText,doImport,
+    contractUnlocked,showContractLogin,contractPwd,openContractLogin,doContractUnlock,
+    fontSize,setFontSize
+  };
+}
 }).mount('#app');
 </script>
 </body>
