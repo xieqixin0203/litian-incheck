@@ -17,9 +17,9 @@
             --sidebar-bg: #141824; --sidebar-text: #a8b4d0; --sidebar-active: #3e4a6b;
             --dot-red: #d4a0a0; --dot-blue: #a8b8d8; --dot-yellow: #e0d4b0;
         }
-        body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; }
+        body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; margin: 0; }
         .sidebar { background: var(--sidebar-bg); color: var(--sidebar-text); width: 240px; transition: 0.3s; display: flex; flex-direction: column; }
-        .sidebar-nav a { display: block; padding: 12px 24px; color: var(--sidebar-text); opacity: 0.75; transition: 0.2s; font-size: 15px; border-left: 3px solid transparent; }
+        .sidebar-nav a { display: block; padding: 14px 24px; color: var(--sidebar-text); opacity: 0.75; transition: 0.2s; font-size: 16px; border-left: 3px solid transparent; text-decoration: none; cursor: pointer; }
         .sidebar-nav a:hover { opacity: 1; background: rgba(255,255,255,0.05); }
         .sidebar-nav a.active { opacity: 1; background: var(--sidebar-active); font-weight: bold; border-left-color: var(--sidebar-text); }
         .main-content { flex: 1; padding: 20px; overflow-y: auto; height: 100vh; }
@@ -28,16 +28,18 @@
         .dot-red { background: var(--dot-red); }
         .dot-blue { background: var(--dot-blue); }
         .dot-yellow { background: var(--dot-yellow); }
-        .modal-mask { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .modal-mask { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
         .ring-svg { transform: rotate(-90deg); }
-        .scroll-area { max-height: 320px; overflow-y: auto; }
+        .scroll-area { max-height: 340px; overflow-y: auto; }
         .scroll-area::-webkit-scrollbar { width: 6px; }
         .scroll-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-        .stage-tag { font-size: 11px; padding: 3px 10px; border-radius: 9999px; font-weight: 500; }
-        .hero-img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; }
-        .hero-plus { position: absolute; top: 8px; left: 8px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.35); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; cursor: pointer; }
-        .todo-row { font-size: 12px; }
-        .edit-btn { opacity: 0.3; transition: 0.2s; }
+        .stage-tag { font-size: 11px; padding: 3px 10px; border-radius: 9999px; font-weight: 500; display: inline-block; }
+        .hero-wrap { position: relative; width: 100%; height: 180px; border-radius: 16px; overflow: hidden; }
+        .hero-img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-plus { position: absolute; top: 10px; left: 10px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.4); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 22px; cursor: pointer; font-weight: 300; }
+        .hero-plus:hover { background: rgba(255,255,255,0.6); }
+        .todo-row { font-size: 13px; }
+        .edit-btn { opacity: 0.4; transition: 0.2s; }
         .todo-row:hover .edit-btn { opacity: 1; }
         @media (max-width: 768px) {
             .sidebar { position: fixed; left: -240px; z-index: 50; height: 100vh; }
@@ -55,13 +57,13 @@
                 <h2 class="text-base opacity-80 mt-1">项目指挥台</h2>
             </div>
             <nav class="sidebar-nav py-4 flex-1">
-                <a href="#" @click.prevent="switchView('home')" :class="{'active': currentView==='home'}">主页</a>
-                <a href="#" @click.prevent="switchView('todos')" :class="{'active': currentView==='todos'}">最近待办</a>
-                <a href="#" @click.prevent="switchView('projects')" :class="{'active': currentView==='projects'}">项目总览</a>
-                <a href="#" @click.prevent="switchView('memo')" :class="{'active': currentView==='memo'}">备忘录</a>
+                <a @click="switchView('home')" :class="{'active': currentView==='home'}">主页</a>
+                <a @click="switchView('todos')" :class="{'active': currentView==='todos'}">最近待办</a>
+                <a @click="switchView('projects')" :class="{'active': currentView==='projects'}">项目总览</a>
+                <a @click="switchView('memo')" :class="{'active': currentView==='memo'}">备忘录</a>
                 <a href="https://pan.tencent.com" target="_blank">云盘</a>
                 <a href="https://chat.deepseek.com" target="_blank">DeepSeek</a>
-                <a href="#" @click.prevent="switchView('settings')" :class="{'active': currentView==='settings'}">设置</a>
+                <a @click="switchView('settings')" :class="{'active': currentView==='settings'}">设置</a>
             </nav>
         </aside>
 
@@ -71,27 +73,28 @@
             <div class="flex items-center gap-3 mb-4">
                 <button @click="sidebarOpen = !sidebarOpen" class="md:hidden p-2 bg-[var(--card)] rounded-lg border border-[var(--border)]">☰</button>
                 <div class="flex-1 relative">
-                    <input v-model="searchKeyword" @input="doSearch" placeholder="搜索项目、待办..." class="w-full px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                    <input v-model="searchKeyword" @input="doSearch" placeholder="搜索项目、待办..." class="w-full px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-sm focus:outline-none" style="color: var(--text);">
                     <div v-if="searchResults.length > 0 && searchKeyword" class="absolute top-full left-0 right-0 mt-2 card p-3 max-h-80 overflow-y-auto z-40 shadow-xl">
-                        <div v-for="(r, idx) in searchResults" :key="idx" class="py-2 border-b border-[var(--border)] last:border-0 cursor-pointer hover:opacity-80" @click="goToResult(r)">
+                        <div v-for="(r, idx) in searchResults" :key="idx" class="py-2 border-b border-[var(--border)] last:border-0 cursor-pointer" @click="goToResult(r)">
                             <div class="text-xs opacity-50">{{ r.type }}</div>
                             <div class="text-sm font-medium">{{ r.title }}</div>
                         </div>
                     </div>
                 </div>
                 <button v-if="!isAdmin" @click="showLogin = true" class="px-3 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm whitespace-nowrap">管理员入口</button>
-                <button v-else @click="isAdmin = false" class="px-3 py-2.5 rounded-xl bg-[var(--primary)] text-white text-sm whitespace-nowrap font-bold">已登录</button>
+                <button v-else @click="isAdmin = false" class="px-3 py-2.5 rounded-xl text-white text-sm whitespace-nowrap font-bold" style="background: var(--primary);">已登录</button>
             </div>
 
-            <!-- 1. 主页 -->
+            <!-- 主页 -->
             <div v-if="currentView === 'home'">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     <!-- 左栏 -->
                     <div class="space-y-4">
                         <!-- 名画/建筑照片 -->
-                        <div class="relative">
+                        <div class="hero-wrap">
                             <img :src="heroImage" alt="Inspiration" class="hero-img">
-                            <div class="hero-plus" @click="rotateHero">+</div>
+                            <div class="hero-plus" @click="pickHero">+</div>
+                            <input ref="heroInput" type="file" accept="image/*" class="hidden" @change="uploadHero">
                         </div>
                         <!-- 日历 -->
                         <div class="card p-4">
@@ -101,24 +104,25 @@
                             </div>
                             <div class="grid grid-cols-7 gap-0.5 text-center text-xs">
                                 <div v-for="d in ['日','一','二','三','四','五','六']" :key="d" class="font-bold opacity-50 py-1">{{ d }}</div>
-                                <div v-for="(day, idx) in calendarDays" :key="idx" class="py-1.5 rounded text-xs" :class="{'bg-[var(--primary)] text-white font-bold': day.isToday, 'opacity-20': !day.isCurrent}">{{ day.date }}</div>
+                                <div v-for="(day, idx) in calendarDays" :key="idx" class="py-1.5 rounded text-xs" :class="{'text-white font-bold': day.isToday, 'opacity-20': !day.isCurrent}" :style="day.isToday ? 'background: var(--primary)' : ''">{{ day.date }}</div>
                             </div>
                         </div>
-                        <!-- 最近待办（大框） -->
+                        <!-- 最近待办 -->
                         <div class="card p-4">
                             <div class="flex justify-between items-center mb-3">
                                 <h3 class="font-bold text-sm">最近待办</h3>
-                                <button @click="switchView('todos')" class="text-xs text-[var(--primary)] hover:underline">全部</button>
+                                <button @click="switchView('todos')" class="text-xs hover:underline" style="color: var(--primary);">全部</button>
                             </div>
-                            <div class="scroll-area space-y-2 pr-1">
-                                <div v-for="todo in pendingTodos" :key="todo.id" class="todo-row flex items-start gap-2 py-1.5 border-b border-[var(--border)] last:border-0">
-                                    <span class="dot mt-1.5" :class="getDotColor(todo)"></span>
-                                    <input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="mt-0.5 w-3.5 h-3.5 accent-[var(--primary)] cursor-pointer flex-shrink-0">
-                                    <div class="flex-1 min-w-0">
-                                        <div class="font-medium truncate">{{ todo.task }}</div>
-                                        <div class="text-[11px] opacity-60 truncate">{{ todo.projectName }} · {{ todo.owner || '未指定' }}</div>
+                            <div class="scroll-area space-y-1 pr-1">
+                                <div v-for="todo in pendingTodos" :key="todo.id" class="todo-row flex items-center gap-2 py-2 border-b border-[var(--border)] last:border-0">
+                                    <span class="dot" :class="getDotColor(todo)"></span>
+                                    <input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="w-3.5 h-3.5 cursor-pointer flex-shrink-0">
+                                    <div class="flex-1 min-w-0 flex items-center gap-2">
+                                        <span class="font-medium truncate">{{ todo.task }}</span>
+                                        <span class="text-[11px] opacity-60 truncate">· {{ todo.projectName }}</span>
+                                        <span class="text-[11px] opacity-60 truncate">· {{ todo.owner || '未指定' }}</span>
                                     </div>
-                                    <button @click="editTodo(todo)" class="edit-btn text-xs text-[var(--primary)] p-1">✎</button>
+                                    <button @click="editTodo(todo)" class="edit-btn text-xs p-1" style="color: var(--primary);">✎</button>
                                 </div>
                             </div>
                         </div>
@@ -128,13 +132,13 @@
                     <div class="lg:col-span-2">
                         <h3 class="font-bold text-sm mb-3">项目进度</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-<div v-for="proj in projects" :key="proj.id" 
-     class="card p-4 cursor-pointer hover:shadow-lg transition flex items-center gap-4"
-     :style="getProjectBorderColor(proj)"
-     @click="goToProject(proj.id)">
+                            <div v-for="proj in projects" :key="proj.id" 
+                                 class="card p-4 cursor-pointer transition flex items-center gap-4"
+                                 :style="getProjectStyle(proj)"
+                                 @click="goToProject(proj.id)">
                                 <div class="relative w-16 h-16 flex-shrink-0">
                                     <svg class="ring-svg w-16 h-16" viewBox="0 0 36 36">
-                                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--border)" stroke-width="3"></circle>
+                                        <circle cx="18" cy="18" r="15.9" fill="none" :stroke="'#d8dee9'" stroke-width="3"></circle>
                                         <circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3"
                                                 :stroke="getRingColor(proj.progress)"
                                                 :stroke-dasharray="100" :stroke-dashoffset="100 - proj.progress"
@@ -145,7 +149,7 @@
                                 <div class="flex-1 min-w-0">
                                     <div class="font-bold text-[15px] truncate">{{ proj.name }}</div>
                                     <div class="text-xs opacity-60 mt-1">开始：{{ proj.startDate }}</div>
-                                    <div class="stage-tag mt-2 inline-block" :class="getStageColor(proj.stage)">{{ proj.stage }}</div>
+                                    <span class="stage-tag mt-2" :class="getStageColor(proj.stage)">{{ proj.stage }}</span>
                                 </div>
                             </div>
                         </div>
@@ -153,7 +157,7 @@
                 </div>
             </div>
 
-            <!-- 2. 最近待办 -->
+            <!-- 最近待办 -->
             <div v-if="currentView === 'todos'">
                 <div class="flex justify-between items-center mb-4">
                     <h1 class="text-xl font-bold">最近待办</h1>
@@ -165,7 +169,7 @@
                         <div class="space-y-2.5">
                             <div v-for="todo in group" :key="todo.id" class="text-[13px] flex items-start gap-2">
                                 <span class="dot mt-1.5" :class="getDotColor(todo)"></span>
-                                <input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="mt-0.5 w-4 h-4 accent-[var(--primary)] cursor-pointer flex-shrink-0">
+                                <input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="mt-0.5 w-4 h-4 cursor-pointer flex-shrink-0">
                                 <div class="flex-1">
                                     <span :class="{'line-through opacity-50': todo.done}" class="font-medium">{{ todo.task }}</span>
                                     <span class="text-[11px] opacity-60 ml-2">👤 {{ todo.owner || '未指定' }}</span>
@@ -176,14 +180,14 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button @click="editTodo(todo)" class="text-xs text-[var(--primary)] p-1">✎</button>
+                                <button @click="editTodo(todo)" class="text-xs p-1" style="color: var(--primary);">✎</button>
                                 <button v-if="isAdmin" @click="deleteTodo(todo)" class="text-xs text-red-400 hover:text-red-600 p-1">✕</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div v-if="doneTodos.length > 0" class="mt-6">
-                    <button @click="showDone = !showDone" class="text-sm opacity-60 hover:opacity-100">{{ showDone ? '▼' : '▶' }} 已完成 ({{ doneTodos.length }})</button>
+                    <button @click="showDone = !showDone" class="text-sm opacity-60">{{ showDone ? '▼' : '▶' }} 已完成 ({{ doneTodos.length }})</button>
                     <div v-show="showDone" class="mt-2 space-y-1">
                         <div v-for="todo in doneTodos" :key="todo.id" class="flex items-center gap-2 text-xs opacity-40 px-2">
                             <span class="line-through truncate">{{ todo.task }}</span>
@@ -193,14 +197,15 @@
                 </div>
             </div>
 
-            <!-- 3. 项目总览 -->
+            <!-- 项目总览 -->
             <div v-if="currentView === 'projects'">
                 <div class="flex justify-between items-center mb-4">
                     <h1 class="text-xl font-bold">项目总览</h1>
                     <button v-if="isAdmin" @click="showAddProject = true" class="px-4 py-2 rounded-lg text-sm text-white" style="background: var(--primary);">+ 新建项目</button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-<div v-for="proj in projects" :key="proj.id" class="card p-5 cursor-pointer hover:shadow-lg transition" :style="getProjectBorderColor(proj)" @click="goToProject(proj.id)">
+                    <div v-for="proj in projects" :key="proj.id" class="card p-5 cursor-pointer transition" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
+                        <div class="flex justify-between items-start mb-2">
                             <h3 class="font-bold text-base">{{ proj.name }}</h3>
                             <span class="stage-tag" :class="getStageColor(proj.stage)">{{ proj.stage }}</span>
                         </div>
@@ -214,18 +219,18 @@
                 </div>
             </div>
 
-            <!-- 4. 备忘录 -->
+            <!-- 备忘录 -->
             <div v-if="currentView === 'memo'">
                 <h1 class="text-xl font-bold mb-4">工作室备忘录</h1>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <a href="#" class="card p-5 hover:shadow-lg transition"><h3 class="font-bold text-sm">SketchUp 建模规范</h3><p class="text-xs opacity-70 mt-1">圆弧段数、组件命名、清理标准</p></a>
-                    <a href="#" class="card p-5 hover:shadow-lg transition"><h3 class="font-bold text-sm">AI 效果图关键词库</h3><p class="text-xs opacity-70 mt-1">按项目类型分类的提示词参考</p></a>
-                    <a href="#" class="card p-5 hover:shadow-lg transition"><h3 class="font-bold text-sm">合同模板库</h3><p class="text-xs opacity-70 mt-1">设计合同、分包、变更、验收</p></a>
-                    <a href="#" class="card p-5 hover:shadow-lg transition"><h3 class="font-bold text-sm">会议纪要模板</h3><p class="text-xs opacity-70 mt-1">已确认/待确认事项标准格式</p></a>
+                    <div class="card p-5"><h3 class="font-bold text-sm">SketchUp 建模规范</h3><p class="text-xs opacity-70 mt-1">圆弧段数、组件命名、清理标准</p></div>
+                    <div class="card p-5"><h3 class="font-bold text-sm">AI 效果图关键词库</h3><p class="text-xs opacity-70 mt-1">按项目类型分类的提示词参考</p></div>
+                    <div class="card p-5"><h3 class="font-bold text-sm">合同模板库</h3><p class="text-xs opacity-70 mt-1">设计合同、分包、变更、验收</p></div>
+                    <div class="card p-5"><h3 class="font-bold text-sm">会议纪要模板</h3><p class="text-xs opacity-70 mt-1">已确认/待确认事项标准格式</p></div>
                 </div>
             </div>
 
-            <!-- 5. 设置 -->
+            <!-- 设置 -->
             <div v-if="currentView === 'settings'">
                 <h1 class="text-xl font-bold mb-4">设置</h1>
                 <div class="card p-5"><p class="text-sm opacity-70">系统设置功能待开发...</p></div>
@@ -233,10 +238,10 @@
         </main>
 
         <!-- 登录 -->
-        <div v-if="showLogin" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="showLogin = false">
+        <div v-if="showLogin" class="modal-mask" @click.self="showLogin = false">
             <div class="card p-6 w-full max-w-sm">
                 <h3 class="font-bold text-lg mb-4">管理员登录</h3>
-                <input v-model="loginPwd" type="password" placeholder="输入密码" @keyup.enter="doLogin" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border)] mb-4">
+                <input v-model="loginPwd" type="password" placeholder="输入密码" @keyup.enter="doLogin" class="w-full border rounded-lg p-2 text-sm border-[var(--border)] mb-4" style="background: transparent; color: var(--text);">
                 <div class="flex justify-end gap-2">
                     <button @click="showLogin = false" class="px-4 py-2 text-sm">取消</button>
                     <button @click="doLogin" class="px-4 py-2 text-sm rounded-lg text-white" style="background: var(--primary);">登录</button>
@@ -245,23 +250,17 @@
         </div>
 
         <!-- 编辑待办 -->
-        <div v-if="editingTodo" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="editingTodo = null">
+        <div v-if="editingTodo" class="modal-mask" @click.self="editingTodo = null">
             <div class="card p-6 w-full max-w-md">
                 <h3 class="font-bold text-lg mb-4">编辑待办</h3>
                 <div class="space-y-3">
-                    <input v-model="editingTodo.task" placeholder="待办内容" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border)]">
-                    <input v-model="editingTodo.owner" placeholder="负责人（可多个，用逗号隔开）" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border)]">
-                    <select v-model="editingTodo.type" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border)]">
+                    <input v-model="editingTodo.task" placeholder="待办内容" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background: transparent; color: var(--text);">
+                    <input v-model="editingTodo.owner" placeholder="负责人（多个用逗号隔开）" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background: transparent; color: var(--text);">
+                    <select v-model="editingTodo.type" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background: transparent; color: var(--text);">
                         <option value="design">设计/会议/指标（红点）</option>
                         <option value="process">工艺跟进（蓝点）</option>
                         <option value="contract">合同跟进（黄点）</option>
                     </select>
-                    <div v-if="editingTodo.subTasks && editingTodo.subTasks.length">
-                        <label class="text-xs opacity-70">子任务</label>
-                        <div v-for="(sub, idx) in editingTodo.subTasks" :key="idx" class="flex gap-2 mt-1">
-                            <input v-model="editingTodo.subTasks[idx]" class="flex-1 border rounded-lg p-2 text-sm bg-transparent border-[var(--border)]">
-                        </div>
-                    </div>
                 </div>
                 <div class="flex justify-end gap-2 mt-5">
                     <button @click="editingTodo = null" class="px-4 py-2 text-sm">取消</button>
@@ -271,20 +270,20 @@
         </div>
 
         <!-- 新建待办 -->
-        <div v-if="showAddTodo" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="showAddTodo = false">
+        <div v-if="showAddTodo" class="modal-mask" @click.self="showAddTodo = false">
             <div class="card p-6 w-full max-w-md">
                 <h3 class="font-bold text-lg mb-4">新建待办</h3>
                 <div class="space-y-3">
-                    <input v-model="newTodo.task" placeholder="待办内容" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border)]">
-                    <select v-model="newTodo.projectId" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border)]">
+                    <input v-model="newTodo.task" placeholder="待办内容" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background: transparent; color: var(--text);">
+                    <select v-model="newTodo.projectId" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background: transparent; color: var(--text);">
                         <option value="">选择项目</option>
                         <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.name }}</option>
                     </select>
-                    <select v-model="newTodo.owner" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border)]">
+                    <select v-model="newTodo.owner" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background: transparent; color: var(--text);">
                         <option value="">选择负责人</option>
                         <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
                     </select>
-                    <select v-model="newTodo.type" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border)]">
+                    <select v-model="newTodo.type" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background: transparent; color: var(--text);">
                         <option value="design">设计/会议/指标（红点）</option>
                         <option value="process">工艺跟进（蓝点）</option>
                         <option value="contract">合同跟进（黄点）</option>
@@ -295,15 +294,15 @@
         </div>
 
         <!-- 新建项目 -->
-        <div v-if="showAddProject" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="showAddProject = false">
+        <div v-if="showAddProject" class="modal-mask" @click.self="showAddProject = false">
             <div class="card p-6 w-full max-w-md">
                 <h3 class="font-bold text-lg mb-4">新建项目</h3>
                 <div class="space-y-3">
-                    <input v-model="newProject.name" placeholder="项目名称" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border)]">
-                    <select v-model="newProject.stage" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border)]">
+                    <input v-model="newProject.name" placeholder="项目名称" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background: transparent; color: var(--text);">
+                    <select v-model="newProject.stage" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background: transparent; color: var(--text);">
                         <option v-for="s in stages" :key="s" :value="s">{{ s }}</option>
                     </select>
-                    <select v-model="newProject.owner" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border)]">
+                    <select v-model="newProject.owner" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background: transparent; color: var(--text);">
                         <option value="">选择负责人</option>
                         <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
                     </select>
@@ -320,7 +319,7 @@
         const stages = ['一、前期强排', '二、方案设计', '三、方案深化', '四、报建图', '五、施工图（含幕墙深化）', '六、室内设计', '七、室内设计施工图', '八、施工中'];
         const ADMIN_PASSWORD = 'litian2024';
 
-        // 项目分类
+        // 项目分类（申菱 / 工业厂房 / 旧改 / 小房子 / 其他）
         const projCategory = {
             'sl4': 'shenling', 'slzb': 'shenling', 'sl5': 'shenling', 'slgz': 'shenling',
             'prsp': 'industrial', 'yj': 'industrial', 'fp': 'industrial', 'rk': 'industrial',
@@ -328,14 +327,7 @@
             'skwj': 'small', 'sq': 'other'
         };
 
-        // 莫兰迪分类底色
-        const categoryBg = {
-            'shenling': 'border-l-4',
-            'industrial': 'border-l-4',
-            'renovation': 'border-l-4',
-            'small': 'border-l-4',
-            'other': 'border-l-4'
-        };
+        // 莫兰迪分类色
         const categoryColor = {
             'shenling': '#8fa3c8',
             'industrial': '#a3b8a3',
@@ -347,9 +339,9 @@
         // 阶段颜色（浅→深）
         const stageColor = {
             '一、前期强排': 'bg-gray-200 text-gray-600',
-            '二、方案设计': 'bg-blue-200 text-blue-800',
-            '三、方案深化': 'bg-blue-300 text-blue-900',
-            '四、报建图': 'bg-blue-500 text-white',
+            '二、方案设计': 'bg-blue-100 text-blue-700',
+            '三、方案深化': 'bg-blue-200 text-blue-800',
+            '四、报建图': 'bg-blue-400 text-white',
             '五、施工图（含幕墙深化）': 'bg-indigo-500 text-white',
             '六、室内设计': 'bg-orange-300 text-orange-900',
             '七、室内设计施工图': 'bg-orange-500 text-white',
@@ -400,11 +392,11 @@
                 const showLogin = ref(false);
                 const loginPwd = ref('');
                 const isAdmin = ref(false);
-                const isNight = ref(false);
                 const searchKeyword = ref('');
                 const searchResults = ref([]);
                 const editingTodo = ref(null);
                 const heroImage = ref('./hero.jpg');
+                const heroInput = ref(null);
 
                 const projects = ref(JSON.parse(localStorage.getItem('studio_projects')) || defaultProjects);
                 const todos = ref(JSON.parse(localStorage.getItem('studio_todos')) || defaultTodos);
@@ -431,19 +423,30 @@
                 };
                 generateCalendar();
 
-                // 日夜
+                // 加载用户自定义hero图片
+                const savedHero = localStorage.getItem('studio_hero');
+                if (savedHero) heroImage.value = savedHero;
+
+                // 日夜模式
                 const checkTime = () => {
                     const h = new Date().getHours();
-                    isNight.value = h >= 18 || h < 7;
-                    document.documentElement.classList.toggle('dark', isNight.value);
+                    document.documentElement.classList.toggle('dark', h >= 18 || h < 7);
                 };
                 onMounted(() => { checkTime(); setInterval(checkTime, 60000); });
 
-                // 图片轮换（暂存多张，可继续加）
-                const heroImages = ['./hero.jpg'];
-                const rotateHero = () => {
-                    // 未来可加更多图，现在是占位提示
-                    alert('可添加更多图片到 heroImages 数组，点击切换下一张。');
+                // 点击+号选择图片
+                const pickHero = () => { heroInput.value.click(); };
+                const uploadHero = (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    if (file.size > 2 * 1024 * 1024) { alert('图片超过2MB，请压缩'); return; }
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        heroImage.value = ev.target.result;
+                        try { localStorage.setItem('studio_hero', ev.target.result); }
+                        catch (err) { alert('图片太大，无法保存到本地'); }
+                    };
+                    reader.readAsDataURL(file);
                 };
 
                 const doSearch = () => {
@@ -480,11 +483,14 @@
                     if (todo.type === 'contract') return 'dot-yellow';
                     return 'dot-red';
                 };
-                const getProjectBg = (proj) => '';
-                const getProjectBorderColor = (proj) => {
-                    return { borderLeftColor: categoryColor[projCategory[proj.id]] || '#ccc' };
+
+                const getProjectStyle = (proj) => {
+                    const color = categoryColor[projCategory[proj.id]] || '#cccccc';
+                    return { borderLeft: '4px solid ' + color };
                 };
+
                 const getStageColor = (stage) => stageColor[stage] || 'bg-gray-100 text-gray-500';
+
                 const getRingColor = (progress) => {
                     if (progress < 25) return '#d4a0a0';
                     if (progress < 50) return '#d4b898';
@@ -528,7 +534,7 @@
                     saveData();
                 };
 
-                const editTodo = (todo) => { editingTodo.value = { ...todo }; };
+                const editTodo = (todo) => { editingTodo.value = JSON.parse(JSON.stringify(todo)); };
                 const saveTodoEdit = () => {
                     const idx = todos.value.findIndex(t => t.id === editingTodo.value.id);
                     if (idx >= 0) todos.value[idx] = { ...editingTodo.value };
@@ -555,11 +561,11 @@
                 return {
                     currentView, sidebarOpen, showDone, showAddTodo, showAddProject, showLogin, loginPwd, isAdmin,
                     searchKeyword, searchResults, doSearch, goToResult, editingTodo,
-                    projects, groupedTodos, pendingTodos, doneTodos, newTodo, newProject, heroImage,
+                    projects, groupedTodos, pendingTodos, doneTodos, newTodo, newProject, heroImage, heroInput,
                     currentMonthName, todayDate, calendarDays, members, stages,
-                    getDotColor, getProjectBg, getProjectBorderColor, getStageColor, getRingColor, doLogin,
+                    getDotColor, getProjectStyle, getStageColor, getRingColor, doLogin,
                     addTodo, toggleTodo, deleteTodo, editTodo, saveTodoEdit, addProject, goToProject,
-                    switchView, rotateHero
+                    switchView, pickHero, uploadHero
                 };
             }
         }).mount('#app');

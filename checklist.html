@@ -8,21 +8,22 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
         :root {
-            --bg: #e3edf6; --text: #1b3554; --card: #ffffff; --primary: #85a5cc; --border: #bdd0e5;
-            --completed-bg: #d5e2ef; --future-bg: #a8bfdb;
+            --bg: #eef1f6; --text: #2d3748; --card: #ffffff; --primary: #7b8bb8; --border: #d8dee9;
+            --completed-bg: #e2e8f0; --future-bg: #4a5568; --future-text: #e8ecf4;
         }
         .dark {
-            --bg: #000f22; --text: #c0e6fd; --card: #1b3554; --primary: #80aad3; --border: #3f6593;
-            --completed-bg: #1b3554; --future-bg: #000f22;
+            --bg: #1a1f2e; --text: #e8ecf4; --card: #252b3d; --primary: #8fa3c8; --border: #3a4258;
+            --completed-bg: #2a3040; --future-bg: #0f1320; --future-text: #6b7590;
         }
-        body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; }
+        body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; margin: 0; }
         .group-header { cursor: pointer; user-select: none; }
         .stage-completed { opacity: 0.6; background: var(--completed-bg) !important; }
-        .stage-future { opacity: 0.4; background: var(--future-bg) !important; }
-        .check-row { line-height: 1.3; }
-        textarea, select, input { background: transparent; color: var(--text); font-size: 13px; }
-        .dark select { background-color: #1b3554; }
-        .contract-section { border: 2px solid var(--primary); }
+        .stage-future { background: var(--future-bg) !important; color: var(--future-text) !important; opacity: 0.75; }
+        .stage-future .group-title { color: var(--future-text) !important; }
+        .check-row { line-height: 1.4; }
+        select, input, textarea { background: transparent; color: var(--text); font-size: 13px; }
+        .dark select { background-color: #252b3d; }
+        .contract-section { border: 2px solid var(--primary); border-radius: 16px; overflow: hidden; }
         @media (max-width: 768px) {
             .check-row { font-size: 13px; }
             .standard-text { font-size: 12px; }
@@ -32,10 +33,10 @@
 <body>
     <div id="app" class="max-w-5xl mx-auto p-3 pb-28">
         <!-- 顶部 -->
-        <header class="mb-4 bg-[var(--card)] p-4 rounded-2xl shadow-sm border border-[var(--border)]">
+        <header class="mb-4 p-4 rounded-2xl shadow-sm" style="background: var(--card); border: 1px solid var(--border);">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                 <div>
-                    <h1 class="text-xl font-bold">📋 项目检查清单</h1>
+                    <h1 class="text-xl font-bold">项目检查清单</h1>
                     <p class="text-sm mt-0.5 opacity-80 font-medium">
                         项目：<span class="font-bold" style="color: var(--primary)">{{ currentProject }}</span> ·
                         进度：<span class="font-bold">{{ doneCount }}/{{ totalCount }}</span> ·
@@ -44,47 +45,48 @@
                     </p>
                 </div>
                 <div class="flex gap-2 flex-wrap">
-                    <button @click="exportData" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-blue-700">导出</button>
-                    <button @click="importData" class="bg-gray-500 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-gray-600">导入</button>
-                    <a href="./index.html" class="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-gray-900">返回首页</a>
+                    <button @click="exportData" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs">导出</button>
+                    <button @click="importData" class="bg-gray-500 text-white px-3 py-1.5 rounded-lg text-xs">导入</button>
+                    <a href="./index.html" class="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-xs">返回首页</a>
                     <input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport">
                 </div>
             </div>
-            <div class="mt-3 bg-gray-200 rounded-full h-2">
-                <div class="h-2 rounded-full transition-all" style="background: var(--primary)" :style="{ width: progressPercent + '%' }"></div>
+            <div class="mt-3 rounded-full h-2" style="background: var(--border);">
+                <div class="h-2 rounded-full transition-all" :style="{ width: progressPercent + '%', background: 'var(--primary)' }"></div>
             </div>
         </header>
 
         <!-- 合同部分 -->
-        <div class="mb-4 bg-[var(--card)] rounded-xl shadow-sm overflow-hidden contract-section">
-            <div class="px-4 py-3 bg-[var(--primary)] text-white flex items-center justify-between">
-                <span class="font-bold text-base">📑 合同文书</span>
-                <span class="text-sm">状态：{{ projContracted ? '已入合同' : '未入合同' }}</span>
+        <div class="mb-4 contract-section">
+            <div class="px-4 py-3 text-white flex items-center justify-between" style="background: var(--primary);">
+                <span class="font-bold text-base">合同文书</span>
+                <span class="text-sm">{{ projContracted ? '已入合同' : '未入合同' }}</span>
             </div>
-            <div class="p-4 space-y-2">
-                <div class="flex items-center justify-between p-2 bg-[var(--bg)] rounded-lg">
+            <div class="p-4 space-y-2" style="background: var(--card);">
+                <div class="flex items-center justify-between p-2 rounded-lg" style="background: var(--bg);">
                     <span class="text-sm font-medium">设计合同</span>
                     <span class="text-xs px-2 py-1 rounded bg-green-100 text-green-700">已有</span>
                 </div>
-                <div class="flex items-center justify-between p-2 bg-[var(--bg)] rounded-lg">
+                <div class="flex items-center justify-between p-2 rounded-lg" style="background: var(--bg);">
                     <span class="text-sm font-medium">分包合同</span>
                     <span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-500">待增加</span>
                 </div>
-                <button class="w-full text-center text-sm text-blue-500 hover:text-blue-700 mt-2">+ 添加合同文书</button>
+                <button class="w-full text-center text-sm mt-2" style="color: var(--primary);">+ 添加合同文书</button>
             </div>
         </div>
 
         <!-- 检查项分组 -->
         <div class="space-y-3">
             <div v-for="(group, stageName) in groupedChecks" :key="stageName"
-                 class="bg-[var(--card)] rounded-xl shadow-sm overflow-hidden border border-[var(--border)]"
+                 class="rounded-xl shadow-sm overflow-hidden"
+                 style="background: var(--card); border: 1px solid var(--border);"
                  :class="getStageClass(stageName)">
                 <div class="group-header px-4 py-3 flex items-center justify-between transition"
-                     :class="isCurrentStage(stageName) ? 'bg-[var(--border)]' : 'bg-[var(--card)]'"
+                     :style="isCurrentStage(stageName) ? 'background: var(--border);' : 'background: var(--card);'"
                      @click="toggleGroup(stageName)">
                     <div class="flex items-center gap-2 flex-wrap">
-                        <span class="text-base font-bold">{{ stageName }}</span>
-                        <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--bg)] opacity-80 font-medium">
+                        <span class="text-base font-bold group-title">{{ stageName }}</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full font-medium" style="background: var(--bg);">
                             {{ group.filter(i => i.status === '合格').length }}/{{ group.length }}
                         </span>
                         <span v-if="group.filter(i => i.status === '不合格').length > 0"
@@ -96,8 +98,8 @@
                     <span class="text-sm opacity-60">{{ openGroups[stageName] ? '▼' : '▶' }}</span>
                 </div>
 
-                <div v-show="openGroups[stageName]" class="divide-y divide-[var(--border)]">
-                    <div v-for="item in group" :key="item.id" class="px-4 py-3 hover:opacity-95 transition">
+                <div v-show="openGroups[stageName]" class="divide-y" style="border-color: var(--border);">
+                    <div v-for="item in group" :key="item.id" class="px-4 py-3">
                         <div class="flex items-center gap-3">
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
@@ -110,18 +112,19 @@
                                 <div class="text-xs opacity-70 truncate mt-0.5 standard-text">{{ item.standard }}</div>
                                 <div v-if="item.note" class="text-xs mt-0.5 text-red-500 truncate">💬 {{ item.note }}</div>
                                 <div class="flex items-center gap-3 mt-1">
-                                    <select v-model="item.owner" @change="saveData" class="text-xs border rounded px-1 py-0.5 cursor-pointer border-[var(--border)]">
+                                    <select v-model="item.owner" @change="saveData" class="text-xs border rounded px-1 py-0.5" style="border-color: var(--border);">
                                         <option value="">未指定</option>
                                         <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
                                     </select>
-                                    <button v-if="!item.showNote && !item.note" @click="item.showNote = true" class="text-xs text-blue-500 hover:text-blue-700 font-medium">+备注</button>
+                                    <button v-if="!item.showNote && !item.note" @click="item.showNote = true" class="text-xs" style="color: var(--primary);">+备注</button>
                                     <div v-if="item.showNote" class="flex-1">
-                                        <input v-model="item.note" @change="saveData" placeholder="填写备注" class="text-xs border rounded px-1 py-0.5 w-full border-[var(--border)]">
+                                        <input v-model="item.note" @change="saveData" placeholder="填写备注" class="text-xs border rounded px-1 py-0.5 w-full" style="border-color: var(--border);">
                                     </div>
                                 </div>
                             </div>
                             <select v-model="item.status" @change="saveData"
-                                    class="text-xs border rounded px-1.5 py-1 flex-shrink-0 border-[var(--border)] font-medium"
+                                    class="text-xs border rounded px-1.5 py-1 flex-shrink-0 font-medium"
+                                    style="border-color: var(--border);"
                                     :class="{
                                         'text-green-600 font-bold': item.status === '合格',
                                         'text-red-600 font-bold': item.status === '不合格',
@@ -140,12 +143,10 @@
         </div>
 
         <!-- 底部问题汇总 -->
-        <div v-if="unqualifiedItems.length > 0" class="fixed bottom-0 left-0 w-full bg-[var(--card)] border-t-2 border-red-300 shadow-2xl p-4 max-w-5xl mx-auto rounded-t-2xl">
+        <div v-if="unqualifiedItems.length > 0" class="fixed bottom-0 left-0 w-full border-t-2 border-red-300 shadow-2xl p-4 max-w-5xl mx-auto rounded-t-2xl" style="background: var(--card);">
             <div class="flex items-center justify-between mb-2">
-                <h3 class="font-bold text-red-600 text-sm">⚠️ 不合格项汇总 ({{ unqualifiedItems.length }})</h3>
-                <button @click="showUnqualified = !showUnqualified" class="text-sm opacity-60">
-                    {{ showUnqualified ? '收起' : '展开' }}
-                </button>
+                <h3 class="font-bold text-red-600 text-sm">不合格项汇总 ({{ unqualifiedItems.length }})</h3>
+                <button @click="showUnqualified = !showUnqualified" class="text-sm opacity-60">{{ showUnqualified ? '收起' : '展开' }}</button>
             </div>
             <ul v-show="showUnqualified" class="text-xs opacity-80 max-h-32 overflow-y-auto list-disc pl-4 space-y-1">
                 <li v-for="item in unqualifiedItems" :key="item.id" class="truncate">
@@ -166,13 +167,13 @@
             'fp': '方普', 'rk': '容控小地块厂房加商业', 'sq': '社-顺德本土文化策展'
         };
 
-const stageOrder = [
-    '一、前期强排', '二、方案设计', '三、方案深化', '四、报建图',
-    '五、施工图（含幕墙深化）', '六、室内设计', '七、室内设计施工图', '八、施工中'
-];
+        // 八个阶段
+        const stageOrder = [
+            '一、前期强排', '二、方案设计', '三、方案深化', '四、报建图',
+            '五、施工图（含幕墙深化）', '六、室内设计', '七、室内设计施工图', '八、施工中'
+        ];
 
         const seedData = [
-            // 前期强排
             { id: 'CHK-PRE-001', stage: '一、前期强排', item: '机动车出入口设置要求', standard: '结合规划条件，核实与路口距离', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-PRE-002', stage: '一、前期强排', item: '室外地坪标高（国家高程）', standard: '结合周边路网与市政标高', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-PRE-003', stage: '一、前期强排', item: '附属绿地、公园绿地是否可纳入绿化率', standard: '按规划条件核实', level: 'P1', owner: '刘文辉' },
@@ -190,7 +191,7 @@ const stageOrder = [
             { id: 'CHK-PRE-015', stage: '一、前期强排', item: '与甲方确认玻璃型号使用', standard: '普通白玻 / low-e / 超白玻', level: 'P1', owner: '谢启欣' },
             { id: 'CHK-PRE-016', stage: '一、前期强排', item: '与甲方确认市政路灯灯光预留', standard: '确认是否需要预留', level: 'P1', owner: '谢启欣' },
             { id: 'CHK-PRE-017', stage: '一、前期强排', item: '与甲方确认围墙与门卫室设置', standard: '验收前还是后做；门卫室面积<15㎡', level: 'P1', owner: '谢启欣' },
-            // 方案设计 (AR)
+
             { id: 'CHK-AR-001', stage: '二、方案设计', item: '民用建筑、民用非居住、非民用建筑三者遮挡/被遮挡关系', standard: '理清日照关系', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-AR-002', stage: '二、方案设计', item: '板式低层/多层短边间距', standard: '14m', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-AR-003', stage: '二、方案设计', item: '高层建筑消防扑救面宽度', standard: '15.5m / 16m', level: 'P0', owner: '刘文辉' },
@@ -203,7 +204,7 @@ const stageOrder = [
             { id: 'CHK-AR-010', stage: '二、方案设计', item: '建筑高度（规划高度）坡屋面计算', standard: '角度≤45%算至檐口顶；>45%算至坡顶一半', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-AR-011', stage: '二、方案设计', item: '室内外高差', standard: '通常150mm，i=12%', level: 'P1', owner: '刘文辉' },
             { id: 'CHK-AR-012', stage: '二、方案设计', item: '场地内外高差核实', standard: '明确排水方向', level: 'P0', owner: '刘文辉' },
-            // 报建图 (REP)
+
             { id: 'CHK-REP-001', stage: '四、报建图', item: '设计单位与规整单位项目诚信编号', standard: '网上提交申请给甲方', level: 'P0', owner: '欧阳琳' },
             { id: 'CHK-REP-002', stage: '四、报建图', item: '甲方提供广东省企业投资项目备案证', standard: '核对一致性', level: 'P0', owner: '欧阳琳' },
             { id: 'CHK-REP-003', stage: '四、报建图', item: '佛山市建设工程规划许可证核发申请表', standard: '甲方填写，三方盖章', level: 'P0', owner: '欧阳琳' },
@@ -233,7 +234,7 @@ const stageOrder = [
             { id: 'CHK-REP-027', stage: '四、报建图', item: '立面/剖面绘制、标号、高度、层数', standard: '规划标高与绝对标高对齐，材质表统一', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-REP-028', stage: '四、报建图', item: '建筑高度计算分类', standard: '低层≤10m；多层≤27m；高层>27m', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-REP-029', stage: '四、报建图', item: '厂房层数分类', standard: '>32m且任一层>10人应防烟楼梯', level: 'P0', owner: '刘文辉' },
-            // 施工图 (SD, DIV, CW)
+
             { id: 'CHK-DIV-001', stage: '五、施工图（含幕墙深化）', item: '与设计室分清责任', standard: '涉及施工图部分尽量由施工图室负责', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-DIV-002', stage: '五、施工图（含幕墙深化）', item: '水土保持（甲方任务）', standard: '需甲方提前找第三方，过会后进入审图', level: 'P0', owner: '刘文辉' },
             { id: 'CHK-DIV-003', stage: '五、施工图（含幕墙深化）', item: '基坑支护（甲方任务）', standard: '放坡或垂直需设计，可与勘察单位同一家', level: 'P0', owner: '刘文辉' },
@@ -264,7 +265,7 @@ const stageOrder = [
             { id: 'CHK-CW-005', stage: '五、施工图（含幕墙深化）', item: '预埋件/后置埋件与结构梁位复核', standard: '避让钢筋，坐标与结构图核对', level: 'P0', owner: '谢启欣' },
             { id: 'CHK-CW-006', stage: '五、施工图（含幕墙深化）', item: '幕墙与建筑立面图核对', standard: '分格与立面一致', level: 'P0', owner: '谢启欣' },
             { id: 'CHK-CW-007', stage: '五、施工图（含幕墙深化）', item: '幕墙节点与SU深化模型对照', standard: '节点符合我们意图', level: 'P0', owner: '谢启欣' },
-            // 室内设计 (ID)
+
             { id: 'CHK-ID-001', stage: '六、室内设计', item: '室内方案模型是否齐全', standard: '核对模型完整性', level: 'P0', owner: '梁婷玉' },
             { id: 'CHK-ID-002', stage: '六、室内设计', item: '还差什么内容未完成', standard: '逐项核对，记录待补内容', level: 'P0', owner: '梁婷玉' },
             { id: 'CHK-ID-003', stage: '六、室内设计', item: '最近会议纪要有没有要补充修改的', standard: '核对确认信息与待确认事项', level: 'P0', owner: '梁婷玉' },
@@ -340,7 +341,7 @@ const stageOrder = [
                     return sorted;
                 });
 
-                // 确定当前阶段：第一个有未完成项的阶段
+                // 当前阶段 = 第一个有未完成项的阶段
                 const currentStage = computed(() => {
                     for (const s of stageOrder) {
                         const group = groupedChecks.value[s];
@@ -352,22 +353,21 @@ const stageOrder = [
 
                 const isCurrentStage = (s) => s === currentStage.value;
 
-                // 初始化折叠状态：只有当前阶段展开，其他折叠
+                // 阶段样式
+                const getStageClass = (s) => {
+                    const curIdx = stageOrder.indexOf(currentStage.value);
+                    const thisIdx = stageOrder.indexOf(s);
+                    if (thisIdx < curIdx) return 'stage-completed';
+                    if (thisIdx > curIdx) return 'stage-future';
+                    return '';
+                };
+
+                // 只展开当前阶段
                 const initOpenGroups = () => {
                     const cur = currentStage.value;
                     stageOrder.forEach(s => {
                         openGroups.value[s] = (s === cur);
                     });
-                };
-
-                const getStageClass = (s) => {
-                    const curIdx = stageOrder.indexOf(currentStage.value);
-                    const thisIdx = stageOrder.indexOf(s);
-                    const group = groupedChecks.value[s];
-                    if (!group) return '';
-                    if (thisIdx < curIdx) return 'stage-completed'; // 前面已完成
-                    if (thisIdx > curIdx) return 'stage-future'; // 后面未开始
-                    return '';
                 };
 
                 const totalCount = computed(() => checks.value.length);
@@ -400,7 +400,7 @@ const stageOrder = [
 
                 onMounted(async () => {
                     await loadFromCloud();
-                    initOpenGroups(); // 根据当前阶段初始化折叠
+                    initOpenGroups();
                 });
 
                 return {
