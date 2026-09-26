@@ -43,7 +43,11 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .scroll-area{flex:1;min-height:0;overflow-y:auto;padding-right:4px}
 .scroll-area::-webkit-scrollbar{width:5px}
 .scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-@media(max-width:768px){.sidebar{position:fixed;left:-240px;z-index:50;height:100vh}.sidebar.open{left:0}.main-content{padding:10px}}
+@media(max-width:768px){
+  .sidebar{position:fixed;left:-240px;z-index:50;height:100vh}
+  .sidebar.open{left:0}
+  .main-content{padding:10px;overflow-y:auto}
+}
 </style>
 </head>
 <body>
@@ -93,8 +97,9 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 
 <!-- 主页 -->
-<div v-if="currentView==='home'" class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-5 gap-3">
-<div class="lg:col-span-2 flex flex-col gap-3 min-h-0">
+<div v-if="currentView==='home'" class="flex-1 min-h-0 flex flex-col lg:flex-row gap-3">
+<!-- 左侧：hero + 最近待办（移动端更突出最近待办） -->
+<div class="lg:w-2/5 flex flex-col gap-3 lg:min-h-0">
 <div class="card p-3 flex-shrink-0">
 <div class="hero-title">精神零食</div>
 <div class="flex gap-3">
@@ -112,7 +117,8 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 </div>
-<div class="card p-3 flex-1 min-h-0 flex flex-col">
+<!-- 最近待办：移动端 min-height 55vh，桌面端 flex-1 -->
+<div class="card p-3 flex flex-col lg:flex-1 lg:min-h-0" style="min-height: 55vh;">
 <div class="flex justify-between items-center mb-2 flex-shrink-0">
 <h3 class="font-bold text-sm">最近待办</h3>
 <button @click="switchView('todos')" class="text-xs hover:underline" style="color:var(--primary)">全部</button>
@@ -132,9 +138,10 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
-<div class="lg:col-span-3 flex flex-col min-h-0">
+<!-- 右侧：项目进度 -->
+<div class="lg:w-3/5 flex flex-col lg:min-h-0">
 <h3 class="font-bold text-sm mb-2 flex-shrink-0">项目进度</h3>
-<div class="flex-1 min-h-0 overflow-y-auto pr-1">
+<div class="lg:flex-1 lg:min-h-0 lg:overflow-y-auto pr-1">
 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 <div v-for="proj in projects" :key="proj.id" class="card p-3 cursor-pointer transition flex items-center gap-3" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
 <div class="relative w-14 h-14 flex-shrink-0">
@@ -199,7 +206,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <div v-if="currentView==='projects'" class="flex-1 min-h-0 overflow-y-auto">
 <div class="flex justify-between items-center mb-4">
 <h1 class="text-xl font-bold">项目总览</h1>
-<button v-if="isAdmin" @click="showAddProject=true" class="px-4 py-2 rounded-lg text-sm text-white" style="background:var(--primary)">+ 新建项目</button>
+<button @click="showAddProject=true" class="px-4 py-2 rounded-lg text-sm text-white" style="background:var(--primary)">+ 新建项目</button>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 <div v-for="proj in projects" :key="proj.id" class="card p-5 cursor-pointer transition" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
@@ -311,9 +318,7 @@ const {createApp,ref,computed,onMounted}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
 const ADMIN_PASSWORD='litian2024';
-
-// ★★★ 数据版本号 —— 每次更新代码时改这个版本号，手机会自动刷新数据 ★★★
-const DATA_VERSION='2026-09-26-v3';
+const DATA_VERSION='2026-09-26-v4';
 
 const projCategory={'sl4':'shenling','slzb':'shenling','sl5':'shenling','slgz':'shenling','prsp':'industrial','yj':'industrial','fp':'industrial','rk':'industrial','whg':'renovation','stc':'renovation','spmy':'renovation','skwj':'small','sq':'other'};
 const categoryBgColor={'shenling':'rgba(143,163,200,0.12)','industrial':'rgba(163,184,163,0.12)','renovation':'rgba(184,174,200,0.12)','small':'rgba(212,200,168,0.15)','other':'rgba(212,184,184,0.12)'};
@@ -358,7 +363,6 @@ const defaultHeroMeta={title:'《康乃馨、百合、百合、玫瑰》',author
 
 createApp({
 setup(){
-// ★★★ 版本号检测：如果本地版本号与当前不一致，清空旧数据 ★★★
 const savedVersion=localStorage.getItem('studio_data_version');
 if(savedVersion!==DATA_VERSION){
 localStorage.removeItem('studio_projects');
