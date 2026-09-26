@@ -7,173 +7,207 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+        :root {
+            --bg-color: #e3edf6;
+            --text-color: #1b3554;
+            --card-bg: #ffffff;
+            --primary: #85a5cc;
+            --border-color: #bdd0e5;
+        }
+        .dark {
+            --bg-color: #000f22;
+            --text-color: #c0e6fd;
+            --card-bg: #1b3554;
+            --primary: #80aad3;
+            --border-color: #3f6593;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.5s, color 0.5s;
+        }
         .card-hover { transition: all 0.2s ease; }
         .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .modal-mask { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { opacity: 0.9; }
+        .tag { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 9999px; border: 1px solid var(--border-color); }
+        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body>
     <div id="app" class="max-w-6xl mx-auto p-4 pb-24">
 
-        <!-- ========== 顶部导航 ========== -->
-        <header class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3 bg-white p-4 rounded-2xl shadow-sm">
+        <!-- 顶部导航 -->
+        <header class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3 bg-[var(--card-bg)] p-4 rounded-2xl shadow-sm border border-[var(--border-color)]">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">🏢 立田工作室 · 项目指挥台</h1>
-                <p class="text-sm text-gray-500 mt-1">
-                    进行中项目 <span class="text-blue-600 font-bold">{{ activeProjects.length }}</span> 个 ·
-                    待办事项 <span class="text-red-600 font-bold">{{ pendingTodos.length }}</span> 条
+                <h1 class="text-2xl font-bold">立田工作室 · 项目指挥台</h1>
+                <p class="text-sm mt-1 opacity-70">
+                    进行中项目 <span class="font-bold" style="color: var(--primary)">{{ activeProjects.length }}</span> 个 ·
+                    待办事项 <span class="font-bold text-red-500">{{ pendingTodos.length }}</span> 条
+                    <span v-if="isAdmin" class="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">管理员模式</span>
                 </p>
             </div>
             <div class="flex gap-2 flex-wrap">
-                <button @click="showAddTodo = true" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">
-                    + 新建待办
-                </button>
-                <button @click="showAddProject = true" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-900 transition">
-                    + 新建项目
-                </button>
-                <button @click="exportAll" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-200 transition">
-                    导出备份
-                </button>
+                <button v-if="!isAdmin" @click="showLogin = true" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-300">🔑 管理员登录</button>
+                <button v-else @click="isAdmin = false" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm">退出管理员</button>
+                <button @click="showAddTodo = true" class="btn-primary px-4 py-2 rounded-lg text-sm">+ 新建待办</button>
+                <button @click="showAddProject = true" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-900">+ 新建项目</button>
+                <a href="https://pan.tencent.com" target="_blank" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600">📁 云盘</a>
+                <a href="https://chat.deepseek.com" target="_blank" class="bg-purple-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-600">🤖 DeepSeek</a>
             </div>
         </header>
 
-        <!-- ========== 第一板块：待办事项 ========== -->
+        <!-- 待办事项 -->
         <section class="mb-8">
             <div class="flex items-center justify-between mb-3">
-                <h2 class="text-lg font-bold text-gray-800">📌 最近待办</h2>
-                <span class="text-xs text-gray-500">点击勾选完成 · 点击项目名可跳转</span>
+                <h2 class="text-lg font-bold">📌 最近待办</h2>
+                <span class="text-xs opacity-60">点击进入详情 · 勾选完成 · 长按可标重要</span>
             </div>
-            <div v-if="pendingTodos.length === 0 && doneTodos.length === 0" class="bg-white rounded-xl p-8 text-center text-gray-400 text-sm">
-                暂无待办。点击右上角"新建待办"添加。
+            <div v-if="pendingTodos.length === 0" class="bg-[var(--card-bg)] rounded-xl p-8 text-center opacity-50 text-sm">
+                暂无待办。
             </div>
-            <div class="bg-white rounded-xl shadow-sm divide-y divide-gray-100">
-                <div v-for="todo in pendingTodos" :key="todo.id" class="p-4 flex items-start gap-3 hover:bg-gray-50 transition">
-                    <input type="checkbox" @change="toggleTodo(todo)" class="mt-1 w-5 h-5 accent-blue-600 cursor-pointer">
-                    <div class="flex-1">
-                        <p class="text-sm md:text-base">{{ todo.task }}</p>
-                        <div class="flex flex-wrap gap-2 mt-2 text-xs">
-                            <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 cursor-pointer hover:bg-gray-200" @click="goToProject(todo.projectId)">
-                                📁 {{ todo.projectName }}
-                            </span>
-                            <span v-if="todo.owner" class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">👤 {{ todo.owner }}</span>
-                            <span v-if="todo.dueDate" class="px-2 py-0.5 rounded-full" :class="isOverdue(todo.dueDate) ? 'bg-red-50 text-red-600 font-bold' : 'bg-orange-50 text-orange-700'">
-                                ⏰ {{ todo.dueDate }}{{ isOverdue(todo.dueDate) ? ' (已逾期)' : '' }}
-                            </span>
-                        </div>
+            <div class="bg-[var(--card-bg)] rounded-xl shadow-sm divide-y divide-[var(--border-color)] border border-[var(--border-color)]">
+                <!-- 单行展示待办 -->
+                <div v-for="todo in sortedTodos" :key="todo.id" 
+                     @click="openTodoDetail(todo)"
+                     class="p-3 flex items-center gap-3 hover:bg-[var(--border-color)] transition cursor-pointer group"
+                     :class="{'opacity-50': todo.done, 'border-l-4 border-red-500': todo.isImportant}">
+                    <input type="checkbox" :checked="todo.done" @change.stop="toggleTodo(todo)" class="w-5 h-5 accent-[var(--primary)] cursor-pointer flex-shrink-0">
+                    <div class="flex-1 min-w-0 flex items-center gap-2 text-sm">
+                        <span v-if="todo.isPinned" class="text-xs">📌</span>
+                        <span v-if="todo.isImportant" class="text-xs text-red-500">🔴</span>
+                        <span class="font-medium truncate line-clamp-1" :class="{'line-through text-gray-400': todo.done}">{{ todo.task }}</span>
+                        <span class="tag hidden md:inline-block">{{ todo.projectName }}</span>
+                        <span class="tag hidden md:inline-block" v-if="todo.dueDate">{{ todo.dueDate }}</span>
                     </div>
-                    <button @click="deleteTodo(todo)" class="text-gray-300 hover:text-red-500 text-sm">✕</button>
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                        <button v-if="isAdmin" @click.stop="deleteTodo(todo)" class="text-xs text-red-400 hover:text-red-600 p-1">删除</button>
+                    </div>
                 </div>
-                <div v-if="doneTodos.length > 0" class="p-3">
-                    <button @click="showDone = !showDone" class="text-xs text-gray-500 hover:text-gray-700">
+                <div v-if="doneTodos.length > 0" class="p-2">
+                    <button @click="showDone = !showDone" class="text-xs opacity-60 hover:opacity-100">
                         {{ showDone ? '▼' : '▶' }} 已完成 ({{ doneTodos.length }})
                     </button>
-                    <div v-show="showDone" class="mt-2 space-y-2">
-                        <div v-for="todo in doneTodos" :key="todo.id" class="flex items-start gap-3 text-gray-400 text-sm">
-                            <input type="checkbox" checked @change="toggleTodo(todo)" class="mt-1 w-5 h-5 cursor-pointer">
-                            <span class="line-through flex-1">{{ todo.task }}</span>
-                            <button @click="deleteTodo(todo)" class="text-gray-300 hover:text-red-500 text-xs">✕</button>
+                    <div v-show="showDone" class="mt-2 space-y-1">
+                        <div v-for="todo in doneTodos" :key="todo.id" class="flex items-center gap-2 text-xs opacity-40 px-2">
+                            <span class="line-through truncate">{{ todo.task }}</span>
+                            <span class="text-gray-400">由 {{ todo.completedBy || '未知' }} 完成</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ========== 第二板块：项目总览 ========== -->
+        <!-- 项目总览 -->
         <section class="mb-8">
-            <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
-                <h2 class="text-lg font-bold text-gray-800">🗂️ 项目总览</h2>
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-bold">🗂️ 项目总览</h2>
                 <div class="flex gap-2 text-xs flex-wrap">
                     <span v-for="(color, stage) in stageMap" :key="stage" class="flex items-center gap-1">
                         <span class="w-3 h-3 rounded-full" :class="color.dot"></span>
-                        <span class="text-gray-600">{{ stage }}</span>
+                        <span class="opacity-60">{{ stage }}</span>
                     </span>
                 </div>
-            </div>
-            <div v-if="activeProjects.length === 0" class="bg-white rounded-xl p-8 text-center text-gray-400 text-sm">
-                暂无项目。点击右上角"新建项目"添加。
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div v-for="proj in activeProjects" :key="proj.id"
                      @click="goToProject(proj.id)"
-                     class="card-hover cursor-pointer bg-white rounded-2xl shadow-sm p-5 border-l-4"
-                     :class="stageMap[proj.stage]?.border || 'border-gray-300'">
-                    <div class="flex items-start justify-between mb-3">
-                        <h3 class="font-bold text-gray-900 text-base">{{ proj.name }}</h3>
-                        <span class="text-xs px-2 py-1 rounded-full font-medium"
-                              :class="[stageMap[proj.stage]?.bg, stageMap[proj.stage]?.text]">
-                            {{ proj.stage }}
-                        </span>
+                     class="card-hover cursor-pointer bg-[var(--card-bg)] rounded-2xl shadow-sm p-5 border border-[var(--border-color)]">
+                    <div class="flex items-start justify-between mb-2">
+                        <h3 class="font-bold text-base truncate">{{ proj.name }}</h3>
+                        <span class="tag" :class="[stageMap[proj.stage]?.bg, stageMap[proj.stage]?.text]">{{ proj.stage }}</span>
                     </div>
-                    <div class="text-xs text-gray-500 space-y-1">
+                    <div class="text-xs space-y-1 opacity-70">
                         <p>👤 负责人：{{ proj.owner || '未指定' }}</p>
-                        <p v-if="proj.note">📝 {{ proj.note }}</p>
+                        <p v-if="proj.note" class="truncate">📝 {{ proj.note }}</p>
                     </div>
-                    <div class="mt-4 flex items-center justify-between">
-                        <div class="flex-1 bg-gray-100 rounded-full h-1.5 mr-3">
-                            <div class="bg-blue-500 h-1.5 rounded-full transition-all" :style="{ width: proj.progress + '%' }"></div>
-                        </div>
-                        <span class="text-xs text-gray-500">{{ proj.progress }}%</span>
-                    </div>
-                    <div class="mt-3 flex justify-end gap-2">
-                        <button @click.stop="deleteProject(proj)" class="text-xs text-gray-300 hover:text-red-500">删除</button>
+                    <!-- 备案与合同状态 -->
+                    <div class="mt-3 flex gap-2">
+                        <span class="tag" :class="proj.filed ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'">备案: {{ proj.filed ? '已备案' : '未备案' }}</span>
+                        <span class="tag" :class="proj.contracted ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'">合同: {{ proj.contracted ? '已签' : '未签' }}</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ========== 第三板块：备忘录 ========== -->
-        <section class="mb-8">
-            <h2 class="text-lg font-bold text-gray-800 mb-3">📎 工作室备忘录</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <a v-for="note in notes" :key="note.id" :href="note.link" target="_blank"
-                   class="card-hover bg-white rounded-2xl shadow-sm p-5 block hover:shadow-md">
-                    <h3 class="font-bold text-gray-900 text-sm mb-1">{{ note.title }}</h3>
-                    <p class="text-xs text-gray-500">{{ note.desc }}</p>
-                </a>
-            </div>
-        </section>
-
-        <!-- ========== 模态框：新建待办 ========== -->
-        <div v-if="showAddTodo" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50" @click.self="showAddTodo = false">
-            <div class="bg-white rounded-2xl p-6 w-full max-w-md">
-                <h3 class="font-bold text-lg mb-4">新建待办</h3>
-                <div class="space-y-3">
-                    <input v-model="newTodo.task" placeholder="待办内容（如：完成方案文本）" class="w-full border rounded-lg p-2 text-sm">
-                    <select v-model="newTodo.projectId" class="w-full border rounded-lg p-2 text-sm">
-                        <option value="">选择项目</option>
-                        <option v-for="p in activeProjects" :key="p.id" :value="p.id">{{ p.name }}</option>
-                    </select>
-                    <select v-model="newTodo.owner" class="w-full border rounded-lg p-2 text-sm">
-                        <option value="">选择负责人</option>
-                        <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
-                    </select>
-                    <input v-model="newTodo.dueDate" type="date" class="w-full border rounded-lg p-2 text-sm">
+        <!-- 模态框：待办详情 -->
+        <div v-if="selectedTodo" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="selectedTodo = null">
+            <div class="bg-[var(--card-bg)] rounded-2xl p-6 w-full max-w-md border border-[var(--border-color)]">
+                <h3 class="font-bold text-lg mb-4">待办详情</h3>
+                <div class="space-y-3 text-sm">
+                    <p><span class="opacity-60">内容：</span>{{ selectedTodo.task }}</p>
+                    <p><span class="opacity-60">项目：</span>{{ selectedTodo.projectName }}</p>
+                    <p><span class="opacity-60">负责人：</span>{{ selectedTodo.owner || '未指定' }}</p>
+                    <p><span class="opacity-60">创建时间：</span>{{ selectedTodo.createdAt }}</p>
+                    <p><span class="opacity-60">完成人：</span>{{ selectedTodo.completedBy || '未完成' }}</p>
                 </div>
-                <div class="flex justify-end gap-2 mt-5">
-                    <button @click="showAddTodo = false" class="px-4 py-2 text-sm text-gray-600">取消</button>
-                    <button @click="addTodo" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">保存</button>
+                <div class="flex justify-end gap-2 mt-6">
+                    <button @click="selectedTodo = null" class="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg">关闭</button>
                 </div>
             </div>
         </div>
 
-        <!-- ========== 模态框：新建项目 ========== -->
-        <div v-if="showAddProject" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50" @click.self="showAddProject = false">
-            <div class="bg-white rounded-2xl p-6 w-full max-w-md">
-                <h3 class="font-bold text-lg mb-4">新建项目</h3>
+        <!-- 模态框：新建待办 -->
+        <div v-if="showAddTodo" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="showAddTodo = false">
+            <div class="bg-[var(--card-bg)] rounded-2xl p-6 w-full max-w-md border border-[var(--border-color)]">
+                <h3 class="font-bold text-lg mb-4">新建待办</h3>
                 <div class="space-y-3">
-                    <input v-model="newProject.name" placeholder="项目名称" class="w-full border rounded-lg p-2 text-sm">
-                    <select v-model="newProject.stage" class="w-full border rounded-lg p-2 text-sm">
-                        <option v-for="(color, stage) in stageMap" :key="stage" :value="stage">{{ stage }}</option>
+                    <input v-model="newTodo.task" placeholder="待办内容" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border-color)]">
+                    <select v-model="newTodo.projectId" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border-color)]">
+                        <option value="">选择项目</option>
+                        <option v-for="p in activeProjects" :key="p.id" :value="p.id">{{ p.name }}</option>
                     </select>
-                    <select v-model="newProject.owner" class="w-full border rounded-lg p-2 text-sm">
+                    <select v-model="newTodo.owner" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border-color)]">
                         <option value="">选择负责人</option>
                         <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
                     </select>
-                    <input v-model="newProject.note" placeholder="备注（如：待出强排方案）" class="w-full border rounded-lg p-2 text-sm">
+                    <div class="flex gap-2">
+                        <label class="flex items-center gap-1 text-xs"><input type="checkbox" v-model="newTodo.isPinned"> 置顶</label>
+                        <label class="flex items-center gap-1 text-xs"><input type="checkbox" v-model="newTodo.isImportant"> 标红重要</label>
+                    </div>
                 </div>
                 <div class="flex justify-end gap-2 mt-5">
-                    <button @click="showAddProject = false" class="px-4 py-2 text-sm text-gray-600">取消</button>
-                    <button @click="addProject" class="px-4 py-2 text-sm bg-gray-800 text-white rounded-lg hover:bg-gray-900">保存</button>
+                    <button @click="showAddTodo = false" class="px-4 py-2 text-sm">取消</button>
+                    <button @click="addTodo" class="px-4 py-2 text-sm btn-primary rounded-lg">保存</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 模态框：登录 -->
+        <div v-if="showLogin" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="showLogin = false">
+            <div class="bg-[var(--card-bg)] rounded-2xl p-6 w-full max-w-sm border border-[var(--border-color)]">
+                <h3 class="font-bold text-lg mb-4">管理员登录</h3>
+                <input v-model="loginPwd" type="password" placeholder="输入密码" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border-color)] mb-4">
+                <div class="flex justify-end gap-2">
+                    <button @click="showLogin = false" class="px-4 py-2 text-sm">取消</button>
+                    <button @click="doLogin" class="px-4 py-2 text-sm btn-primary rounded-lg">登录</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 模态框：新建项目 -->
+        <div v-if="showAddProject" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="showAddProject = false">
+            <div class="bg-[var(--card-bg)] rounded-2xl p-6 w-full max-w-md border border-[var(--border-color)]">
+                <h3 class="font-bold text-lg mb-4">新建项目</h3>
+                <div class="space-y-3">
+                    <input v-model="newProject.name" placeholder="项目名称" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border-color)]">
+                    <select v-model="newProject.stage" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border-color)]">
+                        <option v-for="(color, stage) in stageMap" :key="stage" :value="stage">{{ stage }}</option>
+                    </select>
+                    <select v-model="newProject.owner" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border-color)]">
+                        <option value="">选择负责人</option>
+                        <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
+                    </select>
+                    <div class="flex gap-2">
+                        <label class="flex items-center gap-1 text-xs"><input type="checkbox" v-model="newProject.filed"> 已备案</label>
+                        <label class="flex items-center gap-1 text-xs"><input type="checkbox" v-model="newProject.contracted"> 已入合同</label>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 mt-5">
+                    <button @click="showAddProject = false" class="px-4 py-2 text-sm">取消</button>
+                    <button @click="addProject" class="px-4 py-2 text-sm bg-gray-800 text-white rounded-lg">保存</button>
                 </div>
             </div>
         </div>
@@ -181,58 +215,76 @@
     </div>
 
     <script>
-        const { createApp, ref, computed, watch } = Vue;
+        const { createApp, ref, computed, watch, onMounted } = Vue;
 
-        // ========== 工作室成员名单 ==========
         const members = ['刘文辉', '谢启欣', '欧阳琳', '梁婷玉', '黄建敏', '梁富成'];
+        const ADMIN_PASSWORD = 'litian2024';
 
-        // ========== 阶段与颜色的映射 ==========
         const stageMap = {
-            '前期强排': { bg: 'bg-yellow-100', border: 'border-yellow-400', text: 'text-yellow-800', dot: 'bg-yellow-400' },
-            '深化阶段': { bg: 'bg-blue-100',   border: 'border-blue-400',   text: 'text-blue-800',   dot: 'bg-blue-400' },
-            '报建阶段': { bg: 'bg-green-100',  border: 'border-green-400',  text: 'text-green-800',  dot: 'bg-green-400' },
-            '施工图阶段': { bg: 'bg-pink-100', border: 'border-pink-400',   text: 'text-pink-800',   dot: 'bg-pink-400' },
-            '室内阶段': { bg: 'bg-red-100',    border: 'border-red-400',    text: 'text-red-800',    dot: 'bg-red-400' }
+            '前期方案': { bg: 'bg-yellow-100', text: 'text-yellow-800', dot: 'bg-yellow-400' },
+            '方案深化': { bg: 'bg-blue-100', text: 'text-blue-800', dot: 'bg-blue-400' },
+            '报建阶段': { bg: 'bg-green-100', text: 'text-green-800', dot: 'bg-green-400' },
+            '施工图阶段': { bg: 'bg-pink-100', text: 'text-pink-800', dot: 'bg-pink-400' },
+            '室内阶段': { bg: 'bg-red-100', text: 'text-red-800', dot: 'bg-red-400' },
+            '施工中': { bg: 'bg-purple-100', text: 'text-purple-800', dot: 'bg-purple-400' },
+            '合同阶段': { bg: 'bg-orange-100', text: 'text-orange-800', dot: 'bg-orange-400' }
         };
 
-        // ========== 默认示例数据 ==========
         const defaultProjects = [
-            { id: 'proj-a', name: '项目A · 厂房总部', stage: '前期强排', owner: '刘文辉', note: '方案还没出', progress: 30 },
-            { id: 'proj-b', name: '项目B · 商业街区', stage: '深化阶段', owner: '谢启欣', note: '刚开完会，纪要待做', progress: 55 },
-            { id: 'proj-c', name: '项目C · 旧改',     stage: '报建阶段', owner: '欧阳琳', note: '待办事项待推进', progress: 70 },
-            { id: 'proj-d', name: '项目D · 宿舍楼',   stage: '施工图阶段', owner: '梁婷玉', note: '合同待完成，方案需深化', progress: 80 }
-        ];
-
-        const defaultTodos = [
-            { id: 1, task: '项目A 强排方案还未出', projectId: 'proj-a', projectName: '项目A · 厂房总部', owner: '刘文辉', dueDate: '2025-07-05', done: false },
-            { id: 2, task: '项目B 会议纪要未整理', projectId: 'proj-b', projectName: '项目B · 商业街区', owner: '谢启欣', dueDate: '2025-07-01', done: false },
-            { id: 3, task: '项目C 会议纪要已出，待办事项推进', projectId: 'proj-c', projectName: '项目C · 旧改', owner: '欧阳琳', dueDate: '2025-07-10', done: false },
-            { id: 4, task: '项目D 合同流程 + 方案深化', projectId: 'proj-d', projectName: '项目D · 宿舍楼', owner: '梁婷玉', dueDate: '2025-07-20', done: false }
-        ];
-
-        const defaultNotes = [
-            { id: 1, title: '📐 SketchUp 建模规范', desc: '圆弧段数、组件命名、清理标准', link: '#' },
-            { id: 2, title: '🎨 AI 效果图关键词库', desc: '按项目类型分类的提示词参考', link: '#' },
-            { id: 3, title: '📋 合同模板库', desc: '设计合同、分包、变更、验收', link: '#' },
-            { id: 4, title: '📝 会议纪要模板', desc: '已确认/待确认事项标准格式', link: '#' },
-            { id: 5, title: '📊 技术指标核对表', desc: '面积、容积率、绿化率、配套占比', link: '#' },
-            { id: 6, title: '🔍 检查清单库', desc: '建筑/室内/幕墙/施工图审查', link: './checklist.html' }
+            { id: 'sl4', name: '申菱四基地', stage: '方案深化', owner: '刘文辉', note: '方案重做深化', filed: false, contracted: true },
+            { id: 'slzb', name: '申菱总部改造', stage: '施工中', owner: '谢启欣', note: '*有新增空间方案', filed: true, contracted: true },
+            { id: 'sl5', name: '申菱五基地', stage: '前期方案', owner: '刘文辉', note: '前期方案', filed: false, contracted: false },
+            { id: 'slgz', name: '申菱高州二期', stage: '施工中', owner: '黄建敏', note: '施工中', filed: true, contracted: true },
+            { id: 'prsp', name: '屏荣食品顺德新厂', stage: '施工图阶段', owner: '梁婷玉', note: '规划变更，施工图审图，室内方案', filed: true, contracted: true },
+            { id: 'yj', name: '远江幕墙南海新厂', stage: '施工中', owner: '谢启欣', note: '施工中', filed: true, contracted: true },
+            { id: 'whg', name: '顺德文化馆修缮活化', stage: '合同阶段', owner: '欧阳琳', note: '合同签订过程中', filed: false, contracted: false },
+            { id: 'stc', name: '顺德糖厂', stage: '合同阶段', owner: '欧阳琳', note: '合同签订过程中', filed: false, contracted: false },
+            { id: 'skwj', name: '顺控危旧房', stage: '施工图阶段', owner: '梁富成', note: '图纸绘制', filed: true, contracted: true },
+            { id: 'spmy', name: '升平名扬里历史街区一期', stage: '施工中', owner: '刘文辉', note: '施工中', filed: true, contracted: true },
+            { id: 'fp', name: '方普', stage: '前期方案', owner: '刘文辉', note: '前期方案', filed: false, contracted: false },
+            { id: 'rk', name: '容控小地块厂房加商业', stage: '前期方案', owner: '刘文辉', note: '前期方案', filed: false, contracted: false },
+            { id: 'sq', name: '社-顺德本土文化策展', stage: '方案深化', owner: '梁婷玉', note: '建模阶段', filed: false, contracted: false }
         ];
 
         createApp({
             setup() {
+                const isAdmin = ref(false);
+                const showLogin = ref(false);
+                const loginPwd = ref('');
                 const showDone = ref(false);
                 const showAddTodo = ref(false);
                 const showAddProject = ref(false);
+                const selectedTodo = ref(null);
+                const isNight = ref(false);
 
                 const projects = ref(JSON.parse(localStorage.getItem('studio_projects')) || defaultProjects);
-                const todos = ref(JSON.parse(localStorage.getItem('studio_todos')) || defaultTodos);
-                const notes = ref(defaultNotes);
-                const stageMapRef = stageMap;
+                const todos = ref(JSON.parse(localStorage.getItem('studio_todos')) || []);
+                const notes = ref([]);
 
-                const newTodo = ref({ task: '', projectId: '', owner: '', dueDate: '' });
-                const newProject = ref({ name: '', stage: '前期强排', owner: '', note: '' });
+                const newTodo = ref({ task: '', projectId: '', owner: '', isPinned: false, isImportant: false });
+                const newProject = ref({ name: '', stage: '前期方案', owner: '', note: '', filed: false, contracted: false });
 
+                // 自动日夜模式
+                const checkTime = () => {
+                    const hour = new Date().getHours();
+                    isNight.value = hour >= 18 || hour < 7;
+                    document.documentElement.classList.toggle('dark', isNight.value);
+                };
+                onMounted(() => {
+                    checkTime();
+                    setInterval(checkTime, 60000);
+                });
+
+                // 排序：置顶 > 重要 > 未完成 > 完成
+                const sortedTodos = computed(() => {
+                    const all = [...todos.value];
+                    return all.sort((a, b) => {
+                        if (a.done !== b.done) return a.done ? 1 : -1;
+                        if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
+                        if (a.isImportant !== b.isImportant) return a.isImportant ? -1 : 1;
+                        return b.id - a.id;
+                    });
+                });
                 const activeProjects = computed(() => projects.value);
                 const pendingTodos = computed(() => todos.value.filter(t => !t.done));
                 const doneTodos = computed(() => todos.value.filter(t => t.done));
@@ -240,6 +292,16 @@
                 const saveData = () => {
                     localStorage.setItem('studio_projects', JSON.stringify(projects.value));
                     localStorage.setItem('studio_todos', JSON.stringify(todos.value));
+                };
+
+                const doLogin = () => {
+                    if (loginPwd.value === ADMIN_PASSWORD) {
+                        isAdmin.value = true;
+                        showLogin.value = false;
+                        loginPwd.value = '';
+                    } else {
+                        alert('密码错误');
+                    }
                 };
 
                 const addTodo = () => {
@@ -251,20 +313,29 @@
                         projectId: newTodo.value.projectId,
                         projectName: proj ? proj.name : '未关联项目',
                         owner: newTodo.value.owner,
-                        dueDate: newTodo.value.dueDate,
+                        isPinned: newTodo.value.isPinned,
+                        isImportant: newTodo.value.isImportant,
+                        createdAt: new Date().toLocaleDateString(),
+                        completedBy: '',
                         done: false
                     });
-                    newTodo.value = { task: '', projectId: '', owner: '', dueDate: '' };
+                    newTodo.value = { task: '', projectId: '', owner: '', isPinned: false, isImportant: false };
                     showAddTodo.value = false;
                     saveData();
                 };
 
                 const toggleTodo = (todo) => {
                     todo.done = !todo.done;
+                    if (todo.done) {
+                        todo.completedBy = prompt('请输入完成人姓名') || '未知';
+                    } else {
+                        todo.completedBy = '';
+                    }
                     saveData();
                 };
 
                 const deleteTodo = (todo) => {
+                    if (!isAdmin.value) return alert('只有管理员才能删除');
                     if (!confirm('确定删除这条待办？')) return;
                     todos.value = todos.value.filter(t => t.id !== todo.id);
                     saveData();
@@ -278,16 +349,11 @@
                         stage: newProject.value.stage,
                         owner: newProject.value.owner,
                         note: newProject.value.note,
-                        progress: 0
+                        filed: newProject.value.filed,
+                        contracted: newProject.value.contracted
                     });
-                    newProject.value = { name: '', stage: '前期强排', owner: '', note: '' };
+                    newProject.value = { name: '', stage: '前期方案', owner: '', note: '', filed: false, contracted: false };
                     showAddProject.value = false;
-                    saveData();
-                };
-
-                const deleteProject = (proj) => {
-                    if (!confirm(`确定删除项目「${proj.name}」？相关待办不会自动删除。`)) return;
-                    projects.value = projects.value.filter(p => p.id !== proj.id);
                     saveData();
                 };
 
@@ -295,34 +361,16 @@
                     window.location.href = `./checklist.html?project=${projectId}`;
                 };
 
-                const isOverdue = (dateStr) => {
-                    if (!dateStr) return false;
-                    return new Date(dateStr) < new Date(new Date().toDateString());
-                };
-
-                const exportAll = () => {
-                    const data = {
-                        projects: projects.value,
-                        todos: todos.value,
-                        exportDate: new Date().toISOString()
-                    };
-                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `工作室数据备份_${new Date().toISOString().slice(0,10)}.json`;
-                    a.click();
+                const openTodoDetail = (todo) => {
+                    selectedTodo.value = todo;
                 };
 
                 return {
-                    stageMap: stageMapRef,
-                    activeProjects, pendingTodos, doneTodos,
-                    showDone, showAddTodo, showAddProject,
+                    isNight, isAdmin, showLogin, loginPwd, showDone, showAddTodo, showAddProject, selectedTodo,
+                    projects, activeProjects, pendingTodos, doneTodos, sortedTodos,
                     newTodo, newProject,
-                    addTodo, toggleTodo, deleteTodo,
-                    addProject, deleteProject, goToProject,
-                    isOverdue, exportAll,
-                    members
+                    members, stageMap,
+                    addTodo, toggleTodo, deleteTodo, addProject, goToProject, openTodoDetail, doLogin
                 };
             }
         }).mount('#app');
