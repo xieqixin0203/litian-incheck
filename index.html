@@ -46,12 +46,9 @@
                 <p class="text-sm mt-1 opacity-70">
                     进行中项目 <span class="font-bold" style="color: var(--primary)">{{ activeProjects.length }}</span> 个 ·
                     待办事项 <span class="font-bold text-red-500">{{ pendingTodos.length }}</span> 条
-                    <span v-if="isAdmin" class="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">管理员模式</span>
                 </p>
             </div>
             <div class="flex gap-2 flex-wrap">
-                <button v-if="!isAdmin" @click="showLogin = true" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-300">🔑 管理员登录</button>
-                <button v-else @click="isAdmin = false" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm">退出管理员</button>
                 <button @click="showAddTodo = true" class="btn-primary px-4 py-2 rounded-lg text-sm">+ 新建待办</button>
                 <button @click="showAddProject = true" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-900">+ 新建项目</button>
                 <a href="https://pan.tencent.com" target="_blank" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600">📁 云盘</a>
@@ -63,10 +60,10 @@
         <section class="mb-8">
             <div class="flex items-center justify-between mb-3">
                 <h2 class="text-lg font-bold">📌 最近待办</h2>
-                <span class="text-xs opacity-60">点击进入详情 · 勾选完成 · 长按可标重要</span>
+                <span class="text-xs opacity-60">点击进入详情 · 勾选完成 · 点击删除</span>
             </div>
             <div v-if="pendingTodos.length === 0" class="bg-[var(--card-bg)] rounded-xl p-8 text-center opacity-50 text-sm">
-                暂无待办。
+                暂无待办。点击右上角“新建待办”添加。
             </div>
             <div class="bg-[var(--card-bg)] rounded-xl shadow-sm divide-y divide-[var(--border-color)] border border-[var(--border-color)]">
                 <!-- 单行展示待办 -->
@@ -80,10 +77,10 @@
                         <span v-if="todo.isImportant" class="text-xs text-red-500">🔴</span>
                         <span class="font-medium truncate line-clamp-1" :class="{'line-through text-gray-400': todo.done}">{{ todo.task }}</span>
                         <span class="tag hidden md:inline-block">{{ todo.projectName }}</span>
-                        <span class="tag hidden md:inline-block" v-if="todo.dueDate">{{ todo.dueDate }}</span>
+                        <span class="tag hidden md:inline-block" v-if="todo.owner">👤 {{ todo.owner }}</span>
                     </div>
                     <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-                        <button v-if="isAdmin" @click.stop="deleteTodo(todo)" class="text-xs text-red-400 hover:text-red-600 p-1">删除</button>
+                        <button @click.stop="deleteTodo(todo)" class="text-xs text-red-400 hover:text-red-600 p-1">删除</button>
                     </div>
                 </div>
                 <div v-if="doneTodos.length > 0" class="p-2">
@@ -104,46 +101,40 @@
         <section class="mb-8">
             <div class="flex items-center justify-between mb-3">
                 <h2 class="text-lg font-bold">🗂️ 项目总览</h2>
-                <div class="flex gap-2 text-xs flex-wrap">
-                    <span v-for="(color, stage) in stageMap" :key="stage" class="flex items-center gap-1">
-                        <span class="w-3 h-3 rounded-full" :class="color.dot"></span>
-                        <span class="opacity-60">{{ stage }}</span>
-                    </span>
-                </div>
+                <span class="text-xs opacity-60">点击项目进入检查清单 · 点击编辑修改项目信息</span>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div v-for="proj in activeProjects" :key="proj.id"
-                     @click="goToProject(proj.id)"
-                     class="card-hover cursor-pointer bg-[var(--card-bg)] rounded-2xl shadow-sm p-5 border border-[var(--border-color)]">
+                     class="card-hover bg-[var(--card-bg)] rounded-2xl shadow-sm p-5 border border-[var(--border-color)] relative group">
                     <div class="flex items-start justify-between mb-2">
-                        <h3 class="font-bold text-base truncate">{{ proj.name }}</h3>
-                        <span class="tag" :class="[stageMap[proj.stage]?.bg, stageMap[proj.stage]?.text]">{{ proj.stage }}</span>
+                        <h3 @click="goToProject(proj.id)" class="font-bold text-base truncate cursor-pointer hover:underline">{{ proj.name }}</h3>
+                        <span @click="goToProject(proj.id)" class="tag cursor-pointer" :class="[stageMap[proj.stage]?.bg, stageMap[proj.stage]?.text]">{{ proj.stage }}</span>
                     </div>
-                    <div class="text-xs space-y-1 opacity-70">
+                    <div class="text-xs space-y-1 opacity-70 cursor-pointer" @click="goToProject(proj.id)">
                         <p>👤 负责人：{{ proj.owner || '未指定' }}</p>
                         <p v-if="proj.note" class="truncate">📝 {{ proj.note }}</p>
                     </div>
-                    <!-- 备案与合同状态 -->
-                    <div class="mt-3 flex gap-2">
+                    <div class="mt-3 flex gap-2 cursor-pointer" @click="goToProject(proj.id)">
                         <span class="tag" :class="proj.filed ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'">备案: {{ proj.filed ? '已备案' : '未备案' }}</span>
                         <span class="tag" :class="proj.contracted ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'">合同: {{ proj.contracted ? '已签' : '未签' }}</span>
                     </div>
+                    <button @click.stop="editProject(proj)" class="absolute bottom-4 right-4 text-xs opacity-0 group-hover:opacity-100 text-blue-500 hover:text-blue-700">编辑</button>
                 </div>
             </div>
         </section>
 
-        <!-- 模态框：待办详情 -->
+        <!-- 模态框：待办详情/编辑 -->
         <div v-if="selectedTodo" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="selectedTodo = null">
             <div class="bg-[var(--card-bg)] rounded-2xl p-6 w-full max-w-md border border-[var(--border-color)]">
                 <h3 class="font-bold text-lg mb-4">待办详情</h3>
                 <div class="space-y-3 text-sm">
-                    <p><span class="opacity-60">内容：</span>{{ selectedTodo.task }}</p>
-                    <p><span class="opacity-60">项目：</span>{{ selectedTodo.projectName }}</p>
-                    <p><span class="opacity-60">负责人：</span>{{ selectedTodo.owner || '未指定' }}</p>
-                    <p><span class="opacity-60">创建时间：</span>{{ selectedTodo.createdAt }}</p>
-                    <p><span class="opacity-60">完成人：</span>{{ selectedTodo.completedBy || '未完成' }}</p>
+                    <input v-model="selectedTodo.task" class="w-full border rounded-lg p-2 bg-transparent border-[var(--border-color)]">
+                    <input v-model="selectedTodo.owner" placeholder="负责人" class="w-full border rounded-lg p-2 bg-transparent border-[var(--border-color)]">
+                    <p class="opacity-60">项目：{{ selectedTodo.projectName }}</p>
+                    <p class="opacity-60">创建时间：{{ selectedTodo.createdAt }}</p>
                 </div>
                 <div class="flex justify-end gap-2 mt-6">
+                    <button @click="saveTodoEdit" class="px-4 py-2 text-sm btn-primary rounded-lg">保存修改</button>
                     <button @click="selectedTodo = null" class="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg">关闭</button>
                 </div>
             </div>
@@ -171,18 +162,6 @@
                 <div class="flex justify-end gap-2 mt-5">
                     <button @click="showAddTodo = false" class="px-4 py-2 text-sm">取消</button>
                     <button @click="addTodo" class="px-4 py-2 text-sm btn-primary rounded-lg">保存</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 模态框：登录 -->
-        <div v-if="showLogin" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="showLogin = false">
-            <div class="bg-[var(--card-bg)] rounded-2xl p-6 w-full max-w-sm border border-[var(--border-color)]">
-                <h3 class="font-bold text-lg mb-4">管理员登录</h3>
-                <input v-model="loginPwd" type="password" placeholder="输入密码" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border-color)] mb-4">
-                <div class="flex justify-end gap-2">
-                    <button @click="showLogin = false" class="px-4 py-2 text-sm">取消</button>
-                    <button @click="doLogin" class="px-4 py-2 text-sm btn-primary rounded-lg">登录</button>
                 </div>
             </div>
         </div>
@@ -215,10 +194,9 @@
     </div>
 
     <script>
-        const { createApp, ref, computed, watch, onMounted } = Vue;
+        const { createApp, ref, computed, onMounted } = Vue;
 
         const members = ['刘文辉', '谢启欣', '欧阳琳', '梁婷玉', '黄建敏', '梁富成'];
-        const ADMIN_PASSWORD = 'litian2024';
 
         const stageMap = {
             '前期方案': { bg: 'bg-yellow-100', text: 'text-yellow-800', dot: 'bg-yellow-400' },
@@ -246,11 +224,43 @@
             { id: 'sq', name: '社-顺德本土文化策展', stage: '方案深化', owner: '梁婷玉', note: '建模阶段', filed: false, contracted: false }
         ];
 
+        const defaultTodos = [
+            // 申菱总部改造
+            { id: 1, task: '活动中心方案：室内篮球场设计', projectId: 'slzb', projectName: '申菱总部改造', owner: '刘文辉,梁婷玉', isPinned: true, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 2, task: '活动中心方案：堆货区改羽毛球或匹克球场', projectId: 'slzb', projectName: '申菱总部改造', owner: '刘文辉,梁婷玉', isPinned: true, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 3, task: '活动中心方案：增加卫生间', projectId: 'slzb', projectName: '申菱总部改造', owner: '刘文辉,梁婷玉', isPinned: true, isImportant: false, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 4, task: '活动中心方案：场地沿路一侧加宽绿化，做人行道，拓宽货车车道（有具体尺寸及路边线），货车闸门拓宽', projectId: 'slzb', projectName: '申菱总部改造', owner: '刘文辉,梁婷玉', isPinned: true, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 5, task: '10个办公室门需拓宽到1500mm', projectId: 'slzb', projectName: '申菱总部改造', owner: '刘文辉,梁婷玉', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 6, task: '陈总、曲部及总监办公室灰色金属门是否拓宽待定', projectId: 'slzb', projectName: '申菱总部改造', owner: '刘文辉,梁婷玉', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 7, task: '地下室机房：四个玻璃窗换大玻璃', projectId: 'slzb', projectName: '申菱总部改造', owner: '刘文辉,梁婷玉', isPinned: false, isImportant: false, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 8, task: '地下室机房：机房外两级冲孔板吊顶包管道', projectId: 'slzb', projectName: '申菱总部改造', owner: '刘文辉,梁婷玉', isPinned: false, isImportant: false, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 9, task: '地下室机房：机房水沟大样', projectId: 'slzb', projectName: '申菱总部改造', owner: '刘文辉,梁婷玉', isPinned: false, isImportant: false, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 10, task: '地下室机房：地面做地砖，顶面喷深灰色（参考三基地）', projectId: 'slzb', projectName: '申菱总部改造', owner: '刘文辉,梁婷玉', isPinned: false, isImportant: false, createdAt: '2026-09-26', completedBy: '', done: false },
+            // 申菱四基地
+            { id: 11, task: '中秋节后会议：复核总平面布局，核定间距是否符合规范', projectId: 'sl4', projectName: '申菱四基地', owner: '谢启欣', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 12, task: '中秋节后会议：方案文本整理（梳理基本逻辑：维持消防扑救面理由、酸洗车间高度限定与间距14m理由、最新技术指标）', projectId: 'sl4', projectName: '申菱四基地', owner: '谢启欣', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 13, task: '中秋节后会议：与工艺敲定开会时间', projectId: 'sl4', projectName: '申菱四基地', owner: '谢启欣', isPinned: false, isImportant: false, createdAt: '2026-09-26', completedBy: '', done: false },
+            // 顺德文化馆
+            { id: 14, task: '合同推进', projectId: 'whg', projectName: '顺德文化馆', owner: '刘文辉,欧阳琳', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            // 顺德糖厂
+            { id: 15, task: '合同推进', projectId: 'stc', projectName: '顺德糖厂', owner: '刘文辉,欧阳琳', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            // 容控小地块厂房加商业
+            { id: 16, task: '模型合并', projectId: 'rk', projectName: '容控小地块厂房加商业', owner: '梁婷玉,梁富成', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 17, task: '总平面强排及初步技术指标', projectId: 'rk', projectName: '容控小地块厂房加商业', owner: '欧阳琳', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            // 屏荣食品顺德新厂
+            { id: 18, task: '复查幕墙图纸', projectId: 'prsp', projectName: '屏荣食品顺德新厂', owner: '谢启欣', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 19, task: '跟进及推进规划变更及施工图审图流程', projectId: 'prsp', projectName: '屏荣食品顺德新厂', owner: '刘文辉,欧阳琳', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 20, task: '门卫室幕墙发幕墙深化出图', projectId: 'prsp', projectName: '屏荣食品顺德新厂', owner: '谢启欣', isPinned: false, isImportant: false, createdAt: '2026-09-26', completedBy: '', done: false },
+            // 申菱五基地
+            { id: 21, task: '跟进工艺提资', projectId: 'sl5', projectName: '申菱五基地', owner: '刘文辉', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 22, task: '方案设计：厂房与办公楼之间解决间距问题+模型推敲形体', projectId: 'sl5', projectName: '申菱五基地', owner: '刘文辉,谢启欣', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            { id: 23, task: '方案设计：总平面指标复核', projectId: 'sl5', projectName: '申菱五基地', owner: '刘文辉,谢启欣', isPinned: false, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false },
+            // 方普
+            { id: 24, task: '9月29日带甲方走实地项目', projectId: 'fp', projectName: '方普', owner: '刘文辉,谢启欣', isPinned: true, isImportant: true, createdAt: '2026-09-26', completedBy: '', done: false }
+        ];
+
         createApp({
             setup() {
-                const isAdmin = ref(false);
-                const showLogin = ref(false);
-                const loginPwd = ref('');
                 const showDone = ref(false);
                 const showAddTodo = ref(false);
                 const showAddProject = ref(false);
@@ -258,11 +268,10 @@
                 const isNight = ref(false);
 
                 const projects = ref(JSON.parse(localStorage.getItem('studio_projects')) || defaultProjects);
-                const todos = ref(JSON.parse(localStorage.getItem('studio_todos')) || []);
-                const notes = ref([]);
+                const todos = ref(JSON.parse(localStorage.getItem('studio_todos')) || defaultTodos);
 
                 const newTodo = ref({ task: '', projectId: '', owner: '', isPinned: false, isImportant: false });
-                const newProject = ref({ name: '', stage: '前期方案', owner: '', note: '', filed: false, contracted: false });
+                const newProject = ref({ name: '', stage: '前期强排', owner: '', note: '', filed: false, contracted: false });
 
                 // 自动日夜模式
                 const checkTime = () => {
@@ -292,16 +301,6 @@
                 const saveData = () => {
                     localStorage.setItem('studio_projects', JSON.stringify(projects.value));
                     localStorage.setItem('studio_todos', JSON.stringify(todos.value));
-                };
-
-                const doLogin = () => {
-                    if (loginPwd.value === ADMIN_PASSWORD) {
-                        isAdmin.value = true;
-                        showLogin.value = false;
-                        loginPwd.value = '';
-                    } else {
-                        alert('密码错误');
-                    }
                 };
 
                 const addTodo = () => {
@@ -335,7 +334,6 @@
                 };
 
                 const deleteTodo = (todo) => {
-                    if (!isAdmin.value) return alert('只有管理员才能删除');
                     if (!confirm('确定删除这条待办？')) return;
                     todos.value = todos.value.filter(t => t.id !== todo.id);
                     saveData();
@@ -352,7 +350,7 @@
                         filed: newProject.value.filed,
                         contracted: newProject.value.contracted
                     });
-                    newProject.value = { name: '', stage: '前期方案', owner: '', note: '', filed: false, contracted: false };
+                    newProject.value = { name: '', stage: '前期强排', owner: '', note: '', filed: false, contracted: false };
                     showAddProject.value = false;
                     saveData();
                 };
@@ -365,12 +363,26 @@
                     selectedTodo.value = todo;
                 };
 
+                const saveTodoEdit = () => {
+                    saveData();
+                    selectedTodo.value = null;
+                };
+
+                const editProject = (proj) => {
+                    // 简单编辑，直接改内存并保存
+                    const newName = prompt('修改项目名称', proj.name);
+                    if (newName) proj.name = newName;
+                    const newStage = prompt('修改阶段（前期方案/方案深化/报建阶段/施工图阶段/室内阶段/施工中/合同阶段）', proj.stage);
+                    if (newStage) proj.stage = newStage;
+                    saveData();
+                };
+
                 return {
-                    isNight, isAdmin, showLogin, loginPwd, showDone, showAddTodo, showAddProject, selectedTodo,
+                    isNight, showDone, showAddTodo, showAddProject, selectedTodo,
                     projects, activeProjects, pendingTodos, doneTodos, sortedTodos,
                     newTodo, newProject,
                     members, stageMap,
-                    addTodo, toggleTodo, deleteTodo, addProject, goToProject, openTodoDetail, doLogin
+                    addTodo, toggleTodo, deleteTodo, addProject, goToProject, openTodoDetail, saveTodoEdit, editProject
                 };
             }
         }).mount('#app');

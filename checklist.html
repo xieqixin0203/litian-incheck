@@ -13,6 +13,8 @@
             --card-bg: #ffffff;
             --primary: #85a5cc;
             --border-color: #bdd0e5;
+            --completed-bg: #d5e2ef;
+            --future-bg: #a8bfdb;
         }
         .dark {
             --bg-color: #000f22;
@@ -20,101 +22,127 @@
             --card-bg: #1b3554;
             --primary: #80aad3;
             --border-color: #3f6593;
+            --completed-bg: #1b3554;
+            --future-bg: #000f22;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background-color 0.5s, color 0.5s;
+            font-size: 15px; /* 字体放大 */
         }
         .group-header { cursor: pointer; user-select: none; }
-        .stage-completed { opacity: 0.5; }
-        .stage-future { opacity: 0.35; background: var(--border-color) !important; }
-        .check-row { line-height: 1.3; }
-        textarea, select, input { background-color: transparent; color: var(--text-color); }
+        .stage-completed { opacity: 0.6; background-color: var(--completed-bg) !important; }
+        .stage-future { opacity: 0.4; background-color: var(--future-bg) !important; }
+        .check-row { line-height: 1.4; }
+        textarea, select, input { background-color: transparent; color: var(--text-color); font-size: 14px; }
+        .dark select { background-color: #1b3554; }
+        .text-dark-important { color: #1b3554; }
+        .dark .text-dark-important { color: #c0e6fd; }
+        .contract-section { border: 2px solid var(--primary); }
     </style>
 </head>
 <body>
     <div id="app" class="max-w-5xl mx-auto p-3 pb-28">
 
         <!-- 顶部 -->
-        <header class="mb-4 bg-[var(--card-bg)] p-3 rounded-2xl shadow-sm border border-[var(--border-color)]">
+        <header class="mb-4 bg-[var(--card-bg)] p-4 rounded-2xl shadow-sm border border-[var(--border-color)]">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                 <div>
-                    <h1 class="text-lg font-bold">📋 项目检查清单</h1>
-                    <p class="text-xs mt-0.5 opacity-70">
-                        项目：<span class="font-semibold" style="color: var(--primary)">{{ currentProject }}</span> ·
-                        进度：<span class="font-semibold">{{ doneCount }}/{{ totalCount }}</span> ·
-                        不合格：<span class="font-semibold text-red-500">{{ unqualifiedItems.length }}</span>
+                    <h1 class="text-xl font-bold">📋 项目检查清单</h1>
+                    <p class="text-sm mt-0.5 opacity-80 font-medium">
+                        项目：<span class="font-bold" style="color: var(--primary)">{{ currentProject }}</span> ·
+                        进度：<span class="font-bold">{{ doneCount }}/{{ totalCount }}</span> ·
+                        不合格：<span class="font-bold text-red-500">{{ unqualifiedItems.length }}</span>
                         <span v-if="loading" class="ml-2 text-orange-500">（云端加载中…）</span>
                     </p>
                 </div>
                 <div class="flex gap-2 flex-wrap">
-                    <button @click="exportData" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg text-xs hover:bg-blue-700">导出</button>
-                    <button @click="importData" class="bg-gray-500 text-white px-2.5 py-1 rounded-lg text-xs hover:bg-gray-600">导入</button>
-                    <a href="./index.html" class="bg-gray-800 text-white px-2.5 py-1 rounded-lg text-xs hover:bg-gray-900">返回首页</a>
+                    <button @click="exportData" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-blue-700">导出</button>
+                    <button @click="importData" class="bg-gray-500 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-gray-600">导入</button>
+                    <a href="./index.html" class="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-gray-900">返回首页</a>
                     <input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport">
                 </div>
             </div>
-            <div class="mt-3 bg-gray-200 rounded-full h-1.5">
-                <div class="h-1.5 rounded-full transition-all" style="background-color: var(--primary)" :style="{ width: progressPercent + '%' }"></div>
+            <div class="mt-3 bg-gray-200 rounded-full h-2">
+                <div class="h-2 rounded-full transition-all" style="background-color: var(--primary)" :style="{ width: progressPercent + '%' }"></div>
             </div>
         </header>
 
+        <!-- 合同部分（单独放最前） -->
+        <div class="mb-4 bg-[var(--card-bg)] rounded-xl shadow-sm overflow-hidden contract-section">
+            <div class="px-4 py-3 bg-[var(--primary)] text-white flex items-center justify-between">
+                <span class="font-bold text-base">📑 合同文书</span>
+                <span class="text-sm">状态：{{ projContracted ? '已入合同' : '未入合同' }}</span>
+            </div>
+            <div class="p-4 space-y-2">
+                <div class="flex items-center justify-between p-2 bg-[var(--bg-color)] rounded-lg">
+                    <span class="text-sm font-medium">设计合同</span>
+                    <span class="text-xs px-2 py-1 rounded bg-green-100 text-green-700">已有</span>
+                </div>
+                <div class="flex items-center justify-between p-2 bg-[var(--bg-color)] rounded-lg">
+                    <span class="text-sm font-medium">分包合同</span>
+                    <span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-500">待增加</span>
+                </div>
+                <button class="w-full text-center text-sm text-blue-500 hover:text-blue-700 mt-2">+ 添加合同文书</button>
+            </div>
+        </div>
+
         <!-- 检查项分组 -->
-        <div class="space-y-2">
+        <div class="space-y-3">
             <div v-for="(group, stageName) in groupedChecks" :key="stageName"
                  class="bg-[var(--card-bg)] rounded-xl shadow-sm overflow-hidden border border-[var(--border-color)]"
                  :class="getStageClass(stageName)">
                 <!-- 分组标题 -->
-                <div class="group-header px-3 py-2 flex items-center justify-between hover:opacity-80 transition"
+                <div class="group-header px-4 py-3 flex items-center justify-between transition"
                      :class="isCurrentStage(stageName) ? 'bg-[var(--border-color)]' : 'bg-[var(--card-bg)]'"
                      @click="toggleGroup(stageName)">
                     <div class="flex items-center gap-2 flex-wrap">
-                        <span class="text-xs font-bold">{{ stageName }}</span>
-                        <span class="text-xs px-1.5 py-0.5 rounded-full bg-[var(--bg-color)] opacity-70">
+                        <span class="text-base font-bold">{{ stageName }}</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--bg-color)] opacity-80 font-medium">
                             {{ group.filter(i => i.status === '合格').length }}/{{ group.length }}
                         </span>
                         <span v-if="group.filter(i => i.status === '不合格').length > 0"
-                              class="text-xs px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-bold">
+                              class="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold">
                             {{ group.filter(i => i.status === '不合格').length }} 不合格
                         </span>
-                        <span v-if="isCurrentStage(stageName)" class="text-xs px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 font-bold">当前阶段</span>
+                        <span v-if="isCurrentStage(stageName)" class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-bold">当前阶段</span>
                     </div>
-                    <span class="text-xs opacity-60">{{ openGroups[stageName] ? '▼' : '▶' }}</span>
+                    <span class="text-sm opacity-60">{{ openGroups[stageName] ? '▼' : '▶' }}</span>
                 </div>
 
                 <!-- 检查项列表 -->
                 <div v-show="openGroups[stageName]" class="divide-y divide-[var(--border-color)]">
-                    <div v-for="item in group" :key="item.id" class="px-3 py-2 hover:opacity-90 transition">
-                        <div class="flex items-center gap-2">
-                            <!-- 左侧：信息（紧凑） -->
+                    <div v-for="item in group" :key="item.id" class="px-4 py-3 hover:opacity-95 transition">
+                        <div class="flex items-center gap-3">
+                            <!-- 左侧：信息 -->
                             <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-1.5 flex-wrap">
-                                    <span class="text-xs px-1 py-0.5 rounded font-bold flex-shrink-0"
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-sm px-1.5 py-0.5 rounded font-bold flex-shrink-0"
                                           :class="item.level === 'P0' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'">
                                         {{ item.level }}
                                     </span>
-                                    <span class="text-xs font-medium truncate check-row">{{ item.item }}</span>
+                                    <span class="text-base font-medium truncate check-row text-dark-important">{{ item.item }}</span>
                                 </div>
-                                <div class="text-xs opacity-60 truncate mt-0.5 check-row">{{ item.standard }}</div>
+                                <div class="text-sm opacity-70 truncate mt-1 check-row">{{ item.standard }}</div>
                                 <!-- 备注折叠 -->
-                                <div v-if="item.note" class="text-xs mt-0.5 text-red-500 truncate">💬 {{ item.note }}</div>
-                                <div class="flex items-center gap-2 mt-0.5">
-                                    <select v-model="item.owner" @change="saveData" class="text-xs border rounded px-1 py-0.5 cursor-pointer border-[var(--border-color)]">
+                                <div v-if="item.note" class="text-sm mt-1 text-red-500 truncate">💬 {{ item.note }}</div>
+                                <div class="flex items-center gap-3 mt-2">
+                                    <select v-model="item.owner" @change="saveData" class="text-sm border rounded px-2 py-1 cursor-pointer border-[var(--border-color)]">
                                         <option value="">未指定</option>
                                         <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
                                     </select>
-                                    <button v-if="!item.showNote && !item.note" @click="item.showNote = true" class="text-xs text-blue-500 hover:text-blue-700">+备注</button>
+                                    <button v-if="!item.showNote && !item.note" @click="item.showNote = true" class="text-sm text-blue-500 hover:text-blue-700 font-medium">+备注</button>
                                     <div v-if="item.showNote" class="flex-1">
-                                        <input v-model="item.note" @change="saveData" placeholder="填写备注" class="text-xs border rounded px-1 py-0.5 w-full border-[var(--border-color)]">
+                                        <input v-model="item.note" @change="saveData" placeholder="填写备注" class="text-sm border rounded px-2 py-1 w-full border-[var(--border-color)]">
                                     </div>
                                 </div>
                             </div>
 
                             <!-- 右侧：状态下拉 -->
                             <select v-model="item.status" @change="saveData"
-                                    class="text-xs border rounded px-1.5 py-1 flex-shrink-0 border-[var(--border-color)]"
+                                    class="text-sm border rounded px-2 py-1.5 flex-shrink-0 border-[var(--border-color)] font-medium"
                                     :class="{
                                         'text-green-600 font-bold': item.status === '合格',
                                         'text-red-600 font-bold': item.status === '不合格',
@@ -133,14 +161,14 @@
         </div>
 
         <!-- 底部问题汇总 -->
-        <div v-if="unqualifiedItems.length > 0" class="fixed bottom-0 left-0 w-full bg-[var(--card-bg)] border-t-2 border-red-300 shadow-2xl p-3 max-w-5xl mx-auto rounded-t-2xl">
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="font-bold text-red-600 text-xs">⚠️ 不合格项汇总 ({{ unqualifiedItems.length }})</h3>
-                <button @click="showUnqualified = !showUnqualified" class="text-xs opacity-60">
+        <div v-if="unqualifiedItems.length > 0" class="fixed bottom-0 left-0 w-full bg-[var(--card-bg)] border-t-2 border-red-300 shadow-2xl p-4 max-w-5xl mx-auto rounded-t-2xl">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="font-bold text-red-600 text-sm">⚠️ 不合格项汇总 ({{ unqualifiedItems.length }})</h3>
+                <button @click="showUnqualified = !showUnqualified" class="text-sm opacity-60">
                     {{ showUnqualified ? '收起' : '展开' }}
                 </button>
             </div>
-            <ul v-show="showUnqualified" class="text-xs opacity-70 max-h-24 overflow-y-auto list-disc pl-4 space-y-0.5">
+            <ul v-show="showUnqualified" class="text-sm opacity-80 max-h-32 overflow-y-auto list-disc pl-4 space-y-1">
                 <li v-for="item in unqualifiedItems" :key="item.id" class="truncate">
                     <span class="font-mono opacity-50">{{ item.id }}</span> {{ item.item }}
                 </li>
@@ -154,163 +182,150 @@
 
         const members = ['刘文辉', '谢启欣', '欧阳琳', '梁婷玉', '黄建敏', '梁富成'];
 
-        // ========== 13个真实项目映射 ==========
         const projectNameMap = {
-            'sl4': '申菱四基地',
-            'slzb': '申菱总部改造',
-            'sl5': '申菱五基地',
-            'slgz': '申菱高州二期',
-            'prsp': '屏荣食品顺德新厂',
-            'yj': '远江幕墙南海新厂',
-            'whg': '顺德文化馆修缮活化',
-            'stc': '顺德糖厂',
-            'skwj': '顺控危旧房',
-            'spmy': '升平名扬里历史街区一期',
-            'fp': '方普',
-            'rk': '容控小地块厂房加商业',
-            'sq': '社-顺德本土文化策展'
+            'sl4': '申菱四基地', 'slzb': '申菱总部改造', 'sl5': '申菱五基地', 'slgz': '申菱高州二期',
+            'prsp': '屏荣食品顺德新厂', 'yj': '远江幕墙南海新厂', 'whg': '顺德文化馆修缮活化',
+            'stc': '顺德糖厂', 'skwj': '顺控危旧房', 'spmy': '升平名扬里历史街区一期',
+            'fp': '方普', 'rk': '容控小地块厂房加商业', 'sq': '社-顺德本土文化策展'
         };
 
-        // ========== 阶段顺序（用于判断当前阶段） ==========
+        // 用户重新定义的阶段名称
         const stageOrder = [
-            '一、前期资料收集与规划条件',
-            '二、方案强排',
-            '三、报建与工规证',
-            '四、报建图与施工图分工',
-            '五、合同进度',
-            '六、施工图各专业进度',
-            '七、幕墙设计进度',
-            '八、室内设计进度'
+            '合同部分',
+            '一、前期强排',
+            '二、方案设计',
+            '三、方案深化',
+            '四、报建图',
+            '五、施工图（含幕墙深化）',
+            '六、室内设计',
+            '七、施工中'
         ];
 
         const seedData = [
-            { id: 'CHK-PRE-001', stage: '一、前期资料收集与规划条件', item: '机动车出入口设置要求', standard: '结合规划条件，核实与路口距离', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-PRE-002', stage: '一、前期资料收集与规划条件', item: '室外地坪标高（国家高程）', standard: '结合周边路网与市政标高', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-PRE-003', stage: '一、前期资料收集与规划条件', item: '附属绿地、公园绿地是否可纳入绿化率', standard: '按规划条件核实', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-PRE-004', stage: '一、前期资料收集与规划条件', item: '配电房、开闭所、垃圾收集点、通信基站、物业用房是否有面积规定', standard: '核实规划条件', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-PRE-005', stage: '一、前期资料收集与规划条件', item: '垃圾收集点——咨询甲方是随便找地方放还是单独建筑', standard: '与甲方确认', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-PRE-006', stage: '一、前期资料收集与规划条件', item: '垃圾站——是否后续归市政管理', standard: '与甲方确认', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-PRE-007', stage: '一、前期资料收集与规划条件', item: '通风廊道', standard: '核实是否存在限制', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-PRE-008', stage: '一、前期资料收集与规划条件', item: '海绵城市、绿色建筑星级（仅针对民用建筑）', standard: '核实规划条件要求', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-PRE-009', stage: '一、前期资料收集与规划条件', item: '高架、城市轨道控制线/保护区、地铁控制线', standard: '核实规划限制条件', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-PRE-010', stage: '一、前期资料收集与规划条件', item: '场地周边路网、规划标高图', standard: '业主提供，提前第三方做测绘', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-PRE-011', stage: '一、前期资料收集与规划条件', item: '场地周边现存建筑及已报建建筑图', standard: '核实是否影响退距或日照', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-PRE-012', stage: '一、前期资料收集与规划条件', item: '土地勘察报告及管线接口定位', standard: '业主找第三方，我方可提供服务', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-PRE-013', stage: '一、前期资料收集与规划条件', item: '交评、交评评审', standard: '提前安排', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-PRE-014', stage: '一、前期资料收集与规划条件', item: '与甲方确认幕墙与窗墙范围', standard: '提前沟通设计界面', level: 'P0', owner: '谢启欣' },
-            { id: 'CHK-PRE-015', stage: '一、前期资料收集与规划条件', item: '与甲方确认玻璃型号使用', standard: '普通白玻 / low-e / 超白玻', level: 'P1', owner: '谢启欣' },
-            { id: 'CHK-PRE-016', stage: '一、前期资料收集与规划条件', item: '与甲方确认市政路灯灯光预留', standard: '确认是否需要预留', level: 'P1', owner: '谢启欣' },
-            { id: 'CHK-PRE-017', stage: '一、前期资料收集与规划条件', item: '与甲方确认围墙与门卫室设置', standard: '验收前还是后做；门卫室面积<15㎡', level: 'P1', owner: '谢启欣' },
+            // 前期强排 (之前的 PRE 和 AR 数据合并并重新分类)
+            { id: 'CHK-PRE-001', stage: '一、前期强排', item: '机动车出入口设置要求', standard: '结合规划条件，核实与路口距离', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-PRE-002', stage: '一、前期强排', item: '室外地坪标高（国家高程）', standard: '结合周边路网与市政标高', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-PRE-003', stage: '一、前期强排', item: '附属绿地、公园绿地是否可纳入绿化率', standard: '按规划条件核实', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-PRE-004', stage: '一、前期强排', item: '配电房、开闭所、垃圾收集点、通信基站、物业用房是否有面积规定', standard: '核实规划条件', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-PRE-005', stage: '一、前期强排', item: '垃圾收集点——咨询甲方是随便找地方放还是单独建筑', standard: '与甲方确认', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-PRE-006', stage: '一、前期强排', item: '垃圾站——是否后续归市政管理', standard: '与甲方确认', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-PRE-007', stage: '一、前期强排', item: '通风廊道', standard: '核实是否存在限制', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-PRE-008', stage: '一、前期强排', item: '海绵城市、绿色建筑星级（仅针对民用建筑）', standard: '核实规划条件要求', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-PRE-009', stage: '一、前期强排', item: '高架、城市轨道控制线/保护区、地铁控制线', standard: '核实规划限制条件', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-PRE-010', stage: '一、前期强排', item: '场地周边路网、规划标高图', standard: '业主提供，提前第三方做测绘', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-PRE-011', stage: '一、前期强排', item: '场地周边现存建筑及已报建建筑图', standard: '核实是否影响退距或日照', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-PRE-012', stage: '一、前期强排', item: '土地勘察报告及管线接口定位', standard: '业主找第三方，我方可提供服务', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-PRE-013', stage: '一、前期强排', item: '交评、交评评审', standard: '提前安排', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-PRE-014', stage: '一、前期强排', item: '与甲方确认幕墙与窗墙范围', standard: '提前沟通设计界面', level: 'P0', owner: '谢启欣' },
+            { id: 'CHK-PRE-015', stage: '一、前期强排', item: '与甲方确认玻璃型号使用', standard: '普通白玻 / low-e / 超白玻', level: 'P1', owner: '谢启欣' },
+            { id: 'CHK-PRE-016', stage: '一、前期强排', item: '与甲方确认市政路灯灯光预留', standard: '确认是否需要预留', level: 'P1', owner: '谢启欣' },
+            { id: 'CHK-PRE-017', stage: '一、前期强排', item: '与甲方确认围墙与门卫室设置', standard: '验收前还是后做；门卫室面积<15㎡', level: 'P1', owner: '谢启欣' },
 
-            { id: 'CHK-AR-001', stage: '二、方案强排', item: '民用建筑、民用非居住、非民用建筑三者遮挡/被遮挡关系', standard: '理清日照关系', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-AR-002', stage: '二、方案强排', item: '板式低层/多层短边间距', standard: '14m', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-AR-003', stage: '二、方案强排', item: '高层建筑消防扑救面宽度', standard: '15.5m / 16m', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-AR-004', stage: '二、方案强排', item: '消防扑救面另一侧长边也需设通道', standard: '建规要求', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-AR-005', stage: '二、方案强排', item: '相邻地块建筑退让、民用建筑退让距离、地下室退让', standard: '注意特殊条件', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-AR-006', stage: '二、方案强排', item: '工业仓储类建筑退让', standard: '按规范要求', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-AR-007', stage: '二、方案强排', item: '四周道路宽度/等级→退让道路红线基本距离', standard: '道路等级+建筑类型+增加退缩', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-AR-008', stage: '二、方案强排', item: '日照分析（住宅/宿舍）', standard: '满足当地日照标准', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-AR-009', stage: '二、方案强排', item: '建筑高度（规划高度）平屋面计算', standard: '室外地坪至檐口顶；透空率>80%装饰构架不计入', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-AR-010', stage: '二、方案强排', item: '建筑高度（规划高度）坡屋面计算', standard: '角度≤45%算至檐口顶；>45%算至坡顶一半', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-AR-011', stage: '二、方案强排', item: '室内外高差', standard: '通常150mm，i=12%', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-AR-012', stage: '二、方案强排', item: '场地内外高差核实', standard: '明确排水方向', level: 'P0', owner: '刘文辉' },
+            // 方案设计 (AR 数据)
+            { id: 'CHK-AR-001', stage: '二、方案设计', item: '民用建筑、民用非居住、非民用建筑三者遮挡/被遮挡关系', standard: '理清日照关系', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-AR-002', stage: '二、方案设计', item: '板式低层/多层短边间距', standard: '14m', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-AR-003', stage: '二、方案设计', item: '高层建筑消防扑救面宽度', standard: '15.5m / 16m', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-AR-004', stage: '二、方案设计', item: '消防扑救面另一侧长边也需设通道', standard: '建规要求', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-AR-005', stage: '二、方案设计', item: '相邻地块建筑退让、民用建筑退让距离、地下室退让', standard: '注意特殊条件', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-AR-006', stage: '二、方案设计', item: '工业仓储类建筑退让', standard: '按规范要求', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-AR-007', stage: '二、方案设计', item: '四周道路宽度/等级→退让道路红线基本距离', standard: '道路等级+建筑类型+增加退缩', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-AR-008', stage: '二、方案设计', item: '日照分析（住宅/宿舍）', standard: '满足当地日照标准', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-AR-009', stage: '二、方案设计', item: '建筑高度（规划高度）平屋面计算', standard: '室外地坪至檐口顶；透空率>80%装饰构架不计入', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-AR-010', stage: '二、方案设计', item: '建筑高度（规划高度）坡屋面计算', standard: '角度≤45%算至檐口顶；>45%算至坡顶一半', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-AR-011', stage: '二、方案设计', item: '室内外高差', standard: '通常150mm，i=12%', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-AR-012', stage: '二、方案设计', item: '场地内外高差核实', standard: '明确排水方向', level: 'P0', owner: '刘文辉' },
 
-            { id: 'CHK-REP-001', stage: '三、报建与工规证', item: '设计单位与规整单位项目诚信编号', standard: '网上提交申请给甲方', level: 'P0', owner: '欧阳琳' },
-            { id: 'CHK-REP-002', stage: '三、报建与工规证', item: '甲方提供广东省企业投资项目备案证', standard: '核对一致性', level: 'P0', owner: '欧阳琳' },
-            { id: 'CHK-REP-003', stage: '三、报建与工规证', item: '佛山市建设工程规划许可证核发申请表', standard: '甲方填写，三方盖章', level: 'P0', owner: '欧阳琳' },
-            { id: 'CHK-REP-004', stage: '三、报建与工规证', item: '技术辅导服务申请表', standard: '三方盖章', level: 'P0', owner: '欧阳琳' },
-            { id: 'CHK-REP-005', stage: '三、报建与工规证', item: '建（构）筑物设计方案自查表', standard: '我方填写，双方盖章', level: 'P0', owner: '欧阳琳' },
-            { id: 'CHK-REP-006', stage: '三、报建与工规证', item: '营业执照与资质证书', standard: '双方盖章', level: 'P0', owner: '欧阳琳' },
-            { id: 'CHK-REP-007', stage: '三、报建与工规证', item: '总图公示牌', standard: '按规划要求制作', level: 'P1', owner: '欧阳琳' },
-            { id: 'CHK-REP-008', stage: '三、报建与工规证', item: '单体子项命名规范', standard: '以"XX楼XX"命名，需申请公章流程', level: 'P0', owner: '欧阳琳' },
-            { id: 'CHK-REP-009', stage: '三、报建与工规证', item: 'CPI电子报建', standard: '提供CPI证书，指标表盖公章，电子报盘版', level: 'P0', owner: '欧阳琳' },
-            { id: 'CHK-REP-010', stage: '三、报建与工规证', item: '海绵城市（2025年要求）', standard: '水电室做，图纸盖章双章', level: 'P0', owner: '黄建敏' },
-            { id: 'CHK-REP-011', stage: '三、报建与工规证', item: '综合管线', standard: '水电室做，需甲方提供周边管线及接入图', level: 'P0', owner: '黄建敏' },
-            { id: 'CHK-REP-012', stage: '三、报建与工规证', item: '人防地下室（10层以上或基础埋深3米以上）', standard: '按地面首层建筑面积修建6级以上防空地下室', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-013', stage: '三、报建与工规证', item: '人防地下室（10层以下或基础埋深3米以下）', standard: '地面总建筑面积2000㎡以上，按2%~5%修建', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-014', stage: '三、报建与工规证', item: '人防蓝图提供', standard: '规划总平、地下室平剖面，需人防局审核', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-015', stage: '三、报建与工规证', item: '报建总图标注各场地开口坡度', standard: '步行/非机动车/机动车最大坡度', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-REP-016', stage: '三、报建与工规证', item: '机动车车位配比、编号、尺寸标注与数量', standard: '含平行/子母车位；卸货泊位', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-017', stage: '三、报建与工规证', item: '各平台/露台/梯间是否上人屋面标高', standard: '出入口标注（仅主出入口及次出入口）', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-REP-018', stage: '三、报建与工规证', item: '场地内外绝对标高', standard: '均有规划标高及绝对标高', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-019', stage: '三、报建与工规证', item: '图签证书编号为最新，工程号、建设单位一致', standard: '审定/项目负责/审核/校对签名对应', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-020', stage: '三、报建与工规证', item: '确认图幅与规划比例一致，索引图、报建图', standard: '按规划要求', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-021', stage: '三、报建与工规证', item: '各层平面标注建筑面积与计容面积', standard: '首层应标注基底面积', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-022', stage: '三、报建与工规证', item: '标高层/栏杆/女儿墙/构架高度', standard: '平屋面注明可踏面', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-023', stage: '三、报建与工规证', item: '绿化覆土厚度', standard: '地下室顶板覆土厚度需注明', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-REP-024', stage: '三、报建与工规证', item: '地下车库标注编号', standard: '起算基准点需标注', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-REP-025', stage: '三、报建与工规证', item: '车位尺寸标注与数量', standard: '上层投影线均要检查是否标明', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-026', stage: '三、报建与工规证', item: '厂房单体命名规范', standard: '以"生产厂房"代替研发车间等字样', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-027', stage: '三、报建与工规证', item: '立面/剖面绘制、标号、高度、层数', standard: '规划标高与绝对标高对齐，材质表统一', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-028', stage: '三、报建与工规证', item: '建筑高度计算分类', standard: '低层≤10m；多层≤27m；高层>27m', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-REP-029', stage: '三、报建与工规证', item: '厂房层数分类', standard: '>32m且任一层>10人应防烟楼梯', level: 'P0', owner: '刘文辉' },
+            // 报建图 (REP 数据)
+            { id: 'CHK-REP-001', stage: '四、报建图', item: '设计单位与规整单位项目诚信编号', standard: '网上提交申请给甲方', level: 'P0', owner: '欧阳琳' },
+            { id: 'CHK-REP-002', stage: '四、报建图', item: '甲方提供广东省企业投资项目备案证', standard: '核对一致性', level: 'P0', owner: '欧阳琳' },
+            { id: 'CHK-REP-003', stage: '四、报建图', item: '佛山市建设工程规划许可证核发申请表', standard: '甲方填写，三方盖章', level: 'P0', owner: '欧阳琳' },
+            { id: 'CHK-REP-004', stage: '四、报建图', item: '技术辅导服务申请表', standard: '三方盖章', level: 'P0', owner: '欧阳琳' },
+            { id: 'CHK-REP-005', stage: '四、报建图', item: '建（构）筑物设计方案自查表', standard: '我方填写，双方盖章', level: 'P0', owner: '欧阳琳' },
+            { id: 'CHK-REP-006', stage: '四、报建图', item: '营业执照与资质证书', standard: '双方盖章', level: 'P0', owner: '欧阳琳' },
+            { id: 'CHK-REP-007', stage: '四、报建图', item: '总图公示牌', standard: '按规划要求制作', level: 'P1', owner: '欧阳琳' },
+            { id: 'CHK-REP-008', stage: '四、报建图', item: '单体子项命名规范', standard: '以"XX楼XX"命名，需申请公章流程', level: 'P0', owner: '欧阳琳' },
+            { id: 'CHK-REP-009', stage: '四、报建图', item: 'CPI电子报建', standard: '提供CPI证书，指标表盖公章，电子报盘版', level: 'P0', owner: '欧阳琳' },
+            { id: 'CHK-REP-010', stage: '四、报建图', item: '海绵城市（2025年要求）', standard: '水电室做，图纸盖章双章', level: 'P0', owner: '黄建敏' },
+            { id: 'CHK-REP-011', stage: '四、报建图', item: '综合管线', standard: '水电室做，需甲方提供周边管线及接入图', level: 'P0', owner: '黄建敏' },
+            { id: 'CHK-REP-012', stage: '四、报建图', item: '人防地下室（10层以上或基础埋深3米以上）', standard: '按地面首层建筑面积修建6级以上防空地下室', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-013', stage: '四、报建图', item: '人防地下室（10层以下或基础埋深3米以下）', standard: '地面总建筑面积2000㎡以上，按2%~5%修建', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-014', stage: '四、报建图', item: '人防蓝图提供', standard: '规划总平、地下室平剖面，需人防局审核', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-015', stage: '四、报建图', item: '报建总图标注各场地开口坡度', standard: '步行/非机动车/机动车最大坡度', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-REP-016', stage: '四、报建图', item: '机动车车位配比、编号、尺寸标注与数量', standard: '含平行/子母车位；卸货泊位', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-017', stage: '四、报建图', item: '各平台/露台/梯间是否上人屋面标高', standard: '出入口标注（仅主出入口及次出入口）', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-REP-018', stage: '四、报建图', item: '场地内外绝对标高', standard: '均有规划标高及绝对标高', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-019', stage: '四、报建图', item: '图签证书编号为最新，工程号、建设单位一致', standard: '审定/项目负责/审核/校对签名对应', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-020', stage: '四、报建图', item: '确认图幅与规划比例一致，索引图、报建图', standard: '按规划要求', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-021', stage: '四、报建图', item: '各层平面标注建筑面积与计容面积', standard: '首层应标注基底面积', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-022', stage: '四、报建图', item: '标高层/栏杆/女儿墙/构架高度', standard: '平屋面注明可踏面', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-023', stage: '四、报建图', item: '绿化覆土厚度', standard: '地下室顶板覆土厚度需注明', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-REP-024', stage: '四、报建图', item: '地下车库标注编号', standard: '起算基准点需标注', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-REP-025', stage: '四、报建图', item: '车位尺寸标注与数量', standard: '上层投影线均要检查是否标明', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-026', stage: '四、报建图', item: '厂房单体命名规范', standard: '以"生产厂房"代替研发车间等字样', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-027', stage: '四、报建图', item: '立面/剖面绘制、标号、高度、层数', standard: '规划标高与绝对标高对齐，材质表统一', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-028', stage: '四、报建图', item: '建筑高度计算分类', standard: '低层≤10m；多层≤27m；高层>27m', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-REP-029', stage: '四、报建图', item: '厂房层数分类', standard: '>32m且任一层>10人应防烟楼梯', level: 'P0', owner: '刘文辉' },
 
-            { id: 'CHK-DIV-001', stage: '四、报建图与施工图分工', item: '与设计室分清责任', standard: '涉及施工图部分尽量由施工图室负责', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-DIV-002', stage: '四、报建图与施工图分工', item: '水土保持（甲方任务）', standard: '需甲方提前找第三方，过会后进入审图', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-DIV-003', stage: '四、报建图与施工图分工', item: '基坑支护（甲方任务）', standard: '放坡或垂直需设计，可与勘察单位同一家', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-DIV-004', stage: '四、报建图与施工图分工', item: '强电设计（甲方任务）', standard: '甲方咨询供电部门，推送电力设计院', level: 'P0', owner: '黄建敏' },
-            { id: 'CHK-DIV-005', stage: '四、报建图与施工图分工', item: '燃气、自来水、外市政、三同时（厂房）', standard: '同时设计、施工、投产使用', level: 'P0', owner: '黄建敏' },
-            { id: 'CHK-DIV-006', stage: '四、报建图与施工图分工', item: '幕墙部分分工', standard: '分清结构由幕墙公司负责；提前介入配合出图', level: 'P0', owner: '谢启欣' },
-            { id: 'CHK-DIV-007', stage: '四、报建图与施工图分工', item: '市政部分分工', standard: '提前确定负责科室', level: 'P0', owner: '黄建敏' },
-            { id: 'CHK-DIV-008', stage: '四、报建图与施工图分工', item: '建筑与结构——围墙大样', standard: '出图确认', level: 'P1', owner: '梁富成' },
-            { id: 'CHK-DIV-009', stage: '四、报建图与施工图分工', item: '水电——弱电光纤到户、室外照明、给排水', standard: '相关图纸要有', level: 'P0', owner: '黄建敏' },
-            { id: 'CHK-DIV-010', stage: '四、报建图与施工图分工', item: '施工图通过审图中心后报送住建局消防科备案', standard: '甲方提前准备', level: 'P0', owner: '刘文辉' },
+            // 施工图 (SD 和 DIV 数据)
+            { id: 'CHK-DIV-001', stage: '五、施工图（含幕墙深化）', item: '与设计室分清责任', standard: '涉及施工图部分尽量由施工图室负责', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-DIV-002', stage: '五、施工图（含幕墙深化）', item: '水土保持（甲方任务）', standard: '需甲方提前找第三方，过会后进入审图', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-DIV-003', stage: '五、施工图（含幕墙深化）', item: '基坑支护（甲方任务）', standard: '放坡或垂直需设计，可与勘察单位同一家', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-DIV-004', stage: '五、施工图（含幕墙深化）', item: '强电设计（甲方任务）', standard: '甲方咨询供电部门，推送电力设计院', level: 'P0', owner: '黄建敏' },
+            { id: 'CHK-DIV-005', stage: '五、施工图（含幕墙深化）', item: '燃气、自来水、外市政、三同时（厂房）', standard: '同时设计、施工、投产使用', level: 'P0', owner: '黄建敏' },
+            { id: 'CHK-DIV-006', stage: '五、施工图（含幕墙深化）', item: '幕墙部分分工', standard: '分清结构由幕墙公司负责；提前介入配合出图', level: 'P0', owner: '谢启欣' },
+            { id: 'CHK-DIV-007', stage: '五、施工图（含幕墙深化）', item: '市政部分分工', standard: '提前确定负责科室', level: 'P0', owner: '黄建敏' },
+            { id: 'CHK-DIV-008', stage: '五、施工图（含幕墙深化）', item: '建筑与结构——围墙大样', standard: '出图确认', level: 'P1', owner: '梁富成' },
+            { id: 'CHK-DIV-009', stage: '五、施工图（含幕墙深化）', item: '水电——弱电光纤到户、室外照明、给排水', standard: '相关图纸要有', level: 'P0', owner: '黄建敏' },
+            { id: 'CHK-DIV-010', stage: '五、施工图（含幕墙深化）', item: '施工图通过审图中心后报送住建局消防科备案', standard: '甲方提前准备', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-SD-001', stage: '五、施工图（含幕墙深化）', item: '建筑专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-SD-002', stage: '五、施工图（含幕墙深化）', item: '结构专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '梁富成' },
+            { id: 'CHK-SD-003', stage: '五、施工图（含幕墙深化）', item: '给排水专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '黄建敏' },
+            { id: 'CHK-SD-004', stage: '五、施工图（含幕墙深化）', item: '电气专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '黄建敏' },
+            { id: 'CHK-SD-005', stage: '五、施工图（含幕墙深化）', item: '暖通专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '黄建敏' },
+            { id: 'CHK-SD-006', stage: '五、施工图（含幕墙深化）', item: '市政专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '黄建敏' },
+            { id: 'CHK-SD-007', stage: '五、施工图（含幕墙深化）', item: '施工图审图阶段——线下深度审查', standard: '确认是否已完成线下审查', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-SD-008', stage: '五、施工图（含幕墙深化）', item: '施工图审图阶段——审图上系统', standard: '确认是否已上系统，跟踪进度', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-SD-009', stage: '五、施工图（含幕墙深化）', item: '设计院坏习惯——飘板厚度', standard: '避免过厚影响立面', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-SD-010', stage: '五、施工图（含幕墙深化）', item: '设计院坏习惯——栏杆样式', standard: '是否符合我们意图', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-SD-011', stage: '五、施工图（含幕墙深化）', item: '设计院坏习惯——开窗大小与比例', standard: '与立面意图一致，比例合理', level: 'P0', owner: '刘文辉' },
+            { id: 'CHK-SD-012', stage: '五、施工图（含幕墙深化）', item: '设计院坏习惯——空调机位/百叶/雨水管', standard: '位置合理，不影响立面', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-SD-013', stage: '五、施工图（含幕墙深化）', item: '设计院坏习惯——节点大样可施工性', standard: '表达清楚，可施工', level: 'P1', owner: '刘文辉' },
+            { id: 'CHK-CW-001', stage: '五、施工图（含幕墙深化）', item: '幕墙施工图是否按我们意图画节点', standard: '与SU深化模型对照', level: 'P0', owner: '谢启欣' },
+            { id: 'CHK-CW-002', stage: '五、施工图（含幕墙深化）', item: '材料尺寸和分缝是否合理', standard: '核对材料表与图纸', level: 'P0', owner: '谢启欣' },
+            { id: 'CHK-CW-003', stage: '五、施工图（含幕墙深化）', item: '分缝是否对缝', standard: '与建筑立面图核对', level: 'P0', owner: '谢启欣' },
+            { id: 'CHK-CW-004', stage: '五、施工图（含幕墙深化）', item: '是否漏掉水电、灯位设置', standard: '核对幕墙节点与机电图', level: 'P0', owner: '谢启欣' },
+            { id: 'CHK-CW-005', stage: '五、施工图（含幕墙深化）', item: '预埋件/后置埋件与结构梁位复核', standard: '避让钢筋，坐标与结构图核对', level: 'P0', owner: '谢启欣' },
+            { id: 'CHK-CW-006', stage: '五、施工图（含幕墙深化）', item: '幕墙与建筑立面图核对', standard: '分格与立面一致', level: 'P0', owner: '谢启欣' },
+            { id: 'CHK-CW-007', stage: '五、施工图（含幕墙深化）', item: '幕墙节点与SU深化模型对照', standard: '节点符合我们意图', level: 'P0', owner: '谢启欣' },
 
-            { id: 'CHK-CON-001', stage: '五、合同进度', item: '前期拟定合同', standard: '确认范围、工期、付款、变更、知识产权等', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-CON-002', stage: '五、合同进度', item: '合同正在走流程', standard: '跟踪签章进度，确认双方盖章', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-CON-003', stage: '五、合同进度', item: '合同节点提醒——快到付款节点时请款', standard: '提前7天提醒，准备请款材料', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-CON-004', stage: '五、合同进度', item: '合同附件齐全', standard: '技术指标、图纸目录、进度计划等完整', level: 'P1', owner: '梁婷玉' },
-            { id: 'CHK-CON-005', stage: '五、合同进度', item: '合同签章完成', standard: '双方盖章，扫描留底', level: 'P0', owner: '梁婷玉' },
-
-            { id: 'CHK-SD-001', stage: '六、施工图各专业进度', item: '建筑专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-SD-002', stage: '六、施工图各专业进度', item: '结构专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '梁富成' },
-            { id: 'CHK-SD-003', stage: '六、施工图各专业进度', item: '给排水专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '黄建敏' },
-            { id: 'CHK-SD-004', stage: '六、施工图各专业进度', item: '电气专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '黄建敏' },
-            { id: 'CHK-SD-005', stage: '六、施工图各专业进度', item: '暖通专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '黄建敏' },
-            { id: 'CHK-SD-006', stage: '六、施工图各专业进度', item: '市政专业图纸是否补齐', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '黄建敏' },
-            { id: 'CHK-SD-007', stage: '六、施工图各专业进度', item: '施工图审图阶段——线下深度审查', standard: '确认是否已完成线下审查', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-SD-008', stage: '六、施工图各专业进度', item: '施工图审图阶段——审图上系统', standard: '确认是否已上系统，跟踪进度', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-SD-009', stage: '六、施工图各专业进度', item: '设计院坏习惯——飘板厚度', standard: '避免过厚影响立面', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-SD-010', stage: '六、施工图各专业进度', item: '设计院坏习惯——栏杆样式', standard: '是否符合我们意图', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-SD-011', stage: '六、施工图各专业进度', item: '设计院坏习惯——开窗大小与比例', standard: '与立面意图一致，比例合理', level: 'P0', owner: '刘文辉' },
-            { id: 'CHK-SD-012', stage: '六、施工图各专业进度', item: '设计院坏习惯——空调机位/百叶/雨水管', standard: '位置合理，不影响立面', level: 'P1', owner: '刘文辉' },
-            { id: 'CHK-SD-013', stage: '六、施工图各专业进度', item: '设计院坏习惯——节点大样可施工性', standard: '表达清楚，可施工', level: 'P1', owner: '刘文辉' },
-
-            { id: 'CHK-CW-001', stage: '七、幕墙设计进度', item: '幕墙施工图是否按我们意图画节点', standard: '与SU深化模型对照', level: 'P0', owner: '谢启欣' },
-            { id: 'CHK-CW-002', stage: '七、幕墙设计进度', item: '材料尺寸和分缝是否合理', standard: '核对材料表与图纸', level: 'P0', owner: '谢启欣' },
-            { id: 'CHK-CW-003', stage: '七、幕墙设计进度', item: '分缝是否对缝', standard: '与建筑立面图核对', level: 'P0', owner: '谢启欣' },
-            { id: 'CHK-CW-004', stage: '七、幕墙设计进度', item: '是否漏掉水电、灯位设置', standard: '核对幕墙节点与机电图', level: 'P0', owner: '谢启欣' },
-            { id: 'CHK-CW-005', stage: '七、幕墙设计进度', item: '预埋件/后置埋件与结构梁位复核', standard: '避让钢筋，坐标与结构图核对', level: 'P0', owner: '谢启欣' },
-            { id: 'CHK-CW-006', stage: '七、幕墙设计进度', item: '幕墙与建筑立面图核对', standard: '分格与立面一致', level: 'P0', owner: '谢启欣' },
-            { id: 'CHK-CW-007', stage: '七、幕墙设计进度', item: '幕墙节点与SU深化模型对照', standard: '节点符合我们意图', level: 'P0', owner: '谢启欣' },
-
-            { id: 'CHK-ID-001', stage: '八、室内设计进度', item: '室内方案模型是否齐全', standard: '核对模型完整性', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-002', stage: '八、室内设计进度', item: '还差什么内容未完成', standard: '逐项核对，记录待补内容', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-003', stage: '八、室内设计进度', item: '最近会议纪要有没有要补充修改的', standard: '核对确认信息与待确认事项', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-004', stage: '八、室内设计进度', item: '室内施工图进度', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-005', stage: '八、室内设计进度', item: '室内施工图检查项有没有漏', standard: '逐项核对下方检查项', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-006', stage: '八、室内设计进度', item: '门洞净宽', standard: '扣除门套后≥900mm，小空间≥700mm', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-007', stage: '八、室内设计进度', item: '门类型标注', standard: '单开/双开/自动门/玻璃/金属/木门', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-008', stage: '八、室内设计进度', item: '门高是否到顶', standard: '到顶高度与吊顶标高一致', level: 'P1', owner: '梁婷玉' },
-            { id: 'CHK-ID-009', stage: '八、室内设计进度', item: '开启方向与平面、立面、消防疏散方向一致', standard: '三方核对', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-010', stage: '八、室内设计进度', item: '阴角位材料交接方式已画大样', standard: '大样图对应', level: 'P1', owner: '梁婷玉' },
-            { id: 'CHK-ID-011', stage: '八、室内设计进度', item: '天地墙分缝：结构分缝与装饰分缝对齐', standard: '标注板块编号、规格、分格间距', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-012', stage: '八、室内设计进度', item: '不同材质交接处收口方式已标注', standard: '大样索引正确', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-013', stage: '八、室内设计进度', item: '天地墙对缝对齐', standard: '地面、墙面、吊顶缝隙对齐', level: 'P1', owner: '梁婷玉' },
-            { id: 'CHK-ID-014', stage: '八、室内设计进度', item: '吊顶与空调/暖通进出风口结合方式已画节点', standard: '节点大样', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-015', stage: '八、室内设计进度', item: '进出风口预留宽度与高度满足设备要求', standard: '核对设备参数', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-016', stage: '八、室内设计进度', item: '灯光排布规律性', standard: '间距、对称、与吊顶分缝对齐', level: 'P1', owner: '梁婷玉' },
-            { id: 'CHK-ID-017', stage: '八、室内设计进度', item: '检修口位置与尺寸已标注', standard: '可开启', level: 'P1', owner: '梁婷玉' },
-            { id: 'CHK-ID-018', stage: '八、室内设计进度', item: '栏杆类型已确定', standard: '金属/木材/实体', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-019', stage: '八、室内设计进度', item: '栏杆高度满足规范', standard: '一般≥1050mm，中庭≥1200mm', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-020', stage: '八、室内设计进度', item: '金属扶手大小已标注', standard: '按设计要求', level: 'P1', owner: '梁婷玉' },
-            { id: 'CHK-ID-021', stage: '八、室内设计进度', item: '栏杆与两侧墙体留缝处理已画节点', standard: '节点大样', level: 'P1', owner: '梁婷玉' },
-            { id: 'CHK-ID-022', stage: '八、室内设计进度', item: '实体栏杆节点大样已出', standard: '节点大样', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-023', stage: '八、室内设计进度', item: '大样图与平面图标号一一对应', standard: '无遗漏无错配', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-024', stage: '八、室内设计进度', item: '立面图所有墙面均画，无遗漏', standard: '核对平面与立面', level: 'P0', owner: '梁婷玉' },
-            { id: 'CHK-ID-025', stage: '八、室内设计进度', item: '立面图关系表达清楚', standard: '材质、分缝、开洞、标高', level: 'P1', owner: '梁婷玉' },
-            { id: 'CHK-ID-026', stage: '八、室内设计进度', item: '平面图管线尺寸和标高已表达', standard: '复杂处有剖面图', level: 'P1', owner: '梁婷玉' },
-            { id: 'CHK-ID-027', stage: '八、室内设计进度', item: '所有留洞有水平和竖向定位', standard: '结构图同步标注', level: 'P0', owner: '梁婷玉' }
+            // 室内设计 (ID 数据)
+            { id: 'CHK-ID-001', stage: '六、室内设计', item: '室内方案模型是否齐全', standard: '核对模型完整性', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-002', stage: '六、室内设计', item: '还差什么内容未完成', standard: '逐项核对，记录待补内容', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-003', stage: '六、室内设计', item: '最近会议纪要有没有要补充修改的', standard: '核对确认信息与待确认事项', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-004', stage: '六、室内设计', item: '室内施工图进度', standard: '核对图纸目录与实际图纸', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-005', stage: '六、室内设计', item: '室内施工图检查项有没有漏', standard: '逐项核对下方检查项', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-006', stage: '六、室内设计', item: '门洞净宽', standard: '扣除门套后≥900mm，小空间≥700mm', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-007', stage: '六、室内设计', item: '门类型标注', standard: '单开/双开/自动门/玻璃/金属/木门', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-008', stage: '六、室内设计', item: '门高是否到顶', standard: '到顶高度与吊顶标高一致', level: 'P1', owner: '梁婷玉' },
+            { id: 'CHK-ID-009', stage: '六、室内设计', item: '开启方向与平面、立面、消防疏散方向一致', standard: '三方核对', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-010', stage: '六、室内设计', item: '阴角位材料交接方式已画大样', standard: '大样图对应', level: 'P1', owner: '梁婷玉' },
+            { id: 'CHK-ID-011', stage: '六、室内设计', item: '天地墙分缝：结构分缝与装饰分缝对齐', standard: '标注板块编号、规格、分格间距', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-012', stage: '六、室内设计', item: '不同材质交接处收口方式已标注', standard: '大样索引正确', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-013', stage: '六、室内设计', item: '天地墙对缝对齐', standard: '地面、墙面、吊顶缝隙对齐', level: 'P1', owner: '梁婷玉' },
+            { id: 'CHK-ID-014', stage: '六、室内设计', item: '吊顶与空调/暖通进出风口结合方式已画节点', standard: '节点大样', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-015', stage: '六、室内设计', item: '进出风口预留宽度与高度满足设备要求', standard: '核对设备参数', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-016', stage: '六、室内设计', item: '灯光排布规律性', standard: '间距、对称、与吊顶分缝对齐', level: 'P1', owner: '梁婷玉' },
+            { id: 'CHK-ID-017', stage: '六、室内设计', item: '检修口位置与尺寸已标注', standard: '可开启', level: 'P1', owner: '梁婷玉' },
+            { id: 'CHK-ID-018', stage: '六、室内设计', item: '栏杆类型已确定', standard: '金属/木材/实体', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-019', stage: '六、室内设计', item: '栏杆高度满足规范', standard: '一般≥1050mm，中庭≥1200mm', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-020', stage: '六、室内设计', item: '金属扶手大小已标注', standard: '按设计要求', level: 'P1', owner: '梁婷玉' },
+            { id: 'CHK-ID-021', stage: '六、室内设计', item: '栏杆与两侧墙体留缝处理已画节点', standard: '节点大样', level: 'P1', owner: '梁婷玉' },
+            { id: 'CHK-ID-022', stage: '六、室内设计', item: '实体栏杆节点大样已出', standard: '节点大样', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-023', stage: '六、室内设计', item: '大样图与平面图标号一一对应', standard: '无遗漏无错配', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-024', stage: '六、室内设计', item: '立面图所有墙面均画，无遗漏', standard: '核对平面与立面', level: 'P0', owner: '梁婷玉' },
+            { id: 'CHK-ID-025', stage: '六、室内设计', item: '立面图关系表达清楚', standard: '材质、分缝、开洞、标高', level: 'P1', owner: '梁婷玉' },
+            { id: 'CHK-ID-026', stage: '六、室内设计', item: '平面图管线尺寸和标高已表达', standard: '复杂处有剖面图', level: 'P1', owner: '梁婷玉' },
+            { id: 'CHK-ID-027', stage: '六、室内设计', item: '所有留洞有水平和竖向定位', standard: '结构图同步标注', level: 'P0', owner: '梁婷玉' }
         ];
 
         const initData = () => seedData.map(item => ({
@@ -332,6 +347,7 @@
                 const fileInput = ref(null);
                 const loading = ref(true);
                 const checks = ref(initData());
+                const projContracted = ref(false); // 从首页同步过来，暂时假数据
 
                 // ========== 云端读取 ==========
                 const loadFromCloud = async () => {
@@ -347,7 +363,6 @@
                     loading.value = false;
                 };
 
-                // ========== 云端保存 ==========
                 const saveToCloud = async () => {
                     try {
                         await fetch(`/api/sync?project=${projectKey}`, {
@@ -372,7 +387,6 @@
                         groups[item.stage].push(item);
                     });
 
-                    // 按 stageOrder 重新排序
                     const sortedGroups = {};
                     stageOrder.forEach(stageName => {
                         if (groups[stageName]) {
@@ -382,12 +396,11 @@
                     return sortedGroups;
                 });
 
-                // 找到"当前阶段"：第一个有未完成项的阶段
                 const currentStage = computed(() => {
                     for (const stageName of stageOrder) {
                         const group = groupedChecks.value[stageName];
                         if (!group) continue;
-                        const hasUnfinished = group.some(i => i.status === '待检' || i.status === '不合格' || i.status === '进行中');
+                        const hasUnfinished = group.some(i => i.status !== '合格');
                         if (hasUnfinished) return stageName;
                     }
                     return stageOrder[stageOrder.length - 1];
@@ -403,17 +416,13 @@
                     const group = groupedChecks.value[stageName];
                     if (!group) return '';
 
-                    // 完全完成 → 折叠、半透明
                     const allDone = group.every(i => i.status === '合格');
                     if (allDone && thisIdx < currentIdx) return 'stage-completed';
-
-                    // 未来阶段 → 深灰折叠
                     if (thisIdx > currentIdx) return 'stage-future';
 
                     return '';
                 };
 
-                // ========== 统计 ==========
                 const totalCount = computed(() => checks.value.length);
                 const doneCount = computed(() => checks.value.filter(i => i.status === '合格').length);
                 const progressPercent = computed(() => totalCount.value === 0 ? 0 : Math.round(doneCount.value / totalCount.value * 100));
@@ -423,26 +432,15 @@
                     openGroups.value[name] = !openGroups.value[name];
                 };
 
-                // ========== 导出/导入 ==========
                 const exportData = () => {
-                    const data = {
-                        project: currentProject.value,
-                        projectKey: projectKey,
-                        checks: checks.value,
-                        exportDate: new Date().toISOString()
-                    };
+                    const data = { project: currentProject.value, projectKey, checks: checks.value, exportDate: new Date().toISOString() };
                     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `检查清单_${currentProject.value}_${new Date().toISOString().slice(0,10)}.json`;
-                    a.click();
+                    a.href = url; a.download = `检查清单_${currentProject.value}_${new Date().toISOString().slice(0,10)}.json`; a.click();
                 };
 
-                const importData = () => {
-                    fileInput.value.click();
-                };
-
+                const importData = () => { fileInput.value.click(); };
                 const handleImport = (event) => {
                     const file = event.target.files[0];
                     if (!file) return;
@@ -455,30 +453,23 @@
                                     checks.value = data.checks;
                                     saveData();
                                 }
-                            } else {
-                                alert('文件格式不正确');
-                            }
-                        } catch (err) {
-                            alert('导入失败：' + err.message);
-                        }
+                            } else { alert('文件格式不正确'); }
+                        } catch (err) { alert('导入失败：' + err.message); }
                     };
                     reader.readAsText(file);
                 };
 
                 onMounted(async () => {
                     await loadFromCloud();
-                    // 默认展开所有分组，但状态通过 class 控制
                     Object.keys(groupedChecks.value).forEach(key => {
-                        openGroups.value[key] = true;
+                        openGroups.value[key] = true; // 默认全部展开，但通过 class 控制视觉折叠
                     });
                 });
 
                 return {
                     currentProject, groupedChecks, openGroups, showUnqualified, fileInput, loading,
-                    totalCount, doneCount, progressPercent, unqualifiedItems,
-                    currentStage, isCurrentStage, getStageClass,
-                    toggleGroup, saveData, exportData, importData, handleImport,
-                    members
+                    totalCount, doneCount, progressPercent, unqualifiedItems, currentStage, isCurrentStage,
+                    getStageClass, toggleGroup, saveData, exportData, importData, handleImport, members, projContracted
                 };
             }
         }).mount('#app');
