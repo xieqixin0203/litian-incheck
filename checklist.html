@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>项目检查清单</title>
-<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
 <style>
 :root{--bg:#eef1f6;--text:#2d3748;--card:#fff;--primary:#7b8bb8;--border:#d8dee9;--completed-bg:#c8d0dc;--future-bg:#5a6678;--future-text:#e8ecf4}
 .dark{--bg:#1a1f2e;--text:#e8ecf4;--card:#252b3d;--primary:#8fa3c8;--border:#3a4258;--completed-bg:#3a4258;--future-bg:#0f1320;--future-text:#6b7590}
+*{box-sizing:border-box}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0}
 .group-header{cursor:pointer;user-select:none}
 .stage-completed{background:var(--completed-bg) !important;opacity:.7}
@@ -26,11 +26,10 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 .meeting-header:hover{background:var(--bg)}
 .meeting-body{padding:0 16px 16px 16px}
 .section{margin-top:12px}
-.section-title{font-size:12px;font-weight:bold;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.section-title::before{content:'';width:3px;height:12px;border-radius:2px}
-.confirmed-section .section-title::before{background:#68b988}
-.pending-section .section-title::before{background:#e0a868}
-.changes-section .section-title::before{background:#6890c8}
+.section-title{font-size:12px;font-weight:bold;margin-bottom:6px;padding-left:8px;border-left:3px solid var(--primary)}
+.confirmed-section .section-title{border-left-color:#68b988}
+.pending-section .section-title{border-left-color:#e0a868}
+.changes-section .section-title{border-left-color:#6890c8}
 .item-row{font-size:13px;padding:6px 0;padding-left:12px;border-bottom:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .item-row:last-child{border-bottom:none}
 .item-meta{font-size:11px;opacity:.6}
@@ -46,12 +45,11 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 .btn-sm{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer}
 .btn-sm:hover{background:var(--bg)}
 .btn-primary{font-size:12px;padding:6px 14px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer}
-@media(max-width:768px){.check-row{font-size:13px}}
 </style>
 </head>
 <body>
 <div id="app" class="max-w-5xl mx-auto p-3 pb-8">
-<!-- 顶部信息 -->
+
 <header class="mb-3 p-4 rounded-2xl shadow-sm" style="background:var(--card);border:1px solid var(--border)">
 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
 <div>
@@ -60,7 +58,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 项目：<span class="font-bold" style="color:var(--primary)">{{ currentProject }}</span> ·
 当前阶段：<span class="font-bold">{{ projectStage }}</span> ·
 进度：<span class="font-bold">{{ doneCount }}/{{ totalCount }}</span>
-<span v-if="loading" class="ml-2 text-orange-500">（云端加载中…）</span>
 </p>
 </div>
 <div class="flex gap-2 flex-wrap">
@@ -70,43 +67,37 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 <input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport">
 </div>
 </div>
-<!-- 标签切换 -->
 <div class="mt-3 flex border-b" style="border-color:var(--border)">
 <button class="tab-btn" :class="{'active':activeTab==='checklist'}" @click="activeTab='checklist'">检查清单</button>
-<button class="tab-btn" :class="{'active':activeTab==='meeting'}" @click="activeTab='meeting'">会议纪要 <span v-if="meetings.length" class="text-xs opacity-60">({{ meetings.length }})</span></button>
+<button class="tab-btn" :class="{'active':activeTab==='meeting'}" @click="activeTab='meeting'">会议纪要</button>
 </div>
 </header>
 
-<!-- ============ 检查清单 ============ -->
+<!-- 检查清单 -->
 <div v-show="activeTab==='checklist'">
 <div class="mb-4 contract-section">
 <div class="px-4 py-3 text-white flex items-center justify-between" style="background:var(--primary)">
 <span class="font-bold text-base">合同文书</span>
 <span class="text-sm">{{ projContracted?'已入合同':'未入合同' }}</span>
 </div>
-<div class="p-4 space-y-2" style="background:var(--card)">
-<div class="flex items-center justify-between p-2 rounded-lg" style="background:var(--bg)">
-<span class="text-sm font-medium">设计合同</span>
+<div class="p-4" style="background:var(--card)">
+<div class="flex items-center justify-between p-2 rounded-lg mb-2" style="background:var(--bg)">
+<span class="text-sm">设计合同</span>
 <span class="text-xs px-2 py-1 rounded bg-green-100 text-green-700">已有</span>
 </div>
 <div class="flex items-center justify-between p-2 rounded-lg" style="background:var(--bg)">
-<span class="text-sm font-medium">分包合同</span>
+<span class="text-sm">分包合同</span>
 <span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-500">待增加</span>
 </div>
 </div>
 </div>
 
 <div class="space-y-3">
-<div v-for="(group,stageName) in groupedChecks" :key="stageName"
-     class="rounded-xl shadow-sm overflow-hidden"
-     style="border:1px solid var(--border)"
-     :class="getStageClass(stageName)">
-<div class="group-header px-4 py-3 flex items-center justify-between transition" @click="toggleGroup(stageName)">
+<div v-for="(group,stageName) in groupedChecks" :key="stageName" class="rounded-xl shadow-sm overflow-hidden" style="border:1px solid var(--border)" :class="getStageClass(stageName)">
+<div class="group-header px-4 py-3 flex items-center justify-between" @click="toggleGroup(stageName)">
 <div class="flex items-center gap-2 flex-wrap">
 <span class="text-base font-bold group-title">{{ stageName }}</span>
-<span class="text-xs px-2 py-0.5 rounded-full font-medium stage-count" style="background:rgba(0,0,0,.06)">
-{{ group.filter(i=>i.status==='合格').length }}/{{ group.length }}
-</span>
+<span class="text-xs px-2 py-0.5 rounded-full font-medium stage-count" style="background:rgba(0,0,0,.06)">{{ group.filter(i=>i.status==='合格').length }}/{{ group.length }}</span>
 <span v-if="stageName===projectStage" class="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-bold">当前阶段</span>
 <span v-if="group.length===0" class="text-xs opacity-50">（暂无检查项）</span>
 </div>
@@ -147,21 +138,18 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 </div>
 </div>
 
-<!-- ============ 会议纪要 ============ -->
+<!-- 会议纪要 -->
 <div v-show="activeTab==='meeting'">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
 <h2 class="text-lg font-bold">会议纪要</h2>
 <div class="flex gap-2">
-<button @click="showConfirmSummary=!showConfirmSummary" class="btn-sm">
-{{ showConfirmSummary?'查看历次会议':'查看确认汇总' }}
-</button>
+<button @click="showConfirmSummary=!showConfirmSummary" class="btn-sm">{{ showConfirmSummary?'查看历次会议':'查看确认汇总' }}</button>
 <button @click="openAddMeeting" class="btn-primary">+ 新增会议纪要</button>
 </div>
 </div>
 
-<!-- 按会议查看 -->
-<div v-if="!showConfirmSummary">
-<div v-if="meetings.length===0" class="card p-8 text-center opacity-60 text-sm">
+<div v-show="!showConfirmSummary">
+<div v-if="meetings.length===0" class="p-8 text-center opacity-60 text-sm rounded-xl" style="background:var(--card);border:1px solid var(--border)">
 暂无会议纪要，点击右上角「+ 新增会议纪要」开始记录。
 </div>
 <div v-for="mt in sortedMeetings" :key="mt.id" class="meeting-card">
@@ -172,9 +160,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 <span v-if="mt.title" class="ml-2">{{ mt.title }}</span>
 </div>
 <div class="text-xs opacity-60 mt-1 truncate">参与人：{{ mt.participants || '未填写' }}</div>
-<div class="text-xs opacity-50 mt-0.5">
-已确认 {{ (mt.confirmed||[]).length }} · 待确认 {{ (mt.pending||[]).filter(p=>p.status==='待确认').length }} · 变更 {{ (mt.changes||[]).length }}
-</div>
 </div>
 <div class="flex items-center gap-2">
 <button @click.stop="editMeeting(mt)" class="btn-sm">编辑</button>
@@ -182,32 +167,22 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 <span class="text-sm opacity-60">{{ mt.expanded?'▼':'▶' }}</span>
 </div>
 </div>
-
 <div v-show="mt.expanded" class="meeting-body">
-<!-- 已确认 -->
 <div class="section confirmed-section">
 <div class="section-title">已确认事项 ({{ (mt.confirmed||[]).length }})</div>
 <div v-if="(mt.confirmed||[]).length===0" class="text-xs opacity-50 pl-3">暂无</div>
-<div v-for="(c,i) in mt.confirmed" :key="i" class="item-row">
-<span>{{ c.text }}</span>
+<div v-for="(c,i) in (mt.confirmed||[])" :key="i" class="item-row"><span>{{ c.text }}</span></div>
 </div>
-</div>
-
-<!-- 待确认 -->
 <div class="section pending-section">
 <div class="section-title">待确认事项 ({{ (mt.pending||[]).length }})</div>
 <div v-if="(mt.pending||[]).length===0" class="text-xs opacity-50 pl-3">暂无</div>
-<div v-for="(p,i) in mt.pending" :key="i" class="item-row">
+<div v-for="(p,i) in (mt.pending||[])" :key="i" class="item-row">
 <span class="flex-1">{{ p.text }}</span>
 <span class="item-meta">负责人：{{ p.owner||'未指定' }}</span>
-<span v-if="p.dueDate" class="item-meta" :style="isOverdue(p.dueDate)&&p.status==='待确认' ? 'color:#dc2626;font-weight:bold' : ''">
-截止：{{ p.dueDate }}{{ isOverdue(p.dueDate)&&p.status==='待确认' ? '（逾期）' : '' }}
-</span>
+<span v-if="p.dueDate" class="item-meta">{{ p.dueDate }}</span>
 <span class="status-badge" :class="'status-'+p.status">{{ p.status }}</span>
 </div>
 </div>
-
-<!-- 变更 -->
 <div class="section changes-section" v-if="(mt.changes||[]).length>0">
 <div class="section-title">变更事项 ({{ mt.changes.length }})</div>
 <div v-for="(c,i) in mt.changes" :key="i" class="item-row">
@@ -219,12 +194,11 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 </div>
 </div>
 
-<!-- 确认汇总 -->
-<div v-else>
-<div class="card p-4">
+<div v-show="showConfirmSummary">
+<div class="p-4 rounded-xl" style="background:var(--card);border:1px solid var(--border)">
 <h3 class="font-bold text-sm mb-3">已确认事项汇总（按时间倒序）</h3>
 <div v-if="allConfirmed.length===0" class="text-xs opacity-50 text-center py-6">暂无已确认事项</div>
-<div v-for="(item,i) in allConfirmed" :key="i" class="flex gap-3 py-2 border-b border-[var(--border)] last:border-0 text-sm">
+<div v-for="(item,i) in allConfirmed" :key="i" class="flex gap-3 py-2 border-b text-sm" style="border-color:var(--border)">
 <span class="opacity-50 text-xs flex-shrink-0 pt-1">{{ item.date }}</span>
 <span class="flex-1">{{ item.text }}</span>
 </div>
@@ -232,41 +206,36 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 </div>
 </div>
 
-<!-- ============ 会议编辑模态框 ============ -->
-<div v-show="showMeetingModal" class="modal-mask" style="display:none" @click.self="closeMeetingModal">
+</div>
+
+<!-- 会议模态框 -->
+<div v-show="showMeetingModal" style="display:none" class="modal-mask" @click.self="closeMeetingModal">
 <div class="modal-box">
 <h3 class="font-bold text-lg mb-4">{{ editingMeetingId ? '编辑会议纪要' : '新增会议纪要' }}</h3>
-
 <div class="mb-3">
 <label class="form-label">会议日期 *</label>
 <input type="date" v-model="draftMeeting.date" class="form-input">
 </div>
-
 <div class="mb-3">
 <label class="form-label">会议主题</label>
 <input v-model="draftMeeting.title" placeholder="如：中秋节后第X次方案沟通" class="form-input">
 </div>
-
 <div class="mb-3">
 <label class="form-label">参与人</label>
 <input v-model="draftMeeting.participants" placeholder="如：刘文辉、谢启欣、甲方陈总" class="form-input">
 </div>
-
-<!-- 已确认 -->
 <div class="mb-3">
-<label class="form-label">已确认事项（甲方签字/明确同意）</label>
+<label class="form-label">已确认事项</label>
 <div v-for="(c,i) in draftMeeting.confirmed" :key="i" class="form-row">
-<input v-model="c.text" placeholder="已确认内容" class="form-input flex-1">
+<input v-model="c.text" placeholder="已确认内容" class="form-input" style="flex:1">
 <button @click="draftMeeting.confirmed.splice(i,1)" class="btn-sm text-red-500">删</button>
 </div>
 <button @click="draftMeeting.confirmed.push({text:''})" class="btn-sm">+ 添加已确认事项</button>
 </div>
-
-<!-- 待确认 -->
 <div class="mb-3">
 <label class="form-label">待确认事项</label>
 <div v-for="(p,i) in draftMeeting.pending" :key="i" class="flex flex-wrap gap-2 mb-2 p-2 rounded" style="background:var(--bg)">
-<input v-model="p.text" placeholder="待确认内容" class="form-input flex-1 min-w-[150px]">
+<input v-model="p.text" placeholder="待确认内容" class="form-input" style="flex:1;min-width:150px">
 <select v-model="p.owner" class="form-input" style="width:100px">
 <option value="">负责人</option>
 <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
@@ -281,26 +250,21 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 </div>
 <button @click="draftMeeting.pending.push({text:'',owner:'',dueDate:'',status:'待确认'})" class="btn-sm">+ 添加待确认事项</button>
 </div>
-
-<!-- 变更 -->
 <div class="mb-3">
 <label class="form-label">变更事项</label>
 <div v-for="(c,i) in draftMeeting.changes" :key="i" class="form-row">
-<input v-model="c.text" placeholder="变更内容" class="form-input flex-1">
+<input v-model="c.text" placeholder="变更内容" class="form-input" style="flex:1">
 <input v-model="c.from" placeholder="原" class="form-input" style="width:80px">
 <input v-model="c.to" placeholder="新" class="form-input" style="width:80px">
 <button @click="draftMeeting.changes.splice(i,1)" class="btn-sm text-red-500">删</button>
 </div>
 <button @click="draftMeeting.changes.push({text:'',from:'',to:''})" class="btn-sm">+ 添加变更事项</button>
 </div>
-
 <div class="flex justify-end gap-2 mt-5">
 <button @click="closeMeetingModal" class="btn-sm">取消</button>
 <button @click="saveMeeting" class="btn-primary">保存</button>
 </div>
 </div>
-</div>
-
 </div>
 
 <script>
@@ -440,11 +404,9 @@ const projectStage=ref(projectStageMap[urlProject]||'一、前期强排');
 const activeTab=ref('checklist');
 const openGroups=ref({});
 const fileInput=ref(null);
-const loading=ref(true);
 const checks=ref(initData());
 const projContracted=ref(false);
 
-// === 会议纪要状态 ===
 const meetings=ref([]);
 const showMeetingModal=ref(false);
 const editingMeetingId=ref(null);
@@ -452,29 +414,14 @@ const showConfirmSummary=ref(false);
 const draftMeeting=ref(makeEmptyMeeting());
 
 function makeEmptyMeeting(){
-return {
-date:new Date().toISOString().slice(0,10),
-title:'',
-participants:'',
-confirmed:[{text:''}],
-pending:[],
-changes:[]
-};
+return {date:new Date().toISOString().slice(0,10),title:'',participants:'',confirmed:[{text:''}],pending:[],changes:[]};
 }
 
-// === 检查清单加载 ===
 const loadFromCloud=async()=>{
-try{
-const res=await fetch(`/api/sync?project=${projectKey}`);
-const data=await res.json();
-if(Array.isArray(data)&&data.length)checks.value=data;
-}catch(e){console.warn('云端读取失败',e)}
-loading.value=false;
+try{const res=await fetch(`/api/sync?project=${projectKey}`);const data=await res.json();if(Array.isArray(data)&&data.length)checks.value=data}catch(e){console.warn(e)}
 };
 const saveToCloud=async()=>{
-try{
-await fetch(`/api/sync?project=${projectKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(checks.value)});
-}catch(e){console.warn('云端保存失败',e)}
+try{await fetch(`/api/sync?project=${projectKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(checks.value)})}catch(e){console.warn(e)}
 };
 const saveData=()=>{saveToCloud()};
 
@@ -502,24 +449,22 @@ const totalCount=computed(()=>checks.value.length);
 const doneCount=computed(()=>checks.value.filter(i=>i.status==='合格').length);
 const toggleGroup=(name)=>{openGroups.value[name]=!openGroups.value[name]};
 
-// === 会议纪要加载 ===
 const loadMeetings=async()=>{
 try{
 const res=await fetch(`/api/sync?project=${projectKey}&type=meeting`);
 const data=await res.json();
 if(Array.isArray(data))meetings.value=data.map(m=>({...m,expanded:false}));
-}catch(e){console.warn('会议纪要读取失败',e)}
+}catch(e){console.warn(e)}
 };
 const saveMeetings=async()=>{
 try{
 const toSave=meetings.value.map(m=>{const {expanded,...rest}=m;return rest});
 await fetch(`/api/sync?project=${projectKey}&type=meeting`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(toSave)});
-}catch(e){console.warn('会议纪要保存失败',e)}
+}catch(e){console.warn(e)}
 };
 
-const sortedMeetings=computed(()=>[...meetings.value].sort((a,b)=>b.date.localeCompare(a.date)));
+const sortedMeetings=computed(()=>[...meetings.value].sort((a,b)=>(b.date||'').localeCompare(a.date||'')));
 
-// 汇总所有已确认事项
 const allConfirmed=computed(()=>{
 const list=[];
 meetings.value.forEach(m=>{
@@ -527,14 +472,10 @@ meetings.value.forEach(m=>{
 if(c.text&&c.text.trim())list.push({date:m.date,text:c.text});
 });
 });
-return list.sort((a,b)=>b.date.localeCompare(a.date));
+return list.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
 });
 
-const openAddMeeting=()=>{
-draftMeeting.value=makeEmptyMeeting();
-editingMeetingId.value=null;
-showMeetingModal.value=true;
-};
+const openAddMeeting=()=>{draftMeeting.value=makeEmptyMeeting();editingMeetingId.value=null;showMeetingModal.value=true};
 const editMeeting=(mt)=>{
 const copy=JSON.parse(JSON.stringify(mt));
 delete copy.expanded;
@@ -545,7 +486,6 @@ showMeetingModal.value=true;
 const closeMeetingModal=()=>{showMeetingModal.value=false;editingMeetingId.value=null};
 const saveMeeting=()=>{
 if(!draftMeeting.value.date){alert('请填写会议日期');return}
-// 清理空项
 const clean={
 ...draftMeeting.value,
 confirmed:(draftMeeting.value.confirmed||[]).filter(c=>c.text&&c.text.trim()),
@@ -567,12 +507,6 @@ meetings.value=meetings.value.filter(m=>m.id!==mt.id);
 saveMeetings();
 };
 
-const isOverdue=(dateStr)=>{
-if(!dateStr)return false;
-return new Date(dateStr)<new Date(new Date().toDateString());
-};
-
-// === 导出/导入 ===
 const exportData=()=>{
 const data={project:currentProject.value,projectKey,checks:checks.value,meetings:meetings.value};
 const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -605,14 +539,13 @@ initOpenGroups();
 
 return{
 currentProject,projectStage,activeTab,
-groupedChecks,openGroups,fileInput,loading,
+groupedChecks,openGroups,fileInput,
 totalCount,doneCount,
 getStageClass,toggleGroup,saveData,
 exportData,importData,handleImport,
 members,projContracted,
-// 会议纪要
 meetings,sortedMeetings,showMeetingModal,editingMeetingId,draftMeeting,showConfirmSummary,allConfirmed,
-openAddMeeting,editMeeting,closeMeetingModal,saveMeeting,deleteMeeting,isOverdue
+openAddMeeting,editMeeting,closeMeetingModal,saveMeeting,deleteMeeting
 };
 }
 }).mount('#app');
