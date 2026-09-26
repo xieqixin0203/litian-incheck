@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>立田工作室 · 项目指挥台</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/lunar-javascript/1.6.12/lunar.js"></script>
 <style>
+[v-cloak]{display:none !important}
 html{font-size:16px}
 html[data-fontsize="small"]{font-size:14px}
 html[data-fontsize="large"]{font-size:18px}
@@ -16,8 +17,6 @@ html[data-fontsize="xlarge"]{font-size:20px}
 .dark{--bg:#1a1f2e;--text:#e8ecf4;--card:#252b3d;--primary:#8fa3c8;--border:#3a4258;--sidebar-bg:#141824;--sidebar-text:#a8b4d0;--sidebar-active:#3e4a6b;--dot-red:#d4a0a0;--dot-blue:#a8b8d8;--dot-yellow:#e0d4b0}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0;height:100vh;overflow:hidden}
 .sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:240px;transition:.3s;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
-.back-btn{display:flex;align-items:center;gap:6px;padding:10px 20px;color:var(--sidebar-text);opacity:.7;cursor:pointer;font-size:13px;border-bottom:1px solid rgba(255,255,255,.08)}
-.back-btn:hover{opacity:1;background:rgba(255,255,255,.05)}
 .sidebar-nav a{display:block;padding:13px 22px;color:var(--sidebar-text);opacity:.75;transition:.2s;font-size:15px;border-left:3px solid transparent;text-decoration:none;cursor:pointer}
 .sidebar-nav a:hover{opacity:1;background:rgba(255,255,255,.05)}
 .sidebar-nav a.active{opacity:1;background:var(--sidebar-active);font-weight:bold;border-left-color:var(--sidebar-text)}
@@ -66,9 +65,8 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </style>
 </head>
 <body>
-<div id="app" class="flex h-screen overflow-hidden">
+<div id="app" v-cloak class="flex h-screen overflow-hidden">
 <aside class="sidebar" :class="{'open':sidebarOpen}">
-</div>
 <div class="p-5 border-b border-white/10">
 <h1 class="text-xl font-bold leading-tight">立田工作室</h1>
 <h2 class="text-sm opacity-80 mt-1">项目指挥台</h2>
@@ -287,7 +285,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </main>
 
 <!-- 登录 -->
-<div v-if="showLogin" class="modal-mask" @click.self="showLogin=false">
+<div v-if="showLogin" v-cloak class="modal-mask" @click.self="showLogin=false">
 <div class="card p-6 w-full max-w-sm">
 <h3 class="font-bold text-lg mb-4">管理员登录</h3>
 <input v-model="loginPwd" type="password" placeholder="输入密码" @keyup.enter="doLogin" class="w-full border rounded-lg p-2 text-sm border-[var(--border)] mb-4" style="background:transparent;color:var(--text)">
@@ -299,7 +297,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 
 <!-- 附图链接弹窗 -->
-<div v-if="linkDialogTarget" class="modal-mask" @click.self="linkDialogTarget=null">
+<div v-if="linkDialogTarget" v-cloak class="modal-mask" @click.self="linkDialogTarget=null">
 <div class="card p-6 w-full max-w-md">
 <h3 class="font-bold text-lg mb-4">附图链接</h3>
 <input v-model="linkDialogValue" placeholder="粘贴云盘 URL" class="w-full border rounded-lg p-2 text-sm border-[var(--border)] mb-4" style="background:transparent;color:var(--text)">
@@ -313,7 +311,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 
 <!-- 编辑待办 -->
-<div v-if="editingTodo" class="modal-mask" @click.self="editingTodo=null">
+<div v-if="editingTodo" v-cloak class="modal-mask" @click.self="editingTodo=null">
 <div class="card p-6 w-full max-w-md">
 <h3 class="font-bold text-lg mb-4">编辑待办</h3>
 <div class="space-y-3">
@@ -333,7 +331,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 
 <!-- 新建待办 -->
-<div v-if="showAddTodo" class="modal-mask" @click.self="showAddTodo=false">
+<div v-if="showAddTodo" v-cloak class="modal-mask" @click.self="showAddTodo=false">
 <div class="card p-6 w-full max-w-md">
 <h3 class="font-bold text-lg mb-4">新建待办</h3>
 <div class="space-y-3">
@@ -357,7 +355,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 
 <!-- 新建项目 -->
-<div v-if="showAddProject" class="modal-mask" @click.self="showAddProject=false">
+<div v-if="showAddProject" v-cloak class="modal-mask" @click.self="showAddProject=false">
 <div class="card p-6 w-full max-w-md">
 <h3 class="font-bold text-lg mb-4">新建项目</h3>
 <div class="space-y-3">
@@ -380,7 +378,7 @@ const {createApp,ref,computed,onMounted}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
 const ADMIN_PASSWORD='litian2024';
-const DATA_VERSION='2026-09-26-v6';
+const DATA_VERSION='2026-09-26-v7';
 
 const HOLIDAYS_2026 = {
   '2026-01-01': {type:'holiday', name:'元旦'},'2026-01-02': {type:'holiday', name:'元旦'},'2026-01-03': {type:'holiday', name:'元旦'},
@@ -434,7 +432,6 @@ const defaultTodos=[
 {id:15,projectName:'方普',projectId:'fp',task:'9月29日带甲方走实地项目',type:'design',subTasks:[],done:false,owner:'刘文辉,谢启欣',link:''}
 ];
 
-// 迁移旧数据：subTasks 从 string[] 转成 {text,link}[]
 const migrateTodos = (arr) => {
   if(!Array.isArray(arr)) return arr;
   return arr.map(t => ({
@@ -446,218 +443,215 @@ const migrateTodos = (arr) => {
 
 createApp({
 setup(){
-const savedVersion=localStorage.getItem('studio_data_version');
-if(savedVersion!==DATA_VERSION){
-localStorage.removeItem('studio_projects');
-localStorage.removeItem('studio_todos');
-localStorage.setItem('studio_data_version',DATA_VERSION);
-}
+  const savedVersion=localStorage.getItem('studio_data_version');
+  if(savedVersion!==DATA_VERSION){
+    localStorage.removeItem('studio_projects');
+    localStorage.removeItem('studio_todos');
+    localStorage.setItem('studio_data_version',DATA_VERSION);
+  }
 
-const currentView=ref('home');
-const sidebarOpen=ref(false);
-const showDone=ref(false);
-const showAddTodo=ref(false);
-const showAddProject=ref(false);
-const showLogin=ref(false);
-const loginPwd=ref('');
-const isAdmin=ref(false);
-const searchKeyword=ref('');
-const searchResults=ref([]);
-const editingTodo=ref(null);
-const linkDialogTarget=ref(null);
-const linkDialogValue=ref('');
+  const currentView=ref('home');
+  const sidebarOpen=ref(false);
+  const showDone=ref(false);
+  const showAddTodo=ref(false);
+  const showAddProject=ref(false);
+  const showLogin=ref(false);
+  const loginPwd=ref('');
+  const isAdmin=ref(false);
+  const searchKeyword=ref('');
+  const searchResults=ref([]);
+  const editingTodo=ref(null);
+  const linkDialogTarget=ref(null);
+  const linkDialogValue=ref('');
 
-// 字号
-const fontSize=ref(localStorage.getItem('studio_fontsize')||'medium');
-const setFontSize=(s)=>{fontSize.value=s;localStorage.setItem('studio_fontsize',s);document.documentElement.setAttribute('data-fontsize',s)};
+  const fontSize=ref(localStorage.getItem('studio_fontsize')||'medium');
+  const setFontSize=(s)=>{fontSize.value=s;localStorage.setItem('studio_fontsize',s);document.documentElement.setAttribute('data-fontsize',s)};
 
-const projects=ref(JSON.parse(localStorage.getItem('studio_projects'))||defaultProjects);
-const todos=ref(migrateTodos(JSON.parse(localStorage.getItem('studio_todos'))||defaultTodos));
-const newTodo=ref({task:'',projectId:'',owner:'',type:'design'});
-const newProject=ref({name:'',stage:stages[0],owner:''});
-const switchView=(v)=>{currentView.value=v;sidebarOpen.value=false};
+  const projects=ref(JSON.parse(localStorage.getItem('studio_projects'))||defaultProjects);
+  const todos=ref(migrateTodos(JSON.parse(localStorage.getItem('studio_todos'))||defaultTodos));
+  const newTodo=ref({task:'',projectId:'',owner:'',type:'design'});
+  const newProject=ref({name:'',stage:stages[0],owner:''});
+  const switchView=(v)=>{currentView.value=v;sidebarOpen.value=false};
 
-// 精神零食
-const heroes=ref([]);
-const currentHero=ref(null);
+  const heroes=ref([]);
+  const currentHero=ref(null);
 
-const parseListTxt=(text)=>{
-  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
-  return lines.map(line=>{
-    const m=line.match(/^(\d+)\.(.+)$/);
-    if(!m) return null;
-    const id=parseInt(m[1]);
-    const content=m[2];
-    const parts=content.split(/[，,]/).map(s=>s.trim());
-    const title=parts[0]||'';
-    let englishTitle='', year='', author='';
-    if(parts.length>=2){
-      const p2=parts[1]||'';
-      const isYear=/^\d{4}/.test(p2);
-      if(isYear){
-        year=p2;
-        author=parts[2]||'';
-      }else{
-        englishTitle=p2;
-        year=parts[2]||'';
-        author=parts[3]||'';
+  const parseListTxt=(text)=>{
+    const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
+    return lines.map(line=>{
+      const m=line.match(/^(\d+)\.(.+)$/);
+      if(!m) return null;
+      const id=parseInt(m[1]);
+      const content=m[2];
+      const parts=content.split(/[，,]/).map(s=>s.trim());
+      const title=parts[0]||'';
+      let englishTitle='', year='', author='';
+      if(parts.length>=2){
+        const p2=parts[1]||'';
+        const isYear=/^\d{4}/.test(p2);
+        if(isYear){
+          year=p2;
+          author=parts[2]||'';
+        }else{
+          englishTitle=p2;
+          year=parts[2]||'';
+          author=parts[3]||'';
+        }
       }
+      return {id, title, englishTitle, year, author, url:`./heroes/${id}.jpg`};
+    }).filter(Boolean);
+  };
+
+  const loadHeroes=async()=>{
+    try{
+      const res=await fetch('./heroes/list.txt');
+      if(!res.ok) throw new Error('list.txt 未找到');
+      const text=await res.text();
+      heroes.value=parseListTxt(text);
+      pickTodayHero();
+    }catch(e){
+      console.warn('heroes/list.txt 读取失败', e);
+      heroes.value=[];
     }
-    return {id, title, englishTitle, year, author, url:`./heroes/${id}.jpg`};
-  }).filter(Boolean);
-};
+  };
 
-const loadHeroes=async()=>{
-  try{
-    const res=await fetch('./heroes/list.txt');
-    if(!res.ok) throw new Error('list.txt 未找到');
-    const text=await res.text();
-    heroes.value=parseListTxt(text);
-    pickTodayHero();
-  }catch(e){
-    console.warn('heroes/list.txt 读取失败', e);
-    heroes.value=[];
-  }
-};
+  const pickTodayHero=()=>{
+    if(heroes.value.length===0){currentHero.value=null;return;}
+    const today=new Date().toISOString().slice(0,10);
+    const saved=JSON.parse(localStorage.getItem('hero_rotation')||'{}');
+    if(saved.date===today && saved.currentId){
+      const h=heroes.value.find(x=>x.id===saved.currentId);
+      if(h){currentHero.value=h;return;}
+    }
+    let usedIds=(saved.usedIds||[]).filter(id=>heroes.value.some(h=>h.id===id));
+    if(usedIds.length>=heroes.value.length) usedIds=[];
+    const remaining=heroes.value.filter(h=>!usedIds.includes(h.id));
+    const picked=remaining[Math.floor(Math.random()*remaining.length)];
+    usedIds.push(picked.id);
+    localStorage.setItem('hero_rotation',JSON.stringify({date:today,currentId:picked.id,usedIds}));
+    currentHero.value=picked;
+  };
 
-const pickTodayHero=()=>{
-  if(heroes.value.length===0){currentHero.value=null;return;}
-  const today=new Date().toISOString().slice(0,10);
-  const saved=JSON.parse(localStorage.getItem('hero_rotation')||'{}');
-  if(saved.date===today && saved.currentId){
-    const h=heroes.value.find(x=>x.id===saved.currentId);
-    if(h){currentHero.value=h;return;}
-  }
-  let usedIds=(saved.usedIds||[]).filter(id=>heroes.value.some(h=>h.id===id));
-  if(usedIds.length>=heroes.value.length) usedIds=[];
-  const remaining=heroes.value.filter(h=>!usedIds.includes(h.id));
-  const picked=remaining[Math.floor(Math.random()*remaining.length)];
-  usedIds.push(picked.id);
-  localStorage.setItem('hero_rotation',JSON.stringify({date:today,currentId:picked.id,usedIds}));
-  currentHero.value=picked;
-};
+  const nextHero=()=>{
+    if(heroes.value.length<2) return;
+    const curId=currentHero.value?currentHero.value.id:null;
+    const others=heroes.value.filter(h=>h.id!==curId);
+    const next=others[Math.floor(Math.random()*others.length)];
+    currentHero.value=next;
+  };
 
-const nextHero=()=>{
-  if(heroes.value.length<2) return;
-  const curId=currentHero.value?currentHero.value.id:null;
-  const others=heroes.value.filter(h=>h.id!==curId);
-  const next=others[Math.floor(Math.random()*others.length)];
-  currentHero.value=next;
-};
+  const currentMonthName=ref('');
+  const todayDate=ref('');
+  const calendarDays=ref([]);
 
-// 日历
-const currentMonthName=ref('');
-const todayDate=ref('');
-const calendarDays=ref([]);
+  const getLunarLabel=(y,m,d)=>{
+    try{
+      if(typeof Solar==='undefined') return '';
+      const solar=Solar.fromYmd(y,m,d);
+      const lunar=solar.getLunar();
+      const day=lunar.getDayInChinese();
+      if(day==='初一') return lunar.getMonthInChinese()+'月';
+      const jq=lunar.getJieQi();
+      if(jq) return jq;
+      return day;
+    }catch(e){return '';}
+  };
 
-const getLunarLabel=(y,m,d)=>{
-  try{
-    if(typeof Solar==='undefined') return '';
-    const solar=Solar.fromYmd(y,m,d);
-    const lunar=solar.getLunar();
-    const day=lunar.getDayInChinese();
-    if(day==='初一') return lunar.getMonthInChinese()+'月';
-    const jq=lunar.getJieQi();
-    if(jq) return jq;
-    return day;
-  }catch(e){return '';}
-};
+  const generateCalendar=()=>{
+    const now=new Date();
+    const y=now.getFullYear(),m=now.getMonth();
+    currentMonthName.value=`${y}年${m+1}月`;
+    todayDate.value=`${m+1}月${now.getDate()}日`;
+    const firstDay=new Date(y,m,1).getDay();
+    const daysInMonth=new Date(y,m+1,0).getDate();
+    const days=[];
+    for(let i=0;i<firstDay;i++)days.push({date:'',isCurrent:false});
+    for(let d=1;d<=daysInMonth;d++){
+      const dt=new Date(y,m,d);
+      const dateStr=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dow=dt.getDay();
+      const h=HOLIDAYS_2026[dateStr];
+      const isHoliday=h&&h.type==='holiday';
+      const isWorkday=h&&h.type==='workday';
+      const isWeekend=(dow===0||dow===6)&&!isWorkday;
+      let label='';
+      if(isHoliday) label=h.name;
+      else if(isWorkday) label=h.name||'班';
+      else label=getLunarLabel(y,m+1,d);
+      days.push({date:d,isCurrent:true,isToday:d===now.getDate(),isWeekend:isWeekend&&!isHoliday,isHoliday,isWorkday,label});
+    }
+    calendarDays.value=days;
+  };
 
-const generateCalendar=()=>{
-  const now=new Date();
-  const y=now.getFullYear(),m=now.getMonth();
-  currentMonthName.value=`${y}年${m+1}月`;
-  todayDate.value=`${m+1}月${now.getDate()}日`;
-  const firstDay=new Date(y,m,1).getDay();
-  const daysInMonth=new Date(y,m+1,0).getDate();
-  const days=[];
-  for(let i=0;i<firstDay;i++)days.push({date:'',isCurrent:false});
-  for(let d=1;d<=daysInMonth;d++){
-    const dt=new Date(y,m,d);
-    const dateStr=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const dow=dt.getDay();
-    const h=HOLIDAYS_2026[dateStr];
-    const isHoliday=h&&h.type==='holiday';
-    const isWorkday=h&&h.type==='workday';
-    const isWeekend=(dow===0||dow===6)&&!isWorkday;
-    let label='';
-    if(isHoliday) label=h.name;
-    else if(isWorkday) label=h.name||'班';
-    else label=getLunarLabel(y,m+1,d);
-    days.push({date:d,isCurrent:true,isToday:d===now.getDate(),isWeekend:isWeekend&&!isHoliday,isHoliday,isWorkday,label});
-  }
-  calendarDays.value=days;
-};
+  const checkTime=()=>{const h=new Date().getHours();document.documentElement.classList.toggle('dark',h>=18||h<7)};
 
-const checkTime=()=>{const h=new Date().getHours();document.documentElement.classList.toggle('dark',h>=18||h<7)};
+  onMounted(async()=>{
+    checkTime();
+    document.documentElement.setAttribute('data-fontsize',fontSize.value);
+    setInterval(checkTime,60000);
+    generateCalendar();
+    await loadHeroes();
+  });
 
-onMounted(async()=>{
-  checkTime();
-  document.documentElement.setAttribute('data-fontsize',fontSize.value);
-  setInterval(checkTime,60000);
-  generateCalendar();
-  await loadHeroes();
-});
+  const doSearch=()=>{
+    const kw=searchKeyword.value.trim().toLowerCase();
+    if(!kw){searchResults.value=[];return}
+    const results=[];
+    projects.value.forEach(p=>{if(p.name.toLowerCase().includes(kw))results.push({type:'项目',title:p.name,projectId:p.id})});
+    todos.value.forEach(t=>{if(t.task.toLowerCase().includes(kw)||t.projectName.toLowerCase().includes(kw))results.push({type:'待办',title:t.task,projectId:t.projectId})});
+    searchResults.value=results.slice(0,20);
+  };
+  const goToResult=(r)=>{searchKeyword.value='';searchResults.value=[];goToProject(r.projectId)};
+  const groupedTodos=computed(()=>{const g={};todos.value.filter(t=>!t.done).forEach(t=>{if(!g[t.projectName])g[t.projectName]=[];g[t.projectName].push(t)});return g});
+  const doneTodos=computed(()=>todos.value.filter(t=>t.done));
+  const getDotColor=(todo)=>{if(todo.type==='design'||todo.type==='meeting')return 'dot-red';if(todo.type==='process')return 'dot-blue';if(todo.type==='contract')return 'dot-yellow';return 'dot-red'};
+  const getProjectStyle=(proj)=>{const c=projCategory[proj.id]||'other';return {background:categoryBgColor[c],borderLeft:'4px solid '+categoryBorderColor[c]}};
+  const getStageColor=(stage)=>stageColor[stage]||'bg-gray-100 text-gray-500';
+  const getProjStages=(proj)=>Array.isArray(proj.stage)?proj.stage:[proj.stage];
+  const getRingGray=(p)=>{if(p<25)return '#c8c8c8';if(p<50)return '#a0a0a0';if(p<75)return '#6b6b6b';return '#2a2a2a'};
 
-const doSearch=()=>{
-  const kw=searchKeyword.value.trim().toLowerCase();
-  if(!kw){searchResults.value=[];return}
-  const results=[];
-  projects.value.forEach(p=>{if(p.name.toLowerCase().includes(kw))results.push({type:'项目',title:p.name,projectId:p.id})});
-  todos.value.forEach(t=>{if(t.task.toLowerCase().includes(kw)||t.projectName.toLowerCase().includes(kw))results.push({type:'待办',title:t.task,projectId:t.projectId})});
-  searchResults.value=results.slice(0,20);
-};
-const goToResult=(r)=>{searchKeyword.value='';searchResults.value=[];goToProject(r.projectId)};
-const groupedTodos=computed(()=>{const g={};todos.value.filter(t=>!t.done).forEach(t=>{if(!g[t.projectName])g[t.projectName]=[];g[t.projectName].push(t)});return g});
-const doneTodos=computed(()=>todos.value.filter(t=>t.done));
-const getDotColor=(todo)=>{if(todo.type==='design'||todo.type==='meeting')return 'dot-red';if(todo.type==='process')return 'dot-blue';if(todo.type==='contract')return 'dot-yellow';return 'dot-red'};
-const getProjectStyle=(proj)=>{const c=projCategory[proj.id]||'other';return {background:categoryBgColor[c],borderLeft:'4px solid '+categoryBorderColor[c]}};
-const getStageColor=(stage)=>stageColor[stage]||'bg-gray-100 text-gray-500';
-const getProjStages=(proj)=>Array.isArray(proj.stage)?proj.stage:[proj.stage];
-const getRingGray=(p)=>{if(p<25)return '#c8c8c8';if(p<50)return '#a0a0a0';if(p<75)return '#6b6b6b';return '#2a2a2a'};
+  const saveData=()=>{localStorage.setItem('studio_projects',JSON.stringify(projects.value));localStorage.setItem('studio_todos',JSON.stringify(todos.value))};
+  const doLogin=()=>{if(loginPwd.value===ADMIN_PASSWORD){isAdmin.value=true;showLogin.value=false;loginPwd.value=''}else alert('密码错误')};
 
-const saveData=()=>{localStorage.setItem('studio_projects',JSON.stringify(projects.value));localStorage.setItem('studio_todos',JSON.stringify(todos.value))};
-const doLogin=()=>{if(loginPwd.value===ADMIN_PASSWORD){isAdmin.value=true;showLogin.value=false;loginPwd.value=''}else alert('密码错误')};
+  const addTodo=()=>{
+    if(!newTodo.value.task.trim())return alert('请填写待办内容');
+    const proj=projects.value.find(p=>p.id===newTodo.value.projectId);
+    todos.value.unshift({id:Date.now(),task:newTodo.value.task,projectId:newTodo.value.projectId,projectName:proj?proj.name:'未关联项目',type:newTodo.value.type,subTasks:[],done:false,owner:newTodo.value.owner,completedBy:'',link:''});
+    newTodo.value={task:'',projectId:'',owner:'',type:'design'};
+    showAddTodo.value=false;
+    saveData();
+  };
 
-const addTodo=()=>{
-  if(!newTodo.value.task.trim())return alert('请填写待办内容');
-  const proj=projects.value.find(p=>p.id===newTodo.value.projectId);
-  todos.value.unshift({id:Date.now(),task:newTodo.value.task,projectId:newTodo.value.projectId,projectName:proj?proj.name:'未关联项目',type:newTodo.value.type,subTasks:[],done:false,owner:newTodo.value.owner,completedBy:'',link:''});
-  newTodo.value={task:'',projectId:'',owner:'',type:'design'};
-  showAddTodo.value=false;
-  saveData();
-};
+  const toggleTodo=(todo)=>{
+    if(todo.done){
+      if(!confirm('恢复为未完成？')) return;
+      todo.done=false;todo.completedBy='';
+    }else{
+      todo.done=true;
+      todo.completedBy=prompt('请输入完成人姓名')||'未知';
+    }
+    saveData();
+  };
 
-const toggleTodo=(todo)=>{
-  if(todo.done){
-    if(!confirm('恢复为未完成？')) return;
-    todo.done=false;todo.completedBy='';
-  }else{
-    todo.done=true;
-    todo.completedBy=prompt('请输入完成人姓名')||'未知';
-  }
-  saveData();
-};
+  const deleteTodo=(todo)=>{if(!isAdmin.value)return alert('只有管理员才能删除');if(!confirm('确定删除？'))return;todos.value=todos.value.filter(t=>t.id!==todo.id);saveData()};
+  const editTodo=(todo)=>{editingTodo.value=JSON.parse(JSON.stringify(todo))};
+  const saveTodoEdit=()=>{const idx=todos.value.findIndex(t=>t.id===editingTodo.value.id);if(idx>=0)todos.value[idx]={...editingTodo.value};saveData();editingTodo.value=null};
 
-const deleteTodo=(todo)=>{if(!isAdmin.value)return alert('只有管理员才能删除');if(!confirm('确定删除？'))return;todos.value=todos.value.filter(t=>t.id!==todo.id);saveData()};
-const editTodo=(todo)=>{editingTodo.value=JSON.parse(JSON.stringify(todo))};
-const saveTodoEdit=()=>{const idx=todos.value.findIndex(t=>t.id===editingTodo.value.id);if(idx>=0)todos.value[idx]={...editingTodo.value};saveData();editingTodo.value=null};
+  const openLinkDialog=(target)=>{linkDialogTarget.value=target;linkDialogValue.value=target.link||''};
+  const saveLink=()=>{linkDialogTarget.value.link=linkDialogValue.value.trim();saveData();linkDialogTarget.value=null};
+  const deleteLink=()=>{if(!confirm('删除此链接？'))return;linkDialogTarget.value.link='';saveData();linkDialogTarget.value=null};
 
-const openLinkDialog=(target)=>{linkDialogTarget.value=target;linkDialogValue.value=target.link||''};
-const saveLink=()=>{linkDialogTarget.value.link=linkDialogValue.value.trim();saveData();linkDialogTarget.value=null};
-const deleteLink=()=>{if(!confirm('删除此链接？'))return;linkDialogTarget.value.link='';saveData();linkDialogTarget.value=null};
+  const addProject=()=>{
+    if(!newProject.value.name.trim())return alert('请填写项目名称');
+    projects.value.push({id:'proj-'+Date.now(),name:newProject.value.name,stage:[newProject.value.stage],owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7)});
+    newProject.value={name:'',stage:stages[0],owner:''};
+    showAddProject.value=false;
+    saveData();
+  };
 
-const addProject=()=>{
-  if(!newProject.value.name.trim())return alert('请填写项目名称');
-  projects.value.push({id:'proj-'+Date.now(),name:newProject.value.name,stage:[newProject.value.stage],owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7)});
-  newProject.value={name:'',stage:stages[0],owner:''};
-  showAddProject.value=false;
-  saveData();
-};
+  const goToProject=(projectId)=>{window.location.href=`./checklist.html?project=${projectId}`};
 
-const goToProject=(projectId)=>{window.location.href=`./checklist.html?project=${projectId}`};
-
-return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,linkDialogTarget,linkDialogValue,projects,groupedTodos,doneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,openLinkDialog,saveLink,deleteLink,addProject,goToProject,switchView,setFontSize,nextHero};
+  return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,linkDialogTarget,linkDialogValue,projects,groupedTodos,doneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,openLinkDialog,saveLink,deleteLink,addProject,goToProject,switchView,setFontSize,nextHero};
 }
 }).mount('#app');
 </script>
