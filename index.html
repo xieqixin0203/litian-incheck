@@ -9,29 +9,30 @@
 <style>
 :root{--bg:#eef1f6;--text:#2d3748;--card:#fff;--primary:#7b8bb8;--border:#d8dee9;--sidebar-bg:#3e4a6b;--sidebar-text:#e8ecf4;--sidebar-active:#5b6ba0;--dot-red:#c98a8a;--dot-blue:#8fa3c8;--dot-yellow:#d4c8a8}
 .dark{--bg:#1a1f2e;--text:#e8ecf4;--card:#252b3d;--primary:#8fa3c8;--border:#3a4258;--sidebar-bg:#141824;--sidebar-text:#a8b4d0;--sidebar-active:#3e4a6b;--dot-red:#d4a0a0;--dot-blue:#a8b8d8;--dot-yellow:#e0d4b0}
-body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0}
-.sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:240px;transition:.3s;display:flex;flex-direction:column;overflow-y:auto}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0;height:100vh;overflow:hidden}
+.sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:240px;transition:.3s;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
 .sidebar-nav a{display:block;padding:13px 22px;color:var(--sidebar-text);opacity:.75;transition:.2s;font-size:15px;border-left:3px solid transparent;text-decoration:none;cursor:pointer}
 .sidebar-nav a:hover{opacity:1;background:rgba(255,255,255,.05)}
 .sidebar-nav a.active{opacity:1;background:var(--sidebar-active);font-weight:bold;border-left-color:var(--sidebar-text)}
-.main-content{flex:1;padding:18px;overflow-y:auto;height:100vh}
+.main-content{flex:1;padding:16px;overflow:hidden;height:100vh;display:flex;flex-direction:column;gap:12px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px}
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
 .dot-red{background:var(--dot-red)}.dot-blue{background:var(--dot-blue)}.dot-yellow{background:var(--dot-yellow)}
 .modal-mask{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
 .ring-svg{transform:rotate(-90deg)}
-.scroll-area{max-height:260px;overflow-y:auto}
-.scroll-area::-webkit-scrollbar{width:5px}
-.scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 .stage-tag{font-size:10.5px;padding:2px 8px;border-radius:9999px;font-weight:500;display:inline-block}
-.hero-img-wrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:14px;overflow:hidden;cursor:pointer;background:#ddd}
+.hero-title{font-size:14px;font-weight:bold;margin-bottom:6px;letter-spacing:1px}
+.hero-img-wrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:12px;overflow:hidden;cursor:pointer;background:#ddd}
 .hero-img{width:100%;height:100%;object-fit:cover;transition:transform .3s;display:block}
 .hero-img-wrap:hover .hero-img{transform:scale(1.03)}
-.hero-plus{position:absolute;top:10px;left:10px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:300;pointer-events:none}
-.hero-meta{font-size:12px;line-height:1.6}
-.hero-meta .title{font-size:14px;font-weight:bold;margin-bottom:4px}
-.hero-meta .author{opacity:.7}
-.todo-row{font-size:12px}
+.hero-plus{position:absolute;top:10px;left:10px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:300;pointer-events:none}
+.hero-meta{font-size:11px;line-height:1.55;margin-top:8px}
+.hero-meta .author{opacity:.75}
+.todo-project-group{margin-bottom:10px}
+.todo-project-title{font-size:11px;font-weight:bold;opacity:.85;margin-bottom:4px;padding-left:2px;color:var(--primary)}
+.todo-row{font-size:12px;padding-left:12px;position:relative;display:flex;align-items:center;gap:6px;padding-top:3px;padding-bottom:3px;border-bottom:1px dashed var(--border)}
+.todo-row:last-child{border-bottom:none}
+.todo-row::before{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:var(--border)}
 .edit-btn{opacity:.4;transition:.2s}
 .todo-row:hover .edit-btn{opacity:1}
 .calendar-mini{background:rgba(0,0,0,.15);border-radius:10px;padding:10px;margin:0 10px 10px}
@@ -39,7 +40,10 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .calendar-mini .day{padding:2px 0;border-radius:3px;color:var(--sidebar-text);opacity:.7}
 .calendar-mini .day.today{background:var(--sidebar-text);color:var(--sidebar-bg);font-weight:bold;opacity:1}
 .calendar-mini .day.empty{opacity:.15}
-@media(max-width:768px){.sidebar{position:fixed;left:-240px;z-index:50;height:100vh}.sidebar.open{left:0}.main-content{padding:12px}}
+.scroll-area{flex:1;min-height:0;overflow-y:auto;padding-right:4px}
+.scroll-area::-webkit-scrollbar{width:5px}
+.scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:768px){.sidebar{position:fixed;left:-240px;z-index:50;height:100vh}.sidebar.open{left:0}.main-content{padding:10px}}
 </style>
 </head>
 <body>
@@ -73,7 +77,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </aside>
 
 <main class="main-content">
-<div class="flex items-center gap-3 mb-3">
+<div class="flex items-center gap-3 flex-shrink-0">
 <button @click="sidebarOpen=!sidebarOpen" class="md:hidden p-2 bg-[var(--card)] rounded-lg border border-[var(--border)]">☰</button>
 <div class="flex-1 relative">
 <input v-model="searchKeyword" @input="doSearch" placeholder="搜索项目、待办..." class="w-full px-4 py-2 rounded-xl border border-[var(--border)] bg-[var(--card)] text-sm focus:outline-none" style="color:var(--text)">
@@ -88,58 +92,59 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <button v-else @click="isAdmin=false" class="px-3 py-2 rounded-xl text-white text-sm whitespace-nowrap font-bold" style="background:var(--primary)">已登录</button>
 </div>
 
-<div v-if="currentView==='home'">
-<div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
-<!-- 左侧栏：hero + 最近待办 -->
-<div class="lg:col-span-2 space-y-3">
-<!-- Hero 图片 + 来历 -->
-<div class="card p-3">
+<!-- 主页 -->
+<div v-if="currentView==='home'" class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-5 gap-3">
+<!-- 左栏：hero + 最近待办 -->
+<div class="lg:col-span-2 flex flex-col gap-3 min-h-0">
+<!-- Hero -->
+<div class="card p-3 flex-shrink-0">
+<div class="hero-title">精神零食</div>
 <div class="flex gap-3">
-<div class="hero-img-wrap" style="flex:0 0 60%" @click="pickHero">
+<div class="hero-img-wrap" style="flex:0 0 58%" @click="pickHero">
 <img :src="heroImage" alt="Inspiration" class="hero-img">
 <div class="hero-plus">+</div>
 <input ref="heroInput" type="file" accept="image/*" class="hidden" @change="uploadHero">
 </div>
-<div class="flex-1 min-w-0 flex flex-col">
+<div class="flex-1 min-w-0">
 <div class="hero-meta">
-<div class="title" contenteditable="true" @blur="saveHeroMeta('title',$event)">{{ heroMeta.title }}</div>
+<div class="font-bold" contenteditable="true" @blur="saveHeroMeta('title',$event)">{{ heroMeta.title }}</div>
 <div class="author" contenteditable="true" @blur="saveHeroMeta('author',$event)">{{ heroMeta.author }}</div>
 <div class="author" contenteditable="true" @blur="saveHeroMeta('year',$event)">{{ heroMeta.year }}</div>
 </div>
 </div>
 </div>
 </div>
-
-<!-- 最近待办（紧凑） -->
-<div class="card p-3">
-<div class="flex justify-between items-center mb-2">
+<!-- 最近待办（占满剩余空间） -->
+<div class="card p-3 flex-1 min-h-0 flex flex-col">
+<div class="flex justify-between items-center mb-2 flex-shrink-0">
 <h3 class="font-bold text-sm">最近待办</h3>
 <button @click="switchView('todos')" class="text-xs hover:underline" style="color:var(--primary)">全部</button>
 </div>
-<div class="scroll-area space-y-0 pr-1">
-<div v-for="todo in pendingTodos" :key="todo.id" class="todo-row flex items-center gap-1.5 py-1 border-b border-[var(--border)] last:border-0">
+<div class="scroll-area">
+<div v-for="(group,projName) in groupedTodos" :key="projName" class="todo-project-group">
+<div class="todo-project-title">{{ projName }}</div>
+<div v-for="todo in group" :key="todo.id" class="todo-row">
 <span class="dot" :class="getDotColor(todo)"></span>
 <input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="w-3 h-3 cursor-pointer flex-shrink-0">
-<div class="flex-1 min-w-0 flex items-center gap-1.5">
-<span class="font-medium truncate">{{ todo.task }}</span>
-<span class="text-[10px] opacity-60 truncate">· {{ todo.projectName }}</span>
+<span class="font-medium truncate flex-1">{{ todo.task }}</span>
 <span class="text-[10px] opacity-60 truncate">· {{ todo.owner||'未指定' }}</span>
-</div>
 <button @click="editTodo(todo)" class="edit-btn text-xs p-0.5" style="color:var(--primary)">✎</button>
 </div>
 </div>
 </div>
 </div>
+</div>
 
-<!-- 右侧栏：项目进度（大区域） -->
-<div class="lg:col-span-3">
-<h3 class="font-bold text-sm mb-2">项目进度</h3>
+<!-- 右栏：项目进度 -->
+<div class="lg:col-span-3 flex flex-col min-h-0">
+<h3 class="font-bold text-sm mb-2 flex-shrink-0">项目进度</h3>
+<div class="flex-1 min-h-0 overflow-y-auto pr-1">
 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 <div v-for="proj in projects" :key="proj.id" class="card p-3 cursor-pointer transition flex items-center gap-3" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
 <div class="relative w-14 h-14 flex-shrink-0">
 <svg class="ring-svg w-14 h-14" viewBox="0 0 36 36">
 <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e5e7eb" stroke-width="3"></circle>
-<circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3" stroke="#1a1a1a" :stroke-dasharray="100" :stroke-dashoffset="100-proj.progress" stroke-linecap="round"></circle>
+<circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3" :stroke="getRingGray(proj.progress)" :stroke-dasharray="100" :stroke-dashoffset="100-proj.progress" stroke-linecap="round"></circle>
 </svg>
 <div class="absolute inset-0 flex items-center justify-center text-xs font-bold" style="color:var(--text)">{{ proj.progress }}%</div>
 </div>
@@ -154,21 +159,22 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
-<div v-if="currentView==='todos'">
+<!-- 最近待办详情页 -->
+<div v-if="currentView==='todos'" class="flex-1 min-h-0 overflow-y-auto">
 <div class="flex justify-between items-center mb-4">
 <h1 class="text-xl font-bold">最近待办</h1>
 <button @click="showAddTodo=true" class="px-4 py-2 rounded-lg text-sm text-white" style="background:var(--primary)">+ 新建待办</button>
 </div>
 <div class="space-y-3">
 <div v-for="(group,projName) in groupedTodos" :key="projName" class="card p-4">
-<div class="font-bold text-sm mb-3 pb-2 border-b border-[var(--border)]">{{ projName }}</div>
+<div class="todo-project-title" style="font-size:13px;margin-bottom:8px">{{ projName }}</div>
 <div class="space-y-2">
 <div v-for="todo in group" :key="todo.id" class="text-[13px] flex items-start gap-2">
 <span class="dot mt-1.5" :class="getDotColor(todo)"></span>
 <input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="mt-0.5 w-4 h-4 cursor-pointer flex-shrink-0">
 <div class="flex-1">
 <span :class="{'line-through opacity-50':todo.done}" class="font-medium">{{ todo.task }}</span>
-<span class="text-[11px] opacity-60 ml-2">👤 {{ todo.owner||'未指定' }}</span>
+<span class="text-[11px] opacity-60 ml-2">· {{ todo.owner||'未指定' }}</span>
 <div v-if="todo.subTasks&&todo.subTasks.length" class="mt-1 opacity-75 space-y-0.5">
 <div v-for="(sub,idx) in todo.subTasks" :key="idx" class="flex items-start gap-1 ml-1">
 <span class="opacity-50">{{ String.fromCharCode(97+idx) }}.</span>
@@ -193,7 +199,8 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
-<div v-if="currentView==='projects'">
+<!-- 项目总览 -->
+<div v-if="currentView==='projects'" class="flex-1 min-h-0 overflow-y-auto">
 <div class="flex justify-between items-center mb-4">
 <h1 class="text-xl font-bold">项目总览</h1>
 <button v-if="isAdmin" @click="showAddProject=true" class="px-4 py-2 rounded-lg text-sm text-white" style="background:var(--primary)">+ 新建项目</button>
@@ -214,7 +221,8 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
-<div v-if="currentView==='memo'">
+<!-- 备忘录 -->
+<div v-if="currentView==='memo'" class="flex-1 min-h-0 overflow-y-auto">
 <h1 class="text-xl font-bold mb-4">工作室备忘录</h1>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <div class="card p-5"><h3 class="font-bold text-sm">SketchUp 建模规范</h3><p class="text-xs opacity-70 mt-1">圆弧段数、组件命名、清理标准</p></div>
@@ -224,12 +232,14 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
-<div v-if="currentView==='settings'">
+<!-- 设置 -->
+<div v-if="currentView==='settings'" class="flex-1 min-h-0 overflow-y-auto">
 <h1 class="text-xl font-bold mb-4">设置</h1>
 <div class="card p-5"><p class="text-sm opacity-70">系统设置功能待开发...</p></div>
 </div>
 </main>
 
+<!-- 登录 -->
 <div v-if="showLogin" class="modal-mask" @click.self="showLogin=false">
 <div class="card p-6 w-full max-w-sm">
 <h3 class="font-bold text-lg mb-4">管理员登录</h3>
@@ -241,6 +251,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
+<!-- 编辑待办 -->
 <div v-if="editingTodo" class="modal-mask" @click.self="editingTodo=null">
 <div class="card p-6 w-full max-w-md">
 <h3 class="font-bold text-lg mb-4">编辑待办</h3>
@@ -260,6 +271,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
+<!-- 新建待办 -->
 <div v-if="showAddTodo" class="modal-mask" @click.self="showAddTodo=false">
 <div class="card p-6 w-full max-w-md">
 <h3 class="font-bold text-lg mb-4">新建待办</h3>
@@ -283,6 +295,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
+<!-- 新建项目 -->
 <div v-if="showAddProject" class="modal-mask" @click.self="showAddProject=false">
 <div class="card p-6 w-full max-w-md">
 <h3 class="font-bold text-lg mb-4">新建项目</h3>
@@ -345,11 +358,7 @@ const defaultTodos=[
 {id:15,projectName:'方普',projectId:'fp',task:'9月29日带甲方走实地项目',type:'design',subTasks:[],done:false,owner:'刘文辉,谢启欣'}
 ];
 
-const defaultHeroMeta={
-title:'《康乃馨、百合、百合、玫瑰》',
-author:'Carnation, Lily, Lily, Rose',
-year:'1885—1886年，美国画家约翰·辛格·萨金特'
-};
+const defaultHeroMeta={title:'《康乃馨、百合、百合、玫瑰》',author:'Carnation, Lily, Lily, Rose',year:'1885—1886年，美国画家约翰·辛格·萨金特'};
 
 createApp({
 setup(){
@@ -419,6 +428,12 @@ const doneTodos=computed(()=>todos.value.filter(t=>t.done));
 const getDotColor=(todo)=>{if(todo.type==='design'||todo.type==='meeting')return 'dot-red';if(todo.type==='process')return 'dot-blue';if(todo.type==='contract')return 'dot-yellow';return 'dot-red'};
 const getProjectStyle=(proj)=>{const c=projCategory[proj.id]||'other';return {background:categoryBgColor[c],borderLeft:'4px solid '+categoryBorderColor[c]}};
 const getStageColor=(stage)=>stageColor[stage]||'bg-gray-100 text-gray-500';
+const getRingGray=(progress)=>{
+if(progress<25)return '#c8c8c8';
+if(progress<50)return '#a0a0a0';
+if(progress<75)return '#6b6b6b';
+return '#2a2a2a';
+};
 const saveData=()=>{localStorage.setItem('studio_projects',JSON.stringify(projects.value));localStorage.setItem('studio_todos',JSON.stringify(todos.value))};
 const doLogin=()=>{if(loginPwd.value===ADMIN_PASSWORD){isAdmin.value=true;showLogin.value=false;loginPwd.value=''}else alert('密码错误')};
 const addTodo=()=>{
@@ -437,7 +452,7 @@ projects.value.push({id:'proj-'+Date.now(),name:newProject.value.name,stage:newP
 newProject.value={name:'',stage:stages[0],owner:''};showAddProject.value=false;saveData();
 };
 const goToProject=(projectId)=>{window.location.href=`./checklist.html?project=${projectId}`};
-return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,projects,groupedTodos,pendingTodos,doneTodos,newTodo,newProject,heroImage,heroInput,heroMeta,currentMonthName,todayDate,calendarDays,members,stages,getDotColor,getProjectStyle,getStageColor,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,addProject,goToProject,switchView,pickHero,uploadHero,saveHeroMeta};
+return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,projects,groupedTodos,pendingTodos,doneTodos,newTodo,newProject,heroImage,heroInput,heroMeta,currentMonthName,todayDate,calendarDays,members,stages,getDotColor,getProjectStyle,getStageColor,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,addProject,goToProject,switchView,pickHero,uploadHero,saveHeroMeta};
 }
 }).mount('#app');
 </script>

@@ -7,14 +7,14 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <style>
-:root{--bg:#eef1f6;--text:#2d3748;--card:#fff;--primary:#7b8bb8;--border:#d8dee9;--completed-bg:#c3ccd9;--future-bg:#5a6678;--future-text:#e8ecf4}
-.dark{--bg:#1a1f2e;--text:#e8ecf4;--card:#252b3d;--primary:#8fa3c8;--border:#3a4258;--completed-bg:#2a3040;--future-bg:#0f1320;--future-text:#6b7590}
+:root{--bg:#eef1f6;--text:#2d3748;--card:#fff;--primary:#7b8bb8;--border:#d8dee9;--completed-bg:#c8d0dc;--future-bg:#5a6678;--future-text:#e8ecf4}
+.dark{--bg:#1a1f2e;--text:#e8ecf4;--card:#252b3d;--primary:#8fa3c8;--border:#3a4258;--completed-bg:#3a4258;--future-bg:#0f1320;--future-text:#6b7590}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0}
 .group-header{cursor:pointer;user-select:none}
-.stage-completed{background:var(--completed-bg) !important;opacity:.85}
-.stage-future{background:var(--future-bg) !important;color:var(--future-text) !important}
-.stage-future .group-title{color:var(--future-text) !important}
-.stage-future .stage-count{background:rgba(255,255,255,.1) !important;color:var(--future-text) !important}
+.stage-completed{background:var(--completed-bg) !important;opacity:.7}
+.stage-future{background:var(--future-bg) !important}
+.stage-future .group-title,.stage-future .stage-count{color:var(--future-text) !important}
+.stage-current{background:var(--card) !important;border-left:4px solid var(--primary) !important}
 .check-row{line-height:1.4}
 select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 .dark select{background-color:#252b3d}
@@ -22,15 +22,15 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 </style>
 </head>
 <body>
-<div id="app" class="max-w-5xl mx-auto p-3 pb-28">
+<div id="app" class="max-w-5xl mx-auto p-3 pb-8">
 <header class="mb-4 p-4 rounded-2xl shadow-sm" style="background:var(--card);border:1px solid var(--border)">
 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
 <div>
 <h1 class="text-xl font-bold">项目检查清单</h1>
 <p class="text-sm mt-0.5 opacity-80 font-medium">
 项目：<span class="font-bold" style="color:var(--primary)">{{ currentProject }}</span> ·
-进度：<span class="font-bold">{{ doneCount }}/{{ totalCount }}</span> ·
-不合格：<span class="font-bold text-red-500">{{ unqualifiedItems.length }}</span>
+当前阶段：<span class="font-bold">{{ projectStage }}</span> ·
+进度：<span class="font-bold">{{ doneCount }}/{{ totalCount }}</span>
 <span v-if="loading" class="ml-2 text-orange-500">（云端加载中…）</span>
 </p>
 </div>
@@ -68,18 +68,14 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 <div v-for="(group,stageName) in groupedChecks" :key="stageName"
      class="rounded-xl shadow-sm overflow-hidden"
      style="border:1px solid var(--border)"
-     :class="getStageClass(stageName)"
-     :style="getStageStyle(stageName)">
+     :class="getStageClass(stageName)">
 <div class="group-header px-4 py-3 flex items-center justify-between transition" @click="toggleGroup(stageName)">
 <div class="flex items-center gap-2 flex-wrap">
 <span class="text-base font-bold group-title">{{ stageName }}</span>
 <span class="text-xs px-2 py-0.5 rounded-full font-medium stage-count" style="background:rgba(0,0,0,.06)">
 {{ group.filter(i=>i.status==='合格').length }}/{{ group.length }}
 </span>
-<span v-if="group.filter(i=>i.status==='不合格').length>0" class="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold">
-{{ group.filter(i=>i.status==='不合格').length }} 不合格
-</span>
-<span v-if="isCurrentStage(stageName)" class="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-bold">当前阶段</span>
+<span v-if="stageName===projectStage" class="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-bold">当前阶段</span>
 <span v-if="group.length===0" class="text-xs opacity-50">（暂无检查项）</span>
 </div>
 <span class="text-sm opacity-60">{{ openGroups[stageName]?'▼':'▶' }}</span>
@@ -89,8 +85,7 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 <div class="flex items-center gap-3">
 <div class="flex-1 min-w-0">
 <div class="flex items-center gap-2 flex-wrap">
-<span class="text-xs px-1.5 py-0.5 rounded font-bold flex-shrink-0"
-:class="item.level==='P0'?'bg-red-100 text-red-700':'bg-orange-100 text-orange-700'">{{ item.level }}</span>
+<span class="text-xs px-1.5 py-0.5 rounded font-bold flex-shrink-0" :class="item.level==='P0'?'bg-red-100 text-red-700':'bg-orange-100 text-orange-700'">{{ item.level }}</span>
 <span class="text-sm font-medium truncate check-row">{{ item.item }}</span>
 </div>
 <div class="text-xs opacity-70 truncate mt-0.5">{{ item.standard }}</div>
@@ -106,10 +101,7 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 </div>
 </div>
 </div>
-<select v-model="item.status" @change="saveData"
-class="text-xs border rounded px-1.5 py-1 flex-shrink-0 font-medium"
-style="border-color:var(--border)"
-:class="{'text-green-600 font-bold':item.status==='合格','text-red-600 font-bold':item.status==='不合格','text-blue-600':item.status==='进行中','opacity-60':item.status==='待检'}">
+<select v-model="item.status" @change="saveData" class="text-xs border rounded px-1.5 py-1 flex-shrink-0 font-medium" style="border-color:var(--border)" :class="{'text-green-600 font-bold':item.status==='合格','text-red-600 font-bold':item.status==='不合格','text-blue-600':item.status==='进行中','opacity-60':item.status==='待检'}">
 <option value="待检">待检</option>
 <option value="进行中">进行中</option>
 <option value="合格">合格</option>
@@ -121,18 +113,6 @@ style="border-color:var(--border)"
 </div>
 </div>
 </div>
-
-<div v-if="unqualifiedItems.length>0" class="fixed bottom-0 left-0 w-full border-t-2 border-red-300 shadow-2xl p-4 max-w-5xl mx-auto rounded-t-2xl" style="background:var(--card)">
-<div class="flex items-center justify-between mb-2">
-<h3 class="font-bold text-red-600 text-sm">不合格项汇总 ({{ unqualifiedItems.length }})</h3>
-<button @click="showUnqualified=!showUnqualified" class="text-sm opacity-60">{{ showUnqualified?'收起':'展开' }}</button>
-</div>
-<ul v-show="showUnqualified" class="text-xs opacity-80 max-h-32 overflow-y-auto list-disc pl-4 space-y-1">
-<li v-for="item in unqualifiedItems" :key="item.id" class="truncate">
-<span class="font-mono opacity-50">{{ item.id }}</span> {{ item.item }}
-</li>
-</ul>
-</div>
 </div>
 
 <script>
@@ -140,6 +120,24 @@ const {createApp,ref,computed,onMounted}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const projectNameMap={'sl4':'申菱四基地','slzb':'申菱总部改造','sl5':'申菱五基地','slgz':'申菱高州二期','prsp':'屏荣食品顺德新厂','yj':'远江幕墙南海新厂','whg':'顺德文化馆修缮活化','stc':'顺德糖厂','skwj':'顺控危旧房','spmy':'升平名扬里历史街区一期','fp':'方普','rk':'容控小地块厂房加商业','sq':'社-顺德本土文化策展'};
 const stageOrder=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
+
+// 每个项目当前所处的阶段
+const projectStageMap={
+'sl4':'三、方案深化',
+'slzb':'八、施工中',
+'sl5':'一、前期强排',
+'slgz':'八、施工中',
+'prsp':'四、报建图',
+'yj':'八、施工中',
+'whg':'四、报建图',
+'stc':'四、报建图',
+'skwj':'五、施工图（含幕墙深化）',
+'spmy':'八、施工中',
+'fp':'一、前期强排',
+'rk':'一、前期强排',
+'sq':'三、方案深化'
+};
+
 const seedData=[
 {id:'CHK-PRE-001',stage:'一、前期强排',item:'机动车出入口设置要求',standard:'结合规划条件，核实与路口距离',level:'P0',owner:'刘文辉'},
 {id:'CHK-PRE-002',stage:'一、前期强排',item:'室外地坪标高（国家高程）',standard:'结合周边路网与市政标高',level:'P0',owner:'刘文辉'},
@@ -265,8 +263,9 @@ const urlParams=new URLSearchParams(window.location.search);
 const urlProject=urlParams.get('project')||'sl4';
 const currentProject=ref(projectNameMap[urlProject]||urlProject);
 const projectKey=urlProject;
+// 从映射表读取当前阶段
+const projectStage=ref(projectStageMap[urlProject]||'一、前期强排');
 const openGroups=ref({});
-const showUnqualified=ref(false);
 const fileInput=ref(null);
 const loading=ref(true);
 const checks=ref(initData());
@@ -281,7 +280,6 @@ try{await fetch(`/api/sync?project=${projectKey}`,{method:'POST',headers:{'Conte
 };
 const saveData=()=>{saveToCloud()};
 
-// 关键修改：强制列出八个阶段，即使没有检查项
 const groupedChecks=computed(()=>{
 const groups={};
 checks.value.forEach(item=>{if(!groups[item.stage])groups[item.stage]=[];groups[item.stage].push(item)});
@@ -290,41 +288,23 @@ stageOrder.forEach(s=>{sorted[s]=groups[s]||[]});
 return sorted;
 });
 
-// 当前阶段 = 第一个有未完成项的阶段，如果没有则取最后一个
-const currentStage=computed(()=>{
-for(const s of stageOrder){
-const group=groupedChecks.value[s];
-if(!group||group.length===0)continue;
-if(group.some(i=>i.status!=='合格'))return s;
-}
-return stageOrder[stageOrder.length-1];
-});
-const isCurrentStage=(s)=>s===currentStage.value;
+// 根据项目当前阶段确定打开哪个
+const initOpenGroups=()=>{
+stageOrder.forEach(s=>{openGroups.value[s]=(s===projectStage.value)});
+};
 
+// 阶段样式：前面=已完成浅灰，当前=高亮，后面=深灰
 const getStageClass=(s)=>{
-const curIdx=stageOrder.indexOf(currentStage.value);
+const curIdx=stageOrder.indexOf(projectStage.value);
 const thisIdx=stageOrder.indexOf(s);
-const group=groupedChecks.value[s];
 if(thisIdx<curIdx)return 'stage-completed';
 if(thisIdx>curIdx)return 'stage-future';
-return '';
-};
-const getStageStyle=(s)=>{
-const curIdx=stageOrder.indexOf(currentStage.value);
-const thisIdx=stageOrder.indexOf(s);
-if(thisIdx===curIdx)return {background:'var(--card)'};
-return {};
-};
-
-const initOpenGroups=()=>{
-const cur=currentStage.value;
-stageOrder.forEach(s=>{openGroups.value[s]=(s===cur)});
+return 'stage-current';
 };
 
 const totalCount=computed(()=>checks.value.length);
 const doneCount=computed(()=>checks.value.filter(i=>i.status==='合格').length);
 const progressPercent=computed(()=>totalCount.value===0?0:Math.round(doneCount.value/totalCount.value*100));
-const unqualifiedItems=computed(()=>checks.value.filter(i=>i.status==='不合格'));
 const toggleGroup=(name)=>{openGroups.value[name]=!openGroups.value[name]};
 const exportData=()=>{
 const data={project:currentProject.value,projectKey,checks:checks.value};
@@ -342,7 +322,7 @@ try{const data=JSON.parse(ev.target.result);if(data.checks&&Array.isArray(data.c
 reader.readAsText(file);
 };
 onMounted(async()=>{await loadFromCloud();initOpenGroups()});
-return{currentProject,groupedChecks,openGroups,showUnqualified,fileInput,loading,totalCount,doneCount,progressPercent,unqualifiedItems,currentStage,isCurrentStage,getStageClass,getStageStyle,toggleGroup,saveData,exportData,importData,handleImport,members,projContracted};
+return{currentProject,projectStage,groupedChecks,openGroups,fileInput,loading,totalCount,doneCount,progressPercent,getStageClass,toggleGroup,saveData,exportData,importData,handleImport,members,projContracted};
 }
 }).mount('#app');
 </script>
