@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>项目检查清单</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
 <style>
 :root{--bg:#eef1f6;--text:#2d3748;--card:#fff;--primary:#7b8bb8;--border:#d8dee9;--completed-bg:#c8d0dc;--future-bg:#5a6678;--future-text:#e8ecf4}
 .dark{--bg:#1a1f2e;--text:#e8ecf4;--card:#252b3d;--primary:#8fa3c8;--border:#3a4258;--completed-bg:#3a4258;--future-bg:#0f1320;--future-text:#6b7590}
@@ -233,7 +233,7 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 </div>
 
 <!-- ============ 会议编辑模态框 ============ -->
-<div v-if="showMeetingModal" class="modal-mask" @click.self="closeMeetingModal">
+<div v-show="showMeetingModal" class="modal-mask" style="display:none" @click.self="closeMeetingModal">
 <div class="modal-box">
 <h3 class="font-bold text-lg mb-4">{{ editingMeetingId ? '编辑会议纪要' : '新增会议纪要' }}</h3>
 
