@@ -9,31 +9,37 @@
     <style>
         :root {
             --bg: #e3edf6; --text: #1b3554; --card: #ffffff; --primary: #85a5cc; --border: #bdd0e5;
-            --dot-red: #e53e3e; --dot-blue: #3182ce; --dot-yellow: #ecc94b;
             --sidebar-bg: #1b3554; --sidebar-text: #e3edf6;
+            --dot-red: #e53e3e; --dot-blue: #3182ce; --dot-yellow: #ecc94b;
         }
         .dark {
             --bg: #000f22; --text: #c0e6fd; --card: #1b3554; --primary: #80aad3; --border: #3f6593;
-            --dot-red: #fc8181; --dot-blue: #63b3ed; --dot-yellow: #f6e05e;
             --sidebar-bg: #000f22; --sidebar-text: #80aad3;
+            --dot-red: #fc8181; --dot-blue: #63b3ed; --dot-yellow: #f6e05e;
         }
         body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; }
-        .sidebar { background: var(--sidebar-bg); color: var(--sidebar-text); width: 260px; transition: 0.3s; }
-        .sidebar a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: var(--sidebar-text); opacity: 0.8; transition: 0.2s; border-radius: 8px; margin: 4px 10px; }
+        .sidebar { background: var(--sidebar-bg); color: var(--sidebar-text); width: 240px; transition: 0.3s; }
+        .sidebar a { display: block; padding: 12px 24px; color: var(--sidebar-text); opacity: 0.75; transition: 0.2s; font-size: 15px; }
         .sidebar a:hover, .sidebar a.active { opacity: 1; background: rgba(255,255,255,0.1); font-weight: bold; }
-        .main-content { flex: 1; padding: 24px; overflow-y: auto; height: 100vh; }
+        .main-content { flex: 1; padding: 20px; overflow-y: auto; height: 100vh; }
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; }
         .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
         .dot-red { background: var(--dot-red); }
         .dot-blue { background: var(--dot-blue); }
         .dot-yellow { background: var(--dot-yellow); }
-        .todo-item { font-size: 13px; line-height: 1.4; }
-        .todo-sub { font-size: 12px; opacity: 0.8; margin-left: 16px; margin-top: 4px; }
         .modal-mask { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .ring-svg { transform: rotate(-90deg); }
+        .ring-bg { stroke: var(--border); }
+        .ring-fg { stroke: var(--primary); transition: stroke-dashoffset 0.5s; }
+        .scroll-area { max-height: 220px; overflow-y: auto; }
+        .scroll-area::-webkit-scrollbar { width: 6px; }
+        .scroll-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        .proj-name { font-size: 15px; }
+        .stage-tag { font-size: 11px; padding: 2px 8px; border-radius: 9999px; font-weight: 500; }
         @media (max-width: 768px) {
-            .sidebar { position: fixed; left: -260px; z-index: 50; height: 100vh; }
+            .sidebar { position: fixed; left: -240px; z-index: 50; height: 100vh; }
             .sidebar.open { left: 0; }
-            .main-content { padding: 16px; }
+            .main-content { padding: 12px; }
         }
     </style>
 </head>
@@ -41,51 +47,101 @@
     <div id="app" class="flex h-screen overflow-hidden">
         <!-- 侧边栏 -->
         <aside class="sidebar" :class="{'open': sidebarOpen}">
-            <div class="p-5 border-b border-white/10">
-                <h1 class="text-lg font-bold">立田工作室</h1>
-                <h2 class="text-sm opacity-80">项目指挥台</h2>
+            <div class="p-6 border-b border-white/10">
+                <h1 class="text-2xl font-bold leading-tight">立田工作室</h1>
+                <h2 class="text-base opacity-80 mt-1">项目指挥台</h2>
             </div>
-            <nav class="py-4 space-y-1">
-                <a href="#" @click.prevent="currentView='home'" :class="{'active': currentView==='home'}">🏠 主页</a>
-                <a href="#" @click.prevent="currentView='todos'" :class="{'active': currentView==='todos'}">📌 最近待办</a>
-                <a href="#" @click.prevent="currentView='projects'" :class="{'active': currentView==='projects'}">🗂️ 项目总览</a>
-                <a href="#" @click.prevent="currentView='memo'" :class="{'active': currentView==='memo'}">📎 备忘录</a>
-                <a href="https://pan.tencent.com" target="_blank">📁 云盘</a>
-                <a href="https://chat.deepseek.com" target="_blank">🤖 DeepSeek</a>
-                <a href="#" @click.prevent="currentView='settings'" :class="{'active': currentView==='settings'}">⚙️ 设置</a>
+            <nav class="py-4">
+                <a href="#" @click.prevent="currentView='home'; sidebarOpen=false" :class="{'active': currentView==='home'}">主页</a>
+                <a href="#" @click.prevent="currentView='todos'; sidebarOpen=false" :class="{'active': currentView==='todos'}">最近待办</a>
+                <a href="#" @click.prevent="currentView='projects'; sidebarOpen=false" :class="{'active': currentView==='projects'}">项目总览</a>
+                <a href="#" @click.prevent="currentView='memo'; sidebarOpen=false" :class="{'active': currentView==='memo'}">备忘录</a>
+                <a href="https://pan.tencent.com" target="_blank">云盘</a>
+                <a href="https://chat.deepseek.com" target="_blank">DeepSeek</a>
+                <a href="#" @click.prevent="currentView='settings'; sidebarOpen=false" :class="{'active': currentView==='settings'}">设置</a>
             </nav>
         </aside>
 
         <!-- 主内容区 -->
         <main class="main-content">
-            <!-- 移动端顶部栏 -->
-            <div class="md:hidden flex items-center gap-3 mb-4">
-                <button @click="sidebarOpen = !sidebarOpen" class="p-2 bg-[var(--card)] rounded-lg border border-[var(--border)]">☰</button>
-                <h1 class="font-bold text-lg">立田工作室</h1>
+            <!-- 顶部栏：移动端菜单 + 搜索 + 管理员 -->
+            <div class="flex items-center gap-3 mb-4">
+                <button @click="sidebarOpen = !sidebarOpen" class="md:hidden p-2 bg-[var(--card)] rounded-lg border border-[var(--border)]">☰</button>
+                <div class="flex-1 relative">
+                    <input v-model="searchKeyword" @input="doSearch" placeholder="搜索项目、待办、检查项..." class="w-full px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                    <!-- 搜索结果下拉 -->
+                    <div v-if="searchResults.length > 0 && searchKeyword" class="absolute top-full left-0 right-0 mt-2 card p-3 max-h-80 overflow-y-auto z-40 shadow-xl">
+                        <div v-for="(r, idx) in searchResults" :key="idx" class="py-2 border-b border-[var(--border)] last:border-0 cursor-pointer hover:opacity-80" @click="goToResult(r)">
+                            <div class="text-xs opacity-50">{{ r.type }}</div>
+                            <div class="text-sm font-medium">{{ r.title }}</div>
+                            <div v-if="r.desc" class="text-xs opacity-70 truncate">{{ r.desc }}</div>
+                        </div>
+                    </div>
+                </div>
+                <button v-if="!isAdmin" @click="showLogin = true" class="px-3 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm whitespace-nowrap">🔑 管理员</button>
+                <button v-else @click="isAdmin = false" class="px-3 py-2.5 rounded-xl bg-green-100 text-green-700 text-sm whitespace-nowrap font-bold">已登录</button>
             </div>
 
             <!-- 1. 主页 -->
             <div v-if="currentView === 'home'">
-                <h1 class="text-2xl font-bold mb-6">主页概览</h1>
-                <!-- 日历 -->
-                <div class="card p-5 mb-6">
-                    <h3 class="font-bold mb-3">📅 {{ currentMonthName }}</h3>
-                    <div class="grid grid-cols-7 gap-1 text-center text-sm">
-                        <div v-for="d in ['日','一','二','三','四','五','六']" :key="d" class="font-bold opacity-60 py-1">{{ d }}</div>
-                        <div v-for="(day, idx) in calendarDays" :key="idx" class="py-2 rounded" :class="{'bg-[var(--primary)] text-white': day.isToday, 'opacity-30': !day.isCurrent}">{{ day.date }}</div>
-                    </div>
-                </div>
-                <!-- 项目进度条 -->
-                <div class="card p-5">
-                    <h3 class="font-bold mb-3">📊 项目进度</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- 左栏：日历 + 最近待办 -->
                     <div class="space-y-4">
-                        <div v-for="proj in projects" :key="proj.id">
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="font-medium">{{ proj.name }}</span>
-                                <span class="opacity-70">{{ proj.stage }}</span>
+                        <!-- 日历 -->
+                        <div class="card p-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-bold text-sm">{{ currentMonthName }}</h3>
+                                <span class="text-xs opacity-60">今日 {{ todayDate }}</span>
                             </div>
-                            <div class="w-full bg-[var(--border)] rounded-full h-2">
-                                <div class="h-2 rounded-full" :style="{ width: proj.progress + '%', background: 'var(--primary)' }"></div>
+                            <div class="grid grid-cols-7 gap-0.5 text-center text-xs">
+                                <div v-for="d in ['日','一','二','三','四','五','六']" :key="d" class="font-bold opacity-50 py-1">{{ d }}</div>
+                                <div v-for="(day, idx) in calendarDays" :key="idx" class="py-1.5 rounded text-xs" :class="{'bg-[var(--primary)] text-white font-bold': day.isToday, 'opacity-20': !day.isCurrent}">{{ day.date }}</div>
+                            </div>
+                        </div>
+
+                        <!-- 最近待办（滚动区） -->
+                        <div class="card p-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-bold text-sm">📌 最近待办</h3>
+                                <button @click="currentView='todos'" class="text-xs text-blue-500 hover:underline">全部</button>
+                            </div>
+                            <div class="scroll-area space-y-2 pr-1">
+                                <div v-for="todo in pendingTodos.slice(0, 20)" :key="todo.id" class="flex items-start gap-2 text-xs">
+                                    <span class="dot mt-1.5" :class="getDotColor(todo)"></span>
+                                    <input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="mt-0.5 w-3.5 h-3.5 accent-[var(--primary)] cursor-pointer flex-shrink-0">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="truncate font-medium">{{ todo.task }}</div>
+                                        <div class="opacity-60 truncate">{{ todo.projectName }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右栏：项目进度卡片 -->
+                    <div class="lg:col-span-2">
+                        <h3 class="font-bold text-sm mb-3">📊 项目进度</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div v-for="proj in projects" :key="proj.id" 
+                                 class="card p-4 cursor-pointer hover:shadow-lg transition flex items-center gap-4"
+                                 :class="getProjectBg(proj)"
+                                 @click="goToProject(proj.id)">
+                                <!-- 圆环进度 -->
+                                <div class="relative w-16 h-16 flex-shrink-0">
+                                    <svg class="ring-svg w-16 h-16" viewBox="0 0 36 36">
+                                        <circle class="ring-bg" cx="18" cy="18" r="15.9" fill="none" stroke-width="3"></circle>
+                                        <circle class="ring-fg" cx="18" cy="18" r="15.9" fill="none" stroke-width="3"
+                                                :stroke-dasharray="100" :stroke-dashoffset="100 - proj.progress"
+                                                stroke-linecap="round"></circle>
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center text-sm font-bold">{{ proj.progress }}%</div>
+                                </div>
+                                <!-- 项目信息 -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="proj-name font-bold truncate">{{ proj.name }}</div>
+                                    <div class="text-xs opacity-70 mt-1">开始：{{ proj.startDate }}</div>
+                                    <div class="stage-tag mt-2 inline-block" :class="getStageColor(proj.stage)">{{ proj.stage }}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -95,45 +151,41 @@
             <!-- 2. 最近待办 -->
             <div v-if="currentView === 'todos'">
                 <div class="flex justify-between items-center mb-4">
-                    <h1 class="text-2xl font-bold">最近待办</h1>
-                    <button @click="showAddTodo = true" class="btn-primary px-4 py-2 rounded-lg text-sm">+ 新建待办</button>
+                    <h1 class="text-xl font-bold">最近待办</h1>
+                    <button @click="showAddTodo = true" class="btn-primary px-4 py-2 rounded-lg text-sm" style="background: var(--primary); color: white;">+ 新建待办</button>
                 </div>
-                <div class="space-y-4">
+                <div class="space-y-3">
                     <div v-for="(group, projName) in groupedTodos" :key="projName" class="card p-4">
-                        <!-- 项目标题 -->
-                        <div class="font-bold text-base mb-3 pb-2 border-b border-[var(--border)] flex items-center gap-2">
+                        <div class="font-bold text-sm mb-3 pb-2 border-b border-[var(--border)] flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-[var(--primary)]"></span>
                             {{ projName }}
                         </div>
-                        <!-- 任务列表 -->
-                        <div class="space-y-3">
-                            <div v-for="todo in group" :key="todo.id" class="todo-item flex items-start gap-2">
+                        <div class="space-y-2.5">
+                            <div v-for="todo in group" :key="todo.id" class="text-xs flex items-start gap-2">
                                 <span class="dot mt-1.5" :class="getDotColor(todo)"></span>
                                 <input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="mt-0.5 w-4 h-4 accent-[var(--primary)] cursor-pointer flex-shrink-0">
                                 <div class="flex-1">
-                                    <span :class="{'line-through opacity-50': todo.done}">{{ todo.task }}</span>
-                                    <!-- 子任务 -->
-                                    <div v-if="todo.subTasks" class="todo-sub">
-                                        <div v-for="(sub, idx) in todo.subTasks" :key="idx" class="flex items-start gap-1">
+                                    <span :class="{'line-through opacity-50': todo.done}" class="font-medium">{{ todo.task }}</span>
+                                    <div v-if="todo.subTasks && todo.subTasks.length" class="mt-1.5 opacity-75 space-y-0.5">
+                                        <div v-for="(sub, idx) in todo.subTasks" :key="idx" class="flex items-start gap-1 ml-1">
                                             <span class="opacity-50">{{ String.fromCharCode(97 + idx) }}.</span>
                                             <span>{{ sub }}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <button v-if="isAdmin" @click="deleteTodo(todo)" class="text-xs text-red-400 hover:text-red-600 p-1">删除</button>
+                                <button v-if="isAdmin" @click="deleteTodo(todo)" class="text-xs text-red-400 hover:text-red-600 p-1">✕</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- 已完成折叠 -->
                 <div v-if="doneTodos.length > 0" class="mt-6">
                     <button @click="showDone = !showDone" class="text-sm opacity-60 hover:opacity-100">
                         {{ showDone ? '▼' : '▶' }} 已完成 ({{ doneTodos.length }})
                     </button>
                     <div v-show="showDone" class="mt-2 space-y-1">
-                        <div v-for="todo in doneTodos" :key="todo.id" class="flex items-center gap-2 text-sm opacity-40 px-2">
+                        <div v-for="todo in doneTodos" :key="todo.id" class="flex items-center gap-2 text-xs opacity-40 px-2">
                             <span class="line-through truncate">{{ todo.task }}</span>
-                            <span class="text-xs">由 {{ todo.completedBy || '未知' }} 完成</span>
+                            <span>由 {{ todo.completedBy || '未知' }} 完成</span>
                         </div>
                     </div>
                 </div>
@@ -142,16 +194,16 @@
             <!-- 3. 项目总览 -->
             <div v-if="currentView === 'projects'">
                 <div class="flex justify-between items-center mb-4">
-                    <h1 class="text-2xl font-bold">项目总览</h1>
-                    <button @click="showAddProject = true" class="btn-primary px-4 py-2 rounded-lg text-sm">+ 新建项目</button>
+                    <h1 class="text-xl font-bold">项目总览</h1>
+                    <button v-if="isAdmin" @click="showAddProject = true" class="px-4 py-2 rounded-lg text-sm" style="background: var(--primary); color: white;">+ 新建项目</button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div v-for="proj in projects" :key="proj.id" class="card p-5 cursor-pointer hover:shadow-lg transition" @click="goToProject(proj.id)">
+                    <div v-for="proj in projects" :key="proj.id" class="card p-5 cursor-pointer hover:shadow-lg transition" :class="getProjectBg(proj)" @click="goToProject(proj.id)">
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="font-bold text-base">{{ proj.name }}</h3>
-                            <span class="text-xs px-2 py-1 rounded-full bg-[var(--border)]">{{ proj.stage }}</span>
+                            <span class="stage-tag" :class="getStageColor(proj.stage)">{{ proj.stage }}</span>
                         </div>
-                        <p class="text-sm opacity-70 mb-1">👤 {{ proj.owner }}</p>
+                        <p class="text-xs opacity-70 mb-1">👤 {{ proj.owner }}</p>
                         <p v-if="proj.note" class="text-xs opacity-60 mb-3 truncate">📝 {{ proj.note }}</p>
                         <div class="flex gap-2 text-xs">
                             <span class="px-2 py-0.5 rounded" :class="proj.filed ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'">备案: {{ proj.filed ? '已' : '未' }}</span>
@@ -163,37 +215,35 @@
 
             <!-- 4. 备忘录 -->
             <div v-if="currentView === 'memo'">
-                <h1 class="text-2xl font-bold mb-4">工作室备忘录</h1>
+                <h1 class="text-xl font-bold mb-4">工作室备忘录</h1>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <a href="#" class="card p-5 hover:shadow-lg transition">
-                        <h3 class="font-bold">📐 SketchUp 建模规范</h3>
-                        <p class="text-sm opacity-70 mt-1">圆弧段数、组件命名、清理标准</p>
-                    </a>
-                    <a href="#" class="card p-5 hover:shadow-lg transition">
-                        <h3 class="font-bold">🎨 AI 效果图关键词库</h3>
-                        <p class="text-sm opacity-70 mt-1">按项目类型分类的提示词参考</p>
-                    </a>
-                    <a href="#" class="card p-5 hover:shadow-lg transition">
-                        <h3 class="font-bold">📋 合同模板库</h3>
-                        <p class="text-sm opacity-70 mt-1">设计合同、分包、变更、验收</p>
-                    </a>
-                    <a href="#" class="card p-5 hover:shadow-lg transition">
-                        <h3 class="font-bold">📝 会议纪要模板</h3>
-                        <p class="text-sm opacity-70 mt-1">已确认/待确认事项标准格式</p>
-                    </a>
+                    <a href="#" class="card p-5 hover:shadow-lg transition"><h3 class="font-bold text-sm">📐 SketchUp 建模规范</h3><p class="text-xs opacity-70 mt-1">圆弧段数、组件命名、清理标准</p></a>
+                    <a href="#" class="card p-5 hover:shadow-lg transition"><h3 class="font-bold text-sm">🎨 AI 效果图关键词库</h3><p class="text-xs opacity-70 mt-1">按项目类型分类的提示词参考</p></a>
+                    <a href="#" class="card p-5 hover:shadow-lg transition"><h3 class="font-bold text-sm">📋 合同模板库</h3><p class="text-xs opacity-70 mt-1">设计合同、分包、变更、验收</p></a>
+                    <a href="#" class="card p-5 hover:shadow-lg transition"><h3 class="font-bold text-sm">📝 会议纪要模板</h3><p class="text-xs opacity-70 mt-1">已确认/待确认事项标准格式</p></a>
                 </div>
             </div>
 
             <!-- 5. 设置 -->
             <div v-if="currentView === 'settings'">
-                <h1 class="text-2xl font-bold mb-4">设置</h1>
-                <div class="card p-5">
-                    <p class="text-sm">系统设置功能待开发...</p>
-                </div>
+                <h1 class="text-xl font-bold mb-4">设置</h1>
+                <div class="card p-5"><p class="text-sm opacity-70">系统设置功能待开发...</p></div>
             </div>
         </main>
 
-        <!-- 模态框：新建待办 -->
+        <!-- 登录模态框 -->
+        <div v-if="showLogin" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="showLogin = false">
+            <div class="card p-6 w-full max-w-sm">
+                <h3 class="font-bold text-lg mb-4">管理员登录</h3>
+                <input v-model="loginPwd" type="password" placeholder="输入密码" @keyup.enter="doLogin" class="w-full border rounded-lg p-2 text-sm bg-transparent border-[var(--border)] mb-4">
+                <div class="flex justify-end gap-2">
+                    <button @click="showLogin = false" class="px-4 py-2 text-sm">取消</button>
+                    <button @click="doLogin" class="px-4 py-2 text-sm rounded-lg" style="background: var(--primary); color: white;">登录</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新建待办 -->
         <div v-if="showAddTodo" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="showAddTodo = false">
             <div class="card p-6 w-full max-w-md">
                 <h3 class="font-bold text-lg mb-4">新建待办</h3>
@@ -208,12 +258,12 @@
                         <option value="process">🔵 工艺跟进</option>
                         <option value="contract">🟡 合同跟进</option>
                     </select>
-                    <button @click="addTodo" class="btn-primary w-full py-2 rounded-lg">保存</button>
+                    <button @click="addTodo" class="w-full py-2 rounded-lg text-sm" style="background: var(--primary); color: white;">保存</button>
                 </div>
             </div>
         </div>
 
-        <!-- 模态框：新建项目 -->
+        <!-- 新建项目 -->
         <div v-if="showAddProject" class="fixed inset-0 modal-mask flex items-center justify-center p-4 z-50" @click.self="showAddProject = false">
             <div class="card p-6 w-full max-w-md">
                 <h3 class="font-bold text-lg mb-4">新建项目</h3>
@@ -226,11 +276,7 @@
                         <option value="">选择负责人</option>
                         <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
                     </select>
-                    <div class="flex gap-2">
-                        <label class="flex items-center gap-1 text-xs"><input type="checkbox" v-model="newProject.filed"> 已备案</label>
-                        <label class="flex items-center gap-1 text-xs"><input type="checkbox" v-model="newProject.contracted"> 已入合同</label>
-                    </div>
-                    <button @click="addProject" class="bg-gray-800 text-white w-full py-2 rounded-lg">保存</button>
+                    <button @click="addProject" class="w-full py-2 rounded-lg text-sm bg-gray-800 text-white">保存</button>
                 </div>
             </div>
         </div>
@@ -241,24 +287,53 @@
 
         const members = ['刘文辉', '谢启欣', '欧阳琳', '梁婷玉', '黄建敏', '梁富成'];
         const stages = ['一、前期强排', '二、方案设计', '三、方案深化', '四、报建图', '五、施工图（含幕墙深化）', '六、室内设计', '七、施工中'];
+        const ADMIN_PASSWORD = 'litian2024';
+
+        // 项目分类
+        const projCategory = {
+            'sl4': 'shenling', 'slzb': 'shenling', 'sl5': 'shenling', 'slgz': 'shenling',
+            'prsp': 'industrial', 'yj': 'industrial', 'fp': 'industrial', 'rk': 'industrial',
+            'whg': 'renovation', 'stc': 'renovation', 'spmy': 'renovation',
+            'skwj': 'small',
+            'sq': 'other'
+        };
+
+        // 分类底色
+        const categoryBg = {
+            'shenling': 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400',
+            'industrial': 'bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400',
+            'renovation': 'bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-400',
+            'small': 'bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400',
+            'other': 'bg-pink-50 dark:bg-pink-900/20 border-l-4 border-pink-400'
+        };
+
+        // 阶段颜色（由浅到深）
+        const stageColor = {
+            '一、前期强排': 'bg-gray-100 text-gray-500',
+            '二、方案设计': 'bg-blue-100 text-blue-600',
+            '三、方案深化': 'bg-blue-300 text-blue-900',
+            '四、报建图': 'bg-blue-600 text-white',
+            '五、施工图（含幕墙深化）': 'bg-purple-600 text-white',
+            '六、室内设计': 'bg-orange-500 text-white',
+            '七、施工中': 'bg-gray-700 text-white'
+        };
 
         const defaultProjects = [
-            { id: 'sl4', name: '申菱四基地', stage: '三、方案深化', owner: '刘文辉', note: '方案重做深化', filed: false, contracted: true, progress: 40 },
-            { id: 'slzb', name: '申菱总部改造', stage: '七、施工中', owner: '谢启欣', note: '*有新增空间方案', filed: true, contracted: true, progress: 85 },
-            { id: 'sl5', name: '申菱五基地', stage: '一、前期强排', owner: '刘文辉', note: '前期方案', filed: false, contracted: false, progress: 10 },
-            { id: 'slgz', name: '申菱高州二期', stage: '七、施工中', owner: '黄建敏', note: '施工中', filed: true, contracted: true, progress: 70 },
-            { id: 'prsp', name: '屏荣食品顺德新厂', stage: '五、施工图（含幕墙深化）', owner: '梁婷玉', note: '规划变更，施工图审图，室内方案', filed: true, contracted: true, progress: 60 },
-            { id: 'yj', name: '远江幕墙南海新厂', stage: '七、施工中', owner: '谢启欣', note: '施工中', filed: true, contracted: true, progress: 75 },
-            { id: 'whg', name: '顺德文化馆修缮活化', stage: '四、报建图', owner: '欧阳琳', note: '合同签订过程中', filed: false, contracted: false, progress: 20 },
-            { id: 'stc', name: '顺德糖厂', stage: '四、报建图', owner: '欧阳琳', note: '合同签订过程中', filed: false, contracted: false, progress: 15 },
-            { id: 'skwj', name: '顺控危旧房', stage: '五、施工图（含幕墙深化）', owner: '梁富成', note: '图纸绘制', filed: true, contracted: true, progress: 55 },
-            { id: 'spmy', name: '升平名扬里历史街区一期', stage: '七、施工中', owner: '刘文辉', note: '施工中', filed: true, contracted: true, progress: 80 },
-            { id: 'fp', name: '方普', stage: '一、前期强排', owner: '刘文辉', note: '前期方案', filed: false, contracted: false, progress: 5 },
-            { id: 'rk', name: '容控小地块厂房加商业', stage: '一、前期强排', owner: '刘文辉', note: '前期方案', filed: false, contracted: false, progress: 15 },
-            { id: 'sq', name: '社-顺德本土文化策展', stage: '三、方案深化', owner: '梁婷玉', note: '建模阶段', filed: false, contracted: false, progress: 30 }
+            { id: 'sl4', name: '申菱四基地', stage: '三、方案深化', owner: '刘文辉', note: '方案重做深化', filed: false, contracted: true, progress: 40, startDate: '2026-03' },
+            { id: 'slzb', name: '申菱总部改造', stage: '七、施工中', owner: '谢启欣', note: '*有新增空间方案', filed: true, contracted: true, progress: 85, startDate: '2025-08' },
+            { id: 'sl5', name: '申菱五基地', stage: '一、前期强排', owner: '刘文辉', note: '前期方案', filed: false, contracted: false, progress: 10, startDate: '2026-08' },
+            { id: 'slgz', name: '申菱高州二期', stage: '七、施工中', owner: '黄建敏', note: '施工中', filed: true, contracted: true, progress: 70, startDate: '2025-11' },
+            { id: 'prsp', name: '屏荣食品顺德新厂', stage: '五、施工图（含幕墙深化）', owner: '梁婷玉', note: '规划变更，施工图审图', filed: true, contracted: true, progress: 60, startDate: '2025-06' },
+            { id: 'yj', name: '远江幕墙南海新厂', stage: '七、施工中', owner: '谢启欣', note: '施工中', filed: true, contracted: true, progress: 75, startDate: '2025-04' },
+            { id: 'whg', name: '顺德文化馆修缮活化', stage: '四、报建图', owner: '欧阳琳', note: '合同签订过程中', filed: false, contracted: false, progress: 20, startDate: '2026-05' },
+            { id: 'stc', name: '顺德糖厂', stage: '四、报建图', owner: '欧阳琳', note: '合同签订过程中', filed: false, contracted: false, progress: 15, startDate: '2026-06' },
+            { id: 'skwj', name: '顺控危旧房', stage: '五、施工图（含幕墙深化）', owner: '梁富成', note: '图纸绘制', filed: true, contracted: true, progress: 55, startDate: '2026-02' },
+            { id: 'spmy', name: '升平名扬里历史街区一期', stage: '七、施工中', owner: '刘文辉', note: '施工中', filed: true, contracted: true, progress: 80, startDate: '2025-09' },
+            { id: 'fp', name: '方普', stage: '一、前期强排', owner: '刘文辉', note: '前期方案', filed: false, contracted: false, progress: 5, startDate: '2026-09' },
+            { id: 'rk', name: '容控小地块厂房加商业', stage: '一、前期强排', owner: '刘文辉', note: '前期方案', filed: false, contracted: false, progress: 15, startDate: '2026-09' },
+            { id: 'sq', name: '社-顺德本土文化策展', stage: '三、方案深化', owner: '梁婷玉', note: '建模阶段', filed: false, contracted: false, progress: 30, startDate: '2026-07' }
         ];
 
-        // 待办数据结构：增加了subTasks和type字段
         const defaultTodos = [
             { id: 1, projectName: '申菱总部改造', projectId: 'slzb', task: '活动中心方案', type: 'design', subTasks: ['室内篮球场设计', '堆货区改羽毛球或匹克球场', '增加卫生间', '场地沿路一侧加宽绿化，做人行道，拓宽货车车道，货车闸门拓宽'], done: false, createdAt: '2026-09-26', owner: '刘文辉,梁婷玉' },
             { id: 2, projectName: '申菱总部改造', projectId: 'slzb', task: '10个办公室门需拓宽到1500mm', type: 'design', subTasks: [], done: false, createdAt: '2026-09-26', owner: '刘文辉,梁婷玉' },
@@ -284,52 +359,75 @@
                 const showDone = ref(false);
                 const showAddTodo = ref(false);
                 const showAddProject = ref(false);
+                const showLogin = ref(false);
+                const loginPwd = ref('');
+                const isAdmin = ref(false);
                 const isNight = ref(false);
+                const searchKeyword = ref('');
+                const searchResults = ref([]);
 
                 const projects = ref(JSON.parse(localStorage.getItem('studio_projects')) || defaultProjects);
                 const todos = ref(JSON.parse(localStorage.getItem('studio_todos')) || defaultTodos);
                 const newTodo = ref({ task: '', projectId: '', type: 'design' });
-                const newProject = ref({ name: '', stage: stages[0], owner: '', filed: false, contracted: false });
+                const newProject = ref({ name: '', stage: stages[0], owner: '' });
 
-                // 日历逻辑
+                // 日历
                 const currentMonthName = ref('');
+                const todayDate = ref('');
                 const calendarDays = ref([]);
                 const generateCalendar = () => {
                     const now = new Date();
-                    const year = now.getFullYear();
-                    const month = now.getMonth();
-                    currentMonthName.value = `${year}年${month + 1}月`;
-                    const firstDay = new Date(year, month, 1).getDay();
-                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    const y = now.getFullYear(), m = now.getMonth();
+                    currentMonthName.value = `${y}年${m + 1}月`;
+                    todayDate.value = `${m + 1}月${now.getDate()}日`;
+                    const firstDay = new Date(y, m, 1).getDay();
+                    const daysInMonth = new Date(y, m + 1, 0).getDate();
                     const days = [];
                     for (let i = 0; i < firstDay; i++) days.push({ date: '', isCurrent: false });
-                    for (let d = 1; d <= daysInMonth; d++) {
-                        days.push({ date: d, isCurrent: true, isToday: d === now.getDate() });
-                    }
+                    for (let d = 1; d <= daysInMonth; d++) days.push({ date: d, isCurrent: true, isToday: d === now.getDate() });
                     calendarDays.value = days;
                 };
                 generateCalendar();
 
-                // 自动日夜模式
+                // 日夜模式
                 const checkTime = () => {
-                    const hour = new Date().getHours();
-                    isNight.value = hour >= 18 || hour < 7;
+                    const h = new Date().getHours();
+                    isNight.value = h >= 18 || h < 7;
                     document.documentElement.classList.toggle('dark', isNight.value);
                 };
-                onMounted(() => {
-                    checkTime();
-                    setInterval(checkTime, 60000);
-                });
+                onMounted(() => { checkTime(); setInterval(checkTime, 60000); });
 
-                // 按项目分组待办
-                const groupedTodos = computed(() => {
-                    const groups = {};
-                    todos.value.filter(t => !t.done).forEach(t => {
-                        if (!groups[t.projectName]) groups[t.projectName] = [];
-                        groups[t.projectName].push(t);
+                // 搜索
+                const doSearch = () => {
+                    const kw = searchKeyword.value.trim().toLowerCase();
+                    if (!kw) { searchResults.value = []; return; }
+                    const results = [];
+                    projects.value.forEach(p => {
+                        if (p.name.toLowerCase().includes(kw)) results.push({ type: '项目', title: p.name, desc: p.stage, projectId: p.id });
                     });
-                    return groups;
+                    todos.value.forEach(t => {
+                        if (t.task.toLowerCase().includes(kw) || t.projectName.toLowerCase().includes(kw)) {
+                            results.push({ type: '待办', title: t.task, desc: t.projectName, projectId: t.projectId });
+                        }
+                    });
+                    searchResults.value = results.slice(0, 20);
+                };
+                const goToResult = (r) => {
+                    searchKeyword.value = '';
+                    searchResults.value = [];
+                    if (r.type === '项目') goToProject(r.projectId);
+                    else if (r.type === '待办') goToProject(r.projectId);
+                };
+
+                const groupedTodos = computed(() => {
+                    const g = {};
+                    todos.value.filter(t => !t.done).forEach(t => {
+                        if (!g[t.projectName]) g[t.projectName] = [];
+                        g[t.projectName].push(t);
+                    });
+                    return g;
                 });
+                const pendingTodos = computed(() => todos.value.filter(t => !t.done));
                 const doneTodos = computed(() => todos.value.filter(t => t.done));
 
                 const getDotColor = (todo) => {
@@ -338,25 +436,26 @@
                     if (todo.type === 'contract') return 'dot-yellow';
                     return 'dot-red';
                 };
+                const getProjectBg = (proj) => categoryBg[projCategory[proj.id]] || '';
+                const getStageColor = (stage) => stageColor[stage] || 'bg-gray-100 text-gray-500';
 
                 const saveData = () => {
                     localStorage.setItem('studio_projects', JSON.stringify(projects.value));
                     localStorage.setItem('studio_todos', JSON.stringify(todos.value));
                 };
 
+                const doLogin = () => {
+                    if (loginPwd.value === ADMIN_PASSWORD) { isAdmin.value = true; showLogin.value = false; loginPwd.value = ''; }
+                    else alert('密码错误');
+                };
+
                 const addTodo = () => {
                     if (!newTodo.value.task.trim()) return alert('请填写待办内容');
                     const proj = projects.value.find(p => p.id === newTodo.value.projectId);
                     todos.value.unshift({
-                        id: Date.now(),
-                        task: newTodo.value.task,
-                        projectId: newTodo.value.projectId,
-                        projectName: proj ? proj.name : '未关联项目',
-                        type: newTodo.value.type,
-                        subTasks: [],
-                        done: false,
-                        createdAt: new Date().toLocaleDateString(),
-                        completedBy: ''
+                        id: Date.now(), task: newTodo.value.task, projectId: newTodo.value.projectId,
+                        projectName: proj ? proj.name : '未关联项目', type: newTodo.value.type,
+                        subTasks: [], done: false, createdAt: new Date().toLocaleDateString(), completedBy: ''
                     });
                     newTodo.value = { task: '', projectId: '', type: 'design' };
                     showAddTodo.value = false;
@@ -370,6 +469,7 @@
                 };
 
                 const deleteTodo = (todo) => {
+                    if (!isAdmin.value) return alert('只有管理员才能删除');
                     if (!confirm('确定删除？')) return;
                     todos.value = todos.value.filter(t => t.id !== todo.id);
                     saveData();
@@ -378,16 +478,11 @@
                 const addProject = () => {
                     if (!newProject.value.name.trim()) return alert('请填写项目名称');
                     projects.value.push({
-                        id: 'proj-' + Date.now(),
-                        name: newProject.value.name,
-                        stage: newProject.value.stage,
-                        owner: newProject.value.owner,
-                        note: '',
-                        filed: newProject.value.filed,
-                        contracted: newProject.value.contracted,
-                        progress: 0
+                        id: 'proj-' + Date.now(), name: newProject.value.name, stage: newProject.value.stage,
+                        owner: newProject.value.owner, note: '', filed: false, contracted: false,
+                        progress: 0, startDate: new Date().toISOString().slice(0, 7)
                     });
-                    newProject.value = { name: '', stage: stages[0], owner: '', filed: false, contracted: false };
+                    newProject.value = { name: '', stage: stages[0], owner: '' };
                     showAddProject.value = false;
                     saveData();
                 };
@@ -397,10 +492,12 @@
                 };
 
                 return {
-                    currentView, sidebarOpen, showDone, showAddTodo, showAddProject,
-                    projects, groupedTodos, doneTodos, newTodo, newProject,
-                    currentMonthName, calendarDays, members, stages,
-                    getDotColor, addTodo, toggleTodo, deleteTodo, addProject, goToProject
+                    currentView, sidebarOpen, showDone, showAddTodo, showAddProject, showLogin, loginPwd, isAdmin,
+                    searchKeyword, searchResults, doSearch, goToResult,
+                    projects, groupedTodos, pendingTodos, doneTodos, newTodo, newProject,
+                    currentMonthName, todayDate, calendarDays, members, stages,
+                    getDotColor, getProjectBg, getStageColor, doLogin,
+                    addTodo, toggleTodo, deleteTodo, addProject, goToProject
                 };
             }
         }).mount('#app');
