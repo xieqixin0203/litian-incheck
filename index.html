@@ -5,12 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>立田工作室 · 项目指挥台</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.js"></script>
 <style>
+html{font-size:16px}
+html[data-fontsize="small"]{font-size:14px}
+html[data-fontsize="large"]{font-size:18px}
+html[data-fontsize="xlarge"]{font-size:20px}
 :root{--bg:#eef1f6;--text:#2d3748;--card:#fff;--primary:#7b8bb8;--border:#d8dee9;--sidebar-bg:#3e4a6b;--sidebar-text:#e8ecf4;--sidebar-active:#5b6ba0;--dot-red:#c98a8a;--dot-blue:#8fa3c8;--dot-yellow:#d4c8a8}
 .dark{--bg:#1a1f2e;--text:#e8ecf4;--card:#252b3d;--primary:#8fa3c8;--border:#3a4258;--sidebar-bg:#141824;--sidebar-text:#a8b4d0;--sidebar-active:#3e4a6b;--dot-red:#d4a0a0;--dot-blue:#a8b8d8;--dot-yellow:#e0d4b0}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0;height:100vh;overflow:hidden}
 .sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:240px;transition:.3s;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
+.back-btn{display:flex;align-items:center;gap:6px;padding:10px 20px;color:var(--sidebar-text);opacity:.7;cursor:pointer;font-size:13px;border-bottom:1px solid rgba(255,255,255,.08)}
+.back-btn:hover{opacity:1;background:rgba(255,255,255,.05)}
 .sidebar-nav a{display:block;padding:13px 22px;color:var(--sidebar-text);opacity:.75;transition:.2s;font-size:15px;border-left:3px solid transparent;text-decoration:none;cursor:pointer}
 .sidebar-nav a:hover{opacity:1;background:rgba(255,255,255,.05)}
 .sidebar-nav a.active{opacity:1;background:var(--sidebar-active);font-weight:bold;border-left-color:var(--sidebar-text)}
@@ -22,11 +29,10 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .ring-svg{transform:rotate(-90deg)}
 .stage-tag{font-size:10.5px;padding:2px 8px;border-radius:9999px;font-weight:500;display:inline-block}
 .hero-title{font-size:14px;font-weight:bold;margin-bottom:6px;letter-spacing:1px}
-.hero-img-wrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:12px;overflow:hidden;cursor:pointer;background:#ddd}
+.hero-img-wrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:#ddd;cursor:pointer}
 .hero-img{width:100%;height:100%;object-fit:cover;transition:transform .3s;display:block}
 .hero-img-wrap:hover .hero-img{transform:scale(1.03)}
-.hero-plus{position:absolute;top:10px;left:10px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:300;pointer-events:none}
-.hero-meta{font-size:11px;line-height:1.55;margin-top:8px}
+.hero-meta{font-size:11px;line-height:1.6;margin-top:8px}
 .hero-meta .author{opacity:.75}
 .todo-project-group{margin-bottom:10px}
 .todo-project-title{font-size:11px;font-weight:bold;opacity:.85;margin-bottom:4px;padding-left:2px;color:var(--primary)}
@@ -35,24 +41,37 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .todo-row::before{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:var(--border)}
 .edit-btn{opacity:.4;transition:.2s}
 .todo-row:hover .edit-btn{opacity:1}
+.sub-task{font-size:11.5px;padding-left:24px;display:flex;align-items:center;gap:6px;padding-top:2px;padding-bottom:2px;border-bottom:1px dashed var(--border)}
+.sub-task:last-child{border-bottom:none}
 .calendar-mini{background:rgba(0,0,0,.15);border-radius:10px;padding:10px;margin:0 10px 10px}
 .calendar-mini .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:10px}
-.calendar-mini .day{padding:2px 0;border-radius:3px;color:var(--sidebar-text);opacity:.7}
-.calendar-mini .day.today{background:var(--sidebar-text);color:var(--sidebar-bg);font-weight:bold;opacity:1}
-.calendar-mini .day.empty{opacity:.15}
+.calendar-mini .cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 0;border-radius:4px;color:var(--sidebar-text);min-height:32px}
+.calendar-mini .cell .dnum{font-size:11px;line-height:1.1}
+.calendar-mini .cell .lunar{font-size:8.5px;line-height:1.1;opacity:.75;margin-top:1px}
+.calendar-mini .cell.empty{opacity:.15}
+.calendar-mini .cell.weekend{background:rgba(143,163,200,.18)}
+.calendar-mini .cell.holiday{background:rgba(229,62,62,.35);color:#fff}
+.calendar-mini .cell.workday{background:rgba(160,160,160,.3)}
+.calendar-mini .cell.today{outline:2px solid var(--sidebar-text);font-weight:bold}
+.calendar-mini .cell .lunar.holiday-name{color:#ffd9d9;font-weight:bold}
+.fontsize-switch{display:flex;align-items:center;padding:8px 14px 4px 14px;gap:4px}
+.fontsize-switch button{flex:1;font-size:11px;padding:4px 0;border-radius:4px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--sidebar-text);cursor:pointer}
+.fontsize-switch button.active{background:var(--sidebar-active);font-weight:bold}
 .scroll-area{flex:1;min-height:0;overflow-y:auto;padding-right:4px}
 .scroll-area::-webkit-scrollbar{width:5px}
 .scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-@media(max-width:768px){
-  .sidebar{position:fixed;left:-240px;z-index:50;height:100vh}
-  .sidebar.open{left:0}
-  .main-content{padding:10px;overflow-y:auto}
-}
+.done-row{cursor:pointer;transition:.15s;border-radius:6px}
+.done-row:hover{background:rgba(127,127,127,.08)}
+@media(max-width:768px){.sidebar{position:fixed;left:-240px;z-index:50;height:100vh}.sidebar.open{left:0}.main-content{padding:10px}}
 </style>
 </head>
 <body>
 <div id="app" class="flex h-screen overflow-hidden">
 <aside class="sidebar" :class="{'open':sidebarOpen}">
+<div class="back-btn" @click="switchView('home')">
+<span style="font-size:16px">＜</span>
+<span>返回主页</span>
+</div>
 <div class="p-5 border-b border-white/10">
 <h1 class="text-xl font-bold leading-tight">立田工作室</h1>
 <h2 class="text-sm opacity-80 mt-1">项目指挥台</h2>
@@ -67,14 +86,26 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <a @click="switchView('settings')" :class="{'active':currentView==='settings'}">设置</a>
 </nav>
 <div class="mt-auto pb-3">
+<div class="fontsize-switch">
+<span style="font-size:11px;opacity:.6;margin-right:4px">字号</span>
+<button @click="setFontSize('small')"  :class="{active:fontSize==='small'}">小</button>
+<button @click="setFontSize('medium')" :class="{active:fontSize==='medium'}">中</button>
+<button @click="setFontSize('large')"  :class="{active:fontSize==='large'}">大</button>
+<button @click="setFontSize('xlarge')" :class="{active:fontSize==='xlarge'}">特大</button>
+</div>
 <div class="calendar-mini">
 <div class="flex justify-between items-center mb-1.5 px-1">
 <span class="text-xs font-bold">{{ currentMonthName }}</span>
 <span class="text-xs opacity-60">{{ todayDate }}</span>
 </div>
 <div class="grid">
-<div v-for="d in ['日','一','二','三','四','五','六']" :key="d" class="font-bold opacity-50">{{ d }}</div>
-<div v-for="(day,idx) in calendarDays" :key="idx" class="day" :class="{'today':day.isToday,'empty':!day.isCurrent}">{{ day.date }}</div>
+<div v-for="d in ['日','一','二','三','四','五','六']" :key="d" class="font-bold opacity-50" style="font-size:10px">{{ d }}</div>
+<div v-for="(cell,idx) in calendarDays" :key="idx"
+     class="cell"
+     :class="{empty:!cell.isCurrent,weekend:cell.isWeekend,holiday:cell.isHoliday,workday:cell.isWorkday,today:cell.isToday}">
+  <span class="dnum">{{ cell.date }}</span>
+  <span class="lunar" :class="{'holiday-name':cell.isHoliday}">{{ cell.label }}</span>
+</div>
 </div>
 </div>
 </div>
@@ -98,26 +129,25 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 
 <!-- 主页 -->
 <div v-if="currentView==='home'" class="flex-1 min-h-0 flex flex-col lg:flex-row gap-3">
-<!-- 左侧：hero + 最近待办（移动端更突出最近待办） -->
 <div class="lg:w-2/5 flex flex-col gap-3 lg:min-h-0">
 <div class="card p-3 flex-shrink-0">
 <div class="hero-title">精神零食</div>
-<div class="flex gap-3">
-<div class="hero-img-wrap" style="flex:0 0 58%" @click="pickHero">
-<img :src="heroImage" alt="Inspiration" class="hero-img">
-<div class="hero-plus">+</div>
-<input ref="heroInput" type="file" accept="image/*" class="hidden" @change="uploadHero">
+<div v-if="currentHero" class="flex gap-3">
+<div class="hero-img-wrap" style="flex:0 0 58%" @click="nextHero">
+<img :src="currentHero.url" alt="Inspiration" class="hero-img">
 </div>
 <div class="flex-1 min-w-0">
 <div class="hero-meta">
-<div class="font-bold" contenteditable="true" @blur="saveHeroMeta('title',$event)">{{ heroMeta.title }}</div>
-<div class="author" contenteditable="true" @blur="saveHeroMeta('author',$event)">{{ heroMeta.author }}</div>
-<div class="author" contenteditable="true" @blur="saveHeroMeta('year',$event)">{{ heroMeta.year }}</div>
+<div class="font-bold">{{ currentHero.title }}</div>
+<div v-if="currentHero.englishTitle" class="author">{{ currentHero.englishTitle }}</div>
+<div v-if="currentHero.year" class="author">{{ currentHero.year }}<span v-if="currentHero.author">，{{ currentHero.author }}</span></div>
 </div>
 </div>
 </div>
+<div v-else class="text-xs opacity-50 text-center py-4">
+请在 heroes 文件夹里放入图片，并创建 list.txt
 </div>
-<!-- 最近待办：移动端 min-height 55vh，桌面端 flex-1 -->
+</div>
 <div class="card p-3 flex flex-col lg:flex-1 lg:min-h-0" style="min-height: 55vh;">
 <div class="flex justify-between items-center mb-2 flex-shrink-0">
 <h3 class="font-bold text-sm">最近待办</h3>
@@ -126,19 +156,26 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <div class="scroll-area">
 <div v-for="(group,projName) in groupedTodos" :key="projName" class="todo-project-group">
 <div class="todo-project-title">{{ projName }}</div>
-<div v-for="todo in group" :key="todo.id" class="todo-row">
+<template v-for="todo in group" :key="todo.id">
+<div class="todo-row">
 <span class="dot" :class="getDotColor(todo)"></span>
 <input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="w-3 h-3 cursor-pointer flex-shrink-0">
 <span class="font-medium truncate flex-1">{{ todo.task }}</span>
 <span class="text-[10px] opacity-60 truncate">· {{ todo.owner||'未指定' }}</span>
+<button @click="openLinkDialog(todo)" class="text-xs p-0.5" :style="todo.link ? '' : 'opacity:.25'" title="附图链接">📎</button>
 <button @click="editTodo(todo)" class="edit-btn text-xs p-0.5" style="color:var(--primary)">✎</button>
 </div>
+<div v-for="(sub,idx) in todo.subTasks" :key="idx" class="sub-task">
+<span class="opacity-50 text-[10px]">{{ String.fromCharCode(97+idx) }}.</span>
+<span class="truncate flex-1">{{ sub.text }}</span>
+<button @click="openLinkDialog(sub)" class="text-xs p-0.5" :style="sub.link ? '' : 'opacity:.25'" title="附图链接">📎</button>
+</div>
+</template>
 </div>
 </div>
 </div>
 </div>
 
-<!-- 右侧：项目进度 -->
 <div class="lg:w-3/5 flex flex-col lg:min-h-0">
 <h3 class="font-bold text-sm mb-2 flex-shrink-0">项目进度</h3>
 <div class="lg:flex-1 lg:min-h-0 lg:overflow-y-auto pr-1">
@@ -154,7 +191,9 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <div class="flex-1 min-w-0">
 <div class="font-bold text-sm truncate">{{ proj.name }}</div>
 <div class="text-[11px] opacity-60 mt-0.5">开始：{{ proj.startDate }}</div>
-<span class="stage-tag mt-1.5" :class="getStageColor(proj.stage)">{{ proj.stage }}</span>
+<div class="flex gap-1 flex-wrap mt-1">
+<span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
+</div>
 </div>
 </div>
 </div>
@@ -171,32 +210,38 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <div class="space-y-3">
 <div v-for="(group,projName) in groupedTodos" :key="projName" class="card p-4">
 <div class="todo-project-title" style="font-size:13px;margin-bottom:8px">{{ projName }}</div>
-<div class="space-y-2">
-<div v-for="todo in group" :key="todo.id" class="text-[13px] flex items-start gap-2">
+<div>
+<template v-for="todo in group" :key="todo.id">
+<div class="text-[13px] flex items-start gap-2 py-1">
 <span class="dot mt-1.5" :class="getDotColor(todo)"></span>
 <input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="mt-0.5 w-4 h-4 cursor-pointer flex-shrink-0">
 <div class="flex-1">
-<span :class="{'line-through opacity-50':todo.done}" class="font-medium">{{ todo.task }}</span>
+<span class="font-medium">{{ todo.task }}</span>
 <span class="text-[11px] opacity-60 ml-2">· {{ todo.owner||'未指定' }}</span>
-<div v-if="todo.subTasks&&todo.subTasks.length" class="mt-1 opacity-75 space-y-0.5">
-<div v-for="(sub,idx) in todo.subTasks" :key="idx" class="flex items-start gap-1 ml-1">
-<span class="opacity-50">{{ String.fromCharCode(97+idx) }}.</span>
-<span>{{ sub }}</span>
 </div>
-</div>
-</div>
+<button @click="openLinkDialog(todo)" class="text-xs p-1" :style="todo.link ? '' : 'opacity:.25'">📎</button>
 <button @click="editTodo(todo)" class="text-xs p-1" style="color:var(--primary)">✎</button>
 <button v-if="isAdmin" @click="deleteTodo(todo)" class="text-xs text-red-400 hover:text-red-600 p-1">✕</button>
 </div>
+<div v-for="(sub,idx) in todo.subTasks" :key="idx" class="sub-task">
+<span class="opacity-50 text-[10px]">{{ String.fromCharCode(97+idx) }}.</span>
+<span class="flex-1">{{ sub.text }}</span>
+<button @click="openLinkDialog(sub)" class="text-xs p-0.5" :style="sub.link ? '' : 'opacity:.25'">📎</button>
+</div>
+</template>
 </div>
 </div>
 </div>
 <div v-if="doneTodos.length>0" class="mt-6">
 <button @click="showDone=!showDone" class="text-sm opacity-60">{{ showDone?'▼':'▶' }} 已完成 ({{ doneTodos.length }})</button>
 <div v-show="showDone" class="mt-2 space-y-1">
-<div v-for="todo in doneTodos" :key="todo.id" class="flex items-center gap-2 text-xs opacity-40 px-2">
-<span class="line-through truncate">{{ todo.task }}</span>
-<span>由 {{ todo.completedBy||'未知' }} 完成</span>
+<div v-for="todo in doneTodos" :key="todo.id"
+     class="done-row flex items-center gap-2 text-xs opacity-50 px-2 py-1"
+     @click="toggleTodo(todo)"
+     title="点击可恢复为待办">
+  <span class="line-through truncate flex-1">{{ todo.task }}</span>
+  <span class="text-[10px]">由 {{ todo.completedBy||'未知' }} 完成</span>
+  <span class="text-[10px]" style="color:var(--primary)">↩ 恢复</span>
 </div>
 </div>
 </div>
@@ -212,7 +257,9 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <div v-for="proj in projects" :key="proj.id" class="card p-5 cursor-pointer transition" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
 <div class="flex justify-between items-start mb-2">
 <h3 class="font-bold text-base">{{ proj.name }}</h3>
-<span class="stage-tag" :class="getStageColor(proj.stage)">{{ proj.stage }}</span>
+<div class="flex gap-1 flex-wrap">
+<span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
+</div>
 </div>
 <p class="text-xs opacity-70 mb-1">负责人：{{ proj.owner }}</p>
 <p v-if="proj.note" class="text-xs opacity-60 mb-3 truncate">{{ proj.note }}</p>
@@ -242,6 +289,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </main>
 
+<!-- 登录 -->
 <div v-if="showLogin" class="modal-mask" @click.self="showLogin=false">
 <div class="card p-6 w-full max-w-sm">
 <h3 class="font-bold text-lg mb-4">管理员登录</h3>
@@ -253,6 +301,21 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
+<!-- 附图链接弹窗 -->
+<div v-if="linkDialogTarget" class="modal-mask" @click.self="linkDialogTarget=null">
+<div class="card p-6 w-full max-w-md">
+<h3 class="font-bold text-lg mb-4">附图链接</h3>
+<input v-model="linkDialogValue" placeholder="粘贴云盘 URL" class="w-full border rounded-lg p-2 text-sm border-[var(--border)] mb-4" style="background:transparent;color:var(--text)">
+<div class="flex justify-end gap-2 flex-wrap">
+<a v-if="linkDialogTarget.link" :href="linkDialogTarget.link" target="_blank" class="px-3 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">打开</a>
+<button v-if="linkDialogTarget.link" @click="deleteLink" class="px-3 py-2 text-sm text-red-500">删除</button>
+<button @click="saveLink" class="px-3 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">保存</button>
+<button @click="linkDialogTarget=null" class="px-3 py-2 text-sm">取消</button>
+</div>
+</div>
+</div>
+
+<!-- 编辑待办 -->
 <div v-if="editingTodo" class="modal-mask" @click.self="editingTodo=null">
 <div class="card p-6 w-full max-w-md">
 <h3 class="font-bold text-lg mb-4">编辑待办</h3>
@@ -272,6 +335,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
+<!-- 新建待办 -->
 <div v-if="showAddTodo" class="modal-mask" @click.self="showAddTodo=false">
 <div class="card p-6 w-full max-w-md">
 <h3 class="font-bold text-lg mb-4">新建待办</h3>
@@ -295,6 +359,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
+<!-- 新建项目 -->
 <div v-if="showAddProject" class="modal-mask" @click.self="showAddProject=false">
 <div class="card p-6 w-full max-w-md">
 <h3 class="font-bold text-lg mb-4">新建项目</h3>
@@ -318,7 +383,20 @@ const {createApp,ref,computed,onMounted}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
 const ADMIN_PASSWORD='litian2024';
-const DATA_VERSION='2026-09-26-v4';
+const DATA_VERSION='2026-09-26-v6';
+
+const HOLIDAYS_2026 = {
+  '2026-01-01': {type:'holiday', name:'元旦'},'2026-01-02': {type:'holiday', name:'元旦'},'2026-01-03': {type:'holiday', name:'元旦'},
+  '2026-02-15': {type:'holiday', name:'春节'},'2026-02-16': {type:'holiday', name:'春节'},'2026-02-17': {type:'holiday', name:'春节'},'2026-02-18': {type:'holiday', name:'春节'},'2026-02-19': {type:'holiday', name:'春节'},'2026-02-20': {type:'holiday', name:'春节'},'2026-02-21': {type:'holiday', name:'春节'},
+  '2026-02-14': {type:'workday', name:'调休'},'2026-02-28': {type:'workday', name:'调休'},
+  '2026-04-04': {type:'holiday', name:'清明'},'2026-04-05': {type:'holiday', name:'清明'},'2026-04-06': {type:'holiday', name:'清明'},
+  '2026-05-01': {type:'holiday', name:'劳动节'},'2026-05-02': {type:'holiday', name:'劳动节'},'2026-05-03': {type:'holiday', name:'劳动节'},'2026-05-04': {type:'holiday', name:'劳动节'},'2026-05-05': {type:'holiday', name:'劳动节'},
+  '2026-04-26': {type:'workday', name:'调休'},'2026-05-09': {type:'workday', name:'调休'},
+  '2026-06-19': {type:'holiday', name:'端午'},'2026-06-20': {type:'holiday', name:'端午'},'2026-06-21': {type:'holiday', name:'端午'},
+  '2026-09-25': {type:'holiday', name:'中秋'},'2026-09-26': {type:'holiday', name:'中秋'},'2026-09-27': {type:'holiday', name:'中秋'},
+  '2026-10-01': {type:'holiday', name:'国庆'},'2026-10-02': {type:'holiday', name:'国庆'},'2026-10-03': {type:'holiday', name:'国庆'},'2026-10-04': {type:'holiday', name:'国庆'},'2026-10-05': {type:'holiday', name:'国庆'},'2026-10-06': {type:'holiday', name:'国庆'},'2026-10-07': {type:'holiday', name:'国庆'},
+  '2026-10-10': {type:'workday', name:'调休'}
+};
 
 const projCategory={'sl4':'shenling','slzb':'shenling','sl5':'shenling','slgz':'shenling','prsp':'industrial','yj':'industrial','fp':'industrial','rk':'industrial','whg':'renovation','stc':'renovation','spmy':'renovation','skwj':'small','sq':'other'};
 const categoryBgColor={'shenling':'rgba(143,163,200,0.12)','industrial':'rgba(163,184,163,0.12)','renovation':'rgba(184,174,200,0.12)','small':'rgba(212,200,168,0.15)','other':'rgba(212,184,184,0.12)'};
@@ -326,40 +404,48 @@ const categoryBorderColor={'shenling':'#8fa3c8','industrial':'#a3b8a3','renovati
 const stageColor={'一、前期强排':'bg-gray-200 text-gray-600','二、方案设计':'bg-blue-100 text-blue-700','三、方案深化':'bg-blue-200 text-blue-800','四、报建图':'bg-blue-400 text-white','五、施工图（含幕墙深化）':'bg-indigo-500 text-white','六、室内设计':'bg-orange-300 text-orange-900','七、室内设计施工图':'bg-orange-500 text-white','八、施工中':'bg-gray-700 text-white'};
 
 const defaultProjects=[
-{id:'sl4',name:'申菱四基地',stage:'三、方案深化',owner:'刘文辉',note:'方案重做深化',filed:false,contracted:true,progress:40,startDate:'2026-03'},
-{id:'slzb',name:'申菱总部改造',stage:'八、施工中',owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08'},
-{id:'sl5',name:'申菱五基地',stage:'一、前期强排',owner:'刘文辉',note:'前期方案',filed:false,contracted:false,progress:10,startDate:'2026-08'},
-{id:'slgz',name:'申菱高州二期',stage:'八、施工中',owner:'黄建敏',note:'施工中',filed:true,contracted:true,progress:70,startDate:'2025-11'},
-{id:'prsp',name:'屏荣食品顺德新厂',stage:'四、报建图',owner:'梁婷玉',note:'规划变更，施工图审图',filed:true,contracted:true,progress:60,startDate:'2025-06'},
-{id:'yj',name:'远江幕墙南海新厂',stage:'八、施工中',owner:'谢启欣',note:'施工中',filed:true,contracted:true,progress:75,startDate:'2025-04'},
-{id:'whg',name:'顺德文化馆修缮活化',stage:'四、报建图',owner:'欧阳琳',note:'合同签订过程中',filed:false,contracted:false,progress:20,startDate:'2026-05'},
-{id:'stc',name:'顺德糖厂',stage:'四、报建图',owner:'欧阳琳',note:'合同签订过程中',filed:false,contracted:false,progress:15,startDate:'2026-06'},
-{id:'skwj',name:'顺控危旧房',stage:'五、施工图（含幕墙深化）',owner:'梁富成',note:'图纸绘制',filed:true,contracted:true,progress:55,startDate:'2026-02'},
-{id:'spmy',name:'升平名扬里历史街区一期',stage:'八、施工中',owner:'刘文辉',note:'施工中',filed:true,contracted:true,progress:80,startDate:'2025-09'},
-{id:'fp',name:'方普',stage:'一、前期强排',owner:'刘文辉',note:'前期方案',filed:false,contracted:false,progress:5,startDate:'2026-09'},
-{id:'rk',name:'容控小地块厂房加商业',stage:'一、前期强排',owner:'刘文辉',note:'前期方案',filed:false,contracted:false,progress:15,startDate:'2026-09'},
-{id:'sq',name:'社-顺德本土文化策展',stage:'三、方案深化',owner:'梁婷玉',note:'建模阶段',filed:false,contracted:false,progress:30,startDate:'2026-07'}
+{id:'sl4',name:'申菱四基地',stage:['三、方案深化'],owner:'刘文辉',note:'方案重做深化',filed:false,contracted:true,progress:40,startDate:'2026-03'},
+{id:'slzb',name:'申菱总部改造',stage:['六、室内设计','七、室内设计施工图','八、施工中'],owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08'},
+{id:'sl5',name:'申菱五基地',stage:['一、前期强排'],owner:'刘文辉',note:'前期方案',filed:false,contracted:false,progress:10,startDate:'2026-08'},
+{id:'slgz',name:'申菱高州二期',stage:['八、施工中'],owner:'黄建敏',note:'施工中',filed:true,contracted:true,progress:70,startDate:'2025-11'},
+{id:'prsp',name:'屏荣食品顺德新厂',stage:['四、报建图'],owner:'梁婷玉',note:'规划变更，施工图审图',filed:true,contracted:true,progress:60,startDate:'2025-06'},
+{id:'yj',name:'远江幕墙南海新厂',stage:['八、施工中'],owner:'谢启欣',note:'施工中',filed:true,contracted:true,progress:75,startDate:'2025-04'},
+{id:'whg',name:'顺德文化馆修缮活化',stage:['四、报建图'],owner:'欧阳琳',note:'合同签订过程中',filed:false,contracted:false,progress:20,startDate:'2026-05'},
+{id:'stc',name:'顺德糖厂',stage:['四、报建图'],owner:'欧阳琳',note:'合同签订过程中',filed:false,contracted:false,progress:15,startDate:'2026-06'},
+{id:'skwj',name:'顺控危旧房',stage:['五、施工图（含幕墙深化）'],owner:'梁富成',note:'图纸绘制',filed:true,contracted:true,progress:55,startDate:'2026-02'},
+{id:'spmy',name:'升平名扬里历史街区一期',stage:['八、施工中'],owner:'刘文辉',note:'施工中',filed:true,contracted:true,progress:80,startDate:'2025-09'},
+{id:'fp',name:'方普',stage:['一、前期强排'],owner:'刘文辉',note:'前期方案',filed:false,contracted:false,progress:5,startDate:'2026-09'},
+{id:'rk',name:'容控小地块厂房加商业',stage:['一、前期强排'],owner:'刘文辉',note:'前期方案',filed:false,contracted:false,progress:15,startDate:'2026-09'},
+{id:'sq',name:'社-顺德本土文化策展',stage:['三、方案深化'],owner:'梁婷玉',note:'建模阶段',filed:false,contracted:false,progress:30,startDate:'2026-07'}
 ];
 
 const defaultTodos=[
-{id:1,projectName:'申菱总部改造',projectId:'slzb',task:'活动中心方案',type:'design',subTasks:['室内篮球场设计','堆货区改羽毛球或匹克球场','增加卫生间','场地沿路一侧加宽绿化，做人行道，拓宽货车车道，货车闸门拓宽'],done:false,owner:'刘文辉,梁婷玉'},
-{id:2,projectName:'申菱总部改造',projectId:'slzb',task:'10个办公室门需拓宽到1500mm',type:'design',subTasks:[],done:false,owner:'刘文辉,梁婷玉'},
-{id:3,projectName:'申菱总部改造',projectId:'slzb',task:'陈总、曲部及总监办公室灰色金属门是否拓宽待定',type:'design',subTasks:[],done:false,owner:'刘文辉,梁婷玉'},
-{id:4,projectName:'申菱总部改造',projectId:'slzb',task:'地下室机房',type:'design',subTasks:['四个玻璃窗换大玻璃','机房外两级冲孔板吊顶包管道','机房水沟大样','地面做地砖，顶面喷深灰色'],done:false,owner:'刘文辉,梁婷玉'},
-{id:5,projectName:'申菱四基地',projectId:'sl4',task:'中秋节后会议',type:'design',subTasks:['复核总平面布局，核定间距是否符合规范','方案文本整理','与工艺敲定开会时间'],done:false,owner:'谢启欣'},
-{id:6,projectName:'顺德文化馆',projectId:'whg',task:'合同推进',type:'contract',subTasks:[],done:false,owner:'刘文辉,欧阳琳'},
-{id:7,projectName:'顺德糖厂',projectId:'stc',task:'合同推进',type:'contract',subTasks:[],done:false,owner:'刘文辉,欧阳琳'},
-{id:8,projectName:'容控小地块厂房加商业',projectId:'rk',task:'模型合并',type:'design',subTasks:[],done:false,owner:'梁婷玉,梁富成'},
-{id:9,projectName:'容控小地块厂房加商业',projectId:'rk',task:'总平面强排及初步技术指标',type:'design',subTasks:[],done:false,owner:'欧阳琳'},
-{id:10,projectName:'屏荣食品顺德新厂',projectId:'prsp',task:'复查幕墙图纸',type:'design',subTasks:[],done:false,owner:'谢启欣'},
-{id:11,projectName:'屏荣食品顺德新厂',projectId:'prsp',task:'跟进及推进规划变更及施工图审图流程',type:'process',subTasks:[],done:false,owner:'刘文辉,欧阳琳'},
-{id:12,projectName:'屏荣食品顺德新厂',projectId:'prsp',task:'门卫室幕墙发幕墙深化出图',type:'design',subTasks:[],done:false,owner:'谢启欣'},
-{id:13,projectName:'申菱五基地',projectId:'sl5',task:'跟进工艺提资',type:'process',subTasks:[],done:false,owner:'刘文辉'},
-{id:14,projectName:'申菱五基地',projectId:'sl5',task:'方案设计',type:'design',subTasks:['厂房与办公楼之间解决间距问题+模型推敲形体','总平面指标复核'],done:false,owner:'刘文辉,谢启欣'},
-{id:15,projectName:'方普',projectId:'fp',task:'9月29日带甲方走实地项目',type:'design',subTasks:[],done:false,owner:'刘文辉,谢启欣'}
+{id:1,projectName:'申菱总部改造',projectId:'slzb',task:'活动中心方案',type:'design',subTasks:[{text:'室内篮球场设计',link:''},{text:'堆货区改羽毛球或匹克球场',link:''},{text:'增加卫生间',link:''},{text:'场地沿路一侧加宽绿化，做人行道，拓宽货车车道，货车闸门拓宽',link:''}],done:false,owner:'刘文辉,梁婷玉',link:''},
+{id:2,projectName:'申菱总部改造',projectId:'slzb',task:'10个办公室门需拓宽到1500mm',type:'design',subTasks:[],done:false,owner:'刘文辉,梁婷玉',link:''},
+{id:3,projectName:'申菱总部改造',projectId:'slzb',task:'陈总、曲部及总监办公室灰色金属门是否拓宽待定',type:'design',subTasks:[],done:false,owner:'刘文辉,梁婷玉',link:''},
+{id:4,projectName:'申菱总部改造',projectId:'slzb',task:'地下室机房',type:'design',subTasks:[{text:'四个玻璃窗换大玻璃',link:''},{text:'机房外两级冲孔板吊顶包管道',link:''},{text:'机房水沟大样',link:''},{text:'地面做地砖，顶面喷深灰色',link:''}],done:false,owner:'刘文辉,梁婷玉',link:''},
+{id:5,projectName:'申菱四基地',projectId:'sl4',task:'中秋节后会议',type:'design',subTasks:[{text:'复核总平面布局，核定间距是否符合规范',link:''},{text:'方案文本整理',link:''},{text:'与工艺敲定开会时间',link:''}],done:false,owner:'谢启欣',link:''},
+{id:6,projectName:'顺德文化馆',projectId:'whg',task:'合同推进',type:'contract',subTasks:[],done:false,owner:'刘文辉,欧阳琳',link:''},
+{id:7,projectName:'顺德糖厂',projectId:'stc',task:'合同推进',type:'contract',subTasks:[],done:false,owner:'刘文辉,欧阳琳',link:''},
+{id:8,projectName:'容控小地块厂房加商业',projectId:'rk',task:'模型合并',type:'design',subTasks:[],done:false,owner:'梁婷玉,梁富成',link:''},
+{id:9,projectName:'容控小地块厂房加商业',projectId:'rk',task:'总平面强排及初步技术指标',type:'design',subTasks:[],done:false,owner:'欧阳琳',link:''},
+{id:10,projectName:'屏荣食品顺德新厂',projectId:'prsp',task:'复查幕墙图纸',type:'design',subTasks:[],done:false,owner:'谢启欣',link:''},
+{id:11,projectName:'屏荣食品顺德新厂',projectId:'prsp',task:'跟进及推进规划变更及施工图审图流程',type:'process',subTasks:[],done:false,owner:'刘文辉,欧阳琳',link:''},
+{id:12,projectName:'屏荣食品顺德新厂',projectId:'prsp',task:'门卫室幕墙发幕墙深化出图',type:'design',subTasks:[],done:false,owner:'谢启欣',link:''},
+{id:13,projectName:'申菱五基地',projectId:'sl5',task:'跟进工艺提资',type:'process',subTasks:[],done:false,owner:'刘文辉',link:''},
+{id:14,projectName:'申菱五基地',projectId:'sl5',task:'方案设计',type:'design',subTasks:[{text:'厂房与办公楼之间解决间距问题+模型推敲形体',link:''},{text:'总平面指标复核',link:''}],done:false,owner:'刘文辉,谢启欣',link:''},
+{id:15,projectName:'方普',projectId:'fp',task:'9月29日带甲方走实地项目',type:'design',subTasks:[],done:false,owner:'刘文辉,谢启欣',link:''}
 ];
 
-const defaultHeroMeta={title:'《康乃馨、百合、百合、玫瑰》',author:'Carnation, Lily, Lily, Rose',year:'1885—1886年，美国画家约翰·辛格·萨金特'};
+// 迁移旧数据：subTasks 从 string[] 转成 {text,link}[]
+const migrateTodos = (arr) => {
+  if(!Array.isArray(arr)) return arr;
+  return arr.map(t => ({
+    ...t,
+    link: t.link || '',
+    subTasks: (t.subTasks || []).map(s => typeof s === 'string' ? {text:s, link:''} : {text:s.text||'', link:s.link||''})
+  }));
+};
 
 createApp({
 setup(){
@@ -381,86 +467,200 @@ const isAdmin=ref(false);
 const searchKeyword=ref('');
 const searchResults=ref([]);
 const editingTodo=ref(null);
-const heroImage=ref('./hero.jpg');
-const heroInput=ref(null);
-const heroMeta=ref(JSON.parse(localStorage.getItem('studio_hero_meta'))||defaultHeroMeta);
+const linkDialogTarget=ref(null);
+const linkDialogValue=ref('');
+
+// 字号
+const fontSize=ref(localStorage.getItem('studio_fontsize')||'medium');
+const setFontSize=(s)=>{fontSize.value=s;localStorage.setItem('studio_fontsize',s);document.documentElement.setAttribute('data-fontsize',s)};
+
 const projects=ref(JSON.parse(localStorage.getItem('studio_projects'))||defaultProjects);
-const todos=ref(JSON.parse(localStorage.getItem('studio_todos'))||defaultTodos);
+const todos=ref(migrateTodos(JSON.parse(localStorage.getItem('studio_todos'))||defaultTodos));
 const newTodo=ref({task:'',projectId:'',owner:'',type:'design'});
 const newProject=ref({name:'',stage:stages[0],owner:''});
 const switchView=(v)=>{currentView.value=v;sidebarOpen.value=false};
+
+// 精神零食
+const heroes=ref([]);
+const currentHero=ref(null);
+
+const parseListTxt=(text)=>{
+  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
+  return lines.map(line=>{
+    const m=line.match(/^(\d+)\.(.+)$/);
+    if(!m) return null;
+    const id=parseInt(m[1]);
+    const content=m[2];
+    const parts=content.split(/[，,]/).map(s=>s.trim());
+    const title=parts[0]||'';
+    let englishTitle='', year='', author='';
+    if(parts.length>=2){
+      const p2=parts[1]||'';
+      const isYear=/^\d{4}/.test(p2);
+      if(isYear){
+        year=p2;
+        author=parts[2]||'';
+      }else{
+        englishTitle=p2;
+        year=parts[2]||'';
+        author=parts[3]||'';
+      }
+    }
+    return {id, title, englishTitle, year, author, url:`./heroes/${id}.jpg`};
+  }).filter(Boolean);
+};
+
+const loadHeroes=async()=>{
+  try{
+    const res=await fetch('./heroes/list.txt');
+    if(!res.ok) throw new Error('list.txt 未找到');
+    const text=await res.text();
+    heroes.value=parseListTxt(text);
+    pickTodayHero();
+  }catch(e){
+    console.warn('heroes/list.txt 读取失败', e);
+    heroes.value=[];
+  }
+};
+
+const pickTodayHero=()=>{
+  if(heroes.value.length===0){currentHero.value=null;return;}
+  const today=new Date().toISOString().slice(0,10);
+  const saved=JSON.parse(localStorage.getItem('hero_rotation')||'{}');
+  if(saved.date===today && saved.currentId){
+    const h=heroes.value.find(x=>x.id===saved.currentId);
+    if(h){currentHero.value=h;return;}
+  }
+  let usedIds=(saved.usedIds||[]).filter(id=>heroes.value.some(h=>h.id===id));
+  if(usedIds.length>=heroes.value.length) usedIds=[];
+  const remaining=heroes.value.filter(h=>!usedIds.includes(h.id));
+  const picked=remaining[Math.floor(Math.random()*remaining.length)];
+  usedIds.push(picked.id);
+  localStorage.setItem('hero_rotation',JSON.stringify({date:today,currentId:picked.id,usedIds}));
+  currentHero.value=picked;
+};
+
+const nextHero=()=>{
+  if(heroes.value.length<2) return;
+  const curId=currentHero.value?currentHero.value.id:null;
+  const others=heroes.value.filter(h=>h.id!==curId);
+  const next=others[Math.floor(Math.random()*others.length)];
+  currentHero.value=next;
+};
+
+// 日历
 const currentMonthName=ref('');
 const todayDate=ref('');
 const calendarDays=ref([]);
+
+const getLunarLabel=(y,m,d)=>{
+  try{
+    if(typeof Solar==='undefined') return '';
+    const solar=Solar.fromYmd(y,m,d);
+    const lunar=solar.getLunar();
+    const day=lunar.getDayInChinese();
+    if(day==='初一') return lunar.getMonthInChinese()+'月';
+    const jq=lunar.getJieQi();
+    if(jq) return jq;
+    return day;
+  }catch(e){return '';}
+};
+
 const generateCalendar=()=>{
-const now=new Date();const y=now.getFullYear(),m=now.getMonth();
-currentMonthName.value=`${y}年${m+1}月`;
-todayDate.value=`${m+1}月${now.getDate()}日`;
-const firstDay=new Date(y,m,1).getDay();
-const daysInMonth=new Date(y,m+1,0).getDate();
-const days=[];
-for(let i=0;i<firstDay;i++)days.push({date:'',isCurrent:false});
-for(let d=1;d<=daysInMonth;d++)days.push({date:d,isCurrent:true,isToday:d===now.getDate()});
-calendarDays.value=days;
+  const now=new Date();
+  const y=now.getFullYear(),m=now.getMonth();
+  currentMonthName.value=`${y}年${m+1}月`;
+  todayDate.value=`${m+1}月${now.getDate()}日`;
+  const firstDay=new Date(y,m,1).getDay();
+  const daysInMonth=new Date(y,m+1,0).getDate();
+  const days=[];
+  for(let i=0;i<firstDay;i++)days.push({date:'',isCurrent:false});
+  for(let d=1;d<=daysInMonth;d++){
+    const dt=new Date(y,m,d);
+    const dateStr=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dow=dt.getDay();
+    const h=HOLIDAYS_2026[dateStr];
+    const isHoliday=h&&h.type==='holiday';
+    const isWorkday=h&&h.type==='workday';
+    const isWeekend=(dow===0||dow===6)&&!isWorkday;
+    let label='';
+    if(isHoliday) label=h.name;
+    else if(isWorkday) label=h.name||'班';
+    else label=getLunarLabel(y,m+1,d);
+    days.push({date:d,isCurrent:true,isToday:d===now.getDate(),isWeekend:isWeekend&&!isHoliday,isHoliday,isWorkday,label});
+  }
+  calendarDays.value=days;
 };
-generateCalendar();
-const savedHero=localStorage.getItem('studio_hero');
-if(savedHero)heroImage.value=savedHero;
+
 const checkTime=()=>{const h=new Date().getHours();document.documentElement.classList.toggle('dark',h>=18||h<7)};
-onMounted(()=>{checkTime();setInterval(checkTime,60000)});
-const pickHero=()=>{heroInput.value.click()};
-const uploadHero=(e)=>{
-const file=e.target.files[0];if(!file)return;
-if(file.size>2*1024*1024){alert('图片超过2MB，请压缩');return}
-const reader=new FileReader();
-reader.onload=(ev)=>{heroImage.value=ev.target.result;try{localStorage.setItem('studio_hero',ev.target.result)}catch(err){alert('图片太大')}};
-reader.readAsDataURL(file);
-};
-const saveHeroMeta=(field,event)=>{
-const val=event.target.innerText.trim();
-heroMeta.value[field]=val;
-localStorage.setItem('studio_hero_meta',JSON.stringify(heroMeta.value));
-};
+
+onMounted(async()=>{
+  checkTime();
+  document.documentElement.setAttribute('data-fontsize',fontSize.value);
+  setInterval(checkTime,60000);
+  generateCalendar();
+  await loadHeroes();
+});
+
 const doSearch=()=>{
-const kw=searchKeyword.value.trim().toLowerCase();
-if(!kw){searchResults.value=[];return}
-const results=[];
-projects.value.forEach(p=>{if(p.name.toLowerCase().includes(kw))results.push({type:'项目',title:p.name,projectId:p.id})});
-todos.value.forEach(t=>{if(t.task.toLowerCase().includes(kw)||t.projectName.toLowerCase().includes(kw))results.push({type:'待办',title:t.task,projectId:t.projectId})});
-searchResults.value=results.slice(0,20);
+  const kw=searchKeyword.value.trim().toLowerCase();
+  if(!kw){searchResults.value=[];return}
+  const results=[];
+  projects.value.forEach(p=>{if(p.name.toLowerCase().includes(kw))results.push({type:'项目',title:p.name,projectId:p.id})});
+  todos.value.forEach(t=>{if(t.task.toLowerCase().includes(kw)||t.projectName.toLowerCase().includes(kw))results.push({type:'待办',title:t.task,projectId:t.projectId})});
+  searchResults.value=results.slice(0,20);
 };
 const goToResult=(r)=>{searchKeyword.value='';searchResults.value=[];goToProject(r.projectId)};
 const groupedTodos=computed(()=>{const g={};todos.value.filter(t=>!t.done).forEach(t=>{if(!g[t.projectName])g[t.projectName]=[];g[t.projectName].push(t)});return g});
-const pendingTodos=computed(()=>todos.value.filter(t=>!t.done));
 const doneTodos=computed(()=>todos.value.filter(t=>t.done));
 const getDotColor=(todo)=>{if(todo.type==='design'||todo.type==='meeting')return 'dot-red';if(todo.type==='process')return 'dot-blue';if(todo.type==='contract')return 'dot-yellow';return 'dot-red'};
 const getProjectStyle=(proj)=>{const c=projCategory[proj.id]||'other';return {background:categoryBgColor[c],borderLeft:'4px solid '+categoryBorderColor[c]}};
 const getStageColor=(stage)=>stageColor[stage]||'bg-gray-100 text-gray-500';
-const getRingGray=(progress)=>{
-if(progress<25)return '#c8c8c8';
-if(progress<50)return '#a0a0a0';
-if(progress<75)return '#6b6b6b';
-return '#2a2a2a';
-};
+const getProjStages=(proj)=>Array.isArray(proj.stage)?proj.stage:[proj.stage];
+const getRingGray=(p)=>{if(p<25)return '#c8c8c8';if(p<50)return '#a0a0a0';if(p<75)return '#6b6b6b';return '#2a2a2a'};
+
 const saveData=()=>{localStorage.setItem('studio_projects',JSON.stringify(projects.value));localStorage.setItem('studio_todos',JSON.stringify(todos.value))};
 const doLogin=()=>{if(loginPwd.value===ADMIN_PASSWORD){isAdmin.value=true;showLogin.value=false;loginPwd.value=''}else alert('密码错误')};
+
 const addTodo=()=>{
-if(!newTodo.value.task.trim())return alert('请填写待办内容');
-const proj=projects.value.find(p=>p.id===newTodo.value.projectId);
-todos.value.unshift({id:Date.now(),task:newTodo.value.task,projectId:newTodo.value.projectId,projectName:proj?proj.name:'未关联项目',type:newTodo.value.type,subTasks:[],done:false,owner:newTodo.value.owner,completedBy:''});
-newTodo.value={task:'',projectId:'',owner:'',type:'design'};showAddTodo.value=false;saveData();
+  if(!newTodo.value.task.trim())return alert('请填写待办内容');
+  const proj=projects.value.find(p=>p.id===newTodo.value.projectId);
+  todos.value.unshift({id:Date.now(),task:newTodo.value.task,projectId:newTodo.value.projectId,projectName:proj?proj.name:'未关联项目',type:newTodo.value.type,subTasks:[],done:false,owner:newTodo.value.owner,completedBy:'',link:''});
+  newTodo.value={task:'',projectId:'',owner:'',type:'design'};
+  showAddTodo.value=false;
+  saveData();
 };
-const toggleTodo=(todo)=>{todo.done=!todo.done;if(todo.done)todo.completedBy=prompt('请输入完成人姓名')||'未知';saveData()};
+
+const toggleTodo=(todo)=>{
+  if(todo.done){
+    if(!confirm('恢复为未完成？')) return;
+    todo.done=false;todo.completedBy='';
+  }else{
+    todo.done=true;
+    todo.completedBy=prompt('请输入完成人姓名')||'未知';
+  }
+  saveData();
+};
+
 const deleteTodo=(todo)=>{if(!isAdmin.value)return alert('只有管理员才能删除');if(!confirm('确定删除？'))return;todos.value=todos.value.filter(t=>t.id!==todo.id);saveData()};
 const editTodo=(todo)=>{editingTodo.value=JSON.parse(JSON.stringify(todo))};
 const saveTodoEdit=()=>{const idx=todos.value.findIndex(t=>t.id===editingTodo.value.id);if(idx>=0)todos.value[idx]={...editingTodo.value};saveData();editingTodo.value=null};
+
+const openLinkDialog=(target)=>{linkDialogTarget.value=target;linkDialogValue.value=target.link||''};
+const saveLink=()=>{linkDialogTarget.value.link=linkDialogValue.value.trim();saveData();linkDialogTarget.value=null};
+const deleteLink=()=>{if(!confirm('删除此链接？'))return;linkDialogTarget.value.link='';saveData();linkDialogTarget.value=null};
+
 const addProject=()=>{
-if(!newProject.value.name.trim())return alert('请填写项目名称');
-projects.value.push({id:'proj-'+Date.now(),name:newProject.value.name,stage:newProject.value.stage,owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7)});
-newProject.value={name:'',stage:stages[0],owner:''};showAddProject.value=false;saveData();
+  if(!newProject.value.name.trim())return alert('请填写项目名称');
+  projects.value.push({id:'proj-'+Date.now(),name:newProject.value.name,stage:[newProject.value.stage],owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7)});
+  newProject.value={name:'',stage:stages[0],owner:''};
+  showAddProject.value=false;
+  saveData();
 };
+
 const goToProject=(projectId)=>{window.location.href=`./checklist.html?project=${projectId}`};
-return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,projects,groupedTodos,pendingTodos,doneTodos,newTodo,newProject,heroImage,heroInput,heroMeta,currentMonthName,todayDate,calendarDays,members,stages,getDotColor,getProjectStyle,getStageColor,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,addProject,goToProject,switchView,pickHero,uploadHero,saveHeroMeta};
+
+return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,linkDialogTarget,linkDialogValue,projects,groupedTodos,doneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,openLinkDialog,saveLink,deleteLink,addProject,goToProject,switchView,setFontSize,nextHero};
 }
 }).mount('#app');
 </script>
