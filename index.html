@@ -10,43 +10,46 @@
 :root{--bg:#eef1f6;--text:#2d3748;--card:#fff;--primary:#7b8bb8;--border:#d8dee9;--sidebar-bg:#3e4a6b;--sidebar-text:#e8ecf4;--sidebar-active:#5b6ba0;--dot-red:#c98a8a;--dot-blue:#8fa3c8;--dot-yellow:#d4c8a8}
 .dark{--bg:#1a1f2e;--text:#e8ecf4;--card:#252b3d;--primary:#8fa3c8;--border:#3a4258;--sidebar-bg:#141824;--sidebar-text:#a8b4d0;--sidebar-active:#3e4a6b;--dot-red:#d4a0a0;--dot-blue:#a8b8d8;--dot-yellow:#e0d4b0}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0}
-.sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:260px;transition:.3s;display:flex;flex-direction:column;overflow-y:auto}
-.sidebar-nav a{display:block;padding:14px 24px;color:var(--sidebar-text);opacity:.75;transition:.2s;font-size:16px;border-left:3px solid transparent;text-decoration:none;cursor:pointer}
+.sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:240px;transition:.3s;display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-nav a{display:block;padding:13px 22px;color:var(--sidebar-text);opacity:.75;transition:.2s;font-size:15px;border-left:3px solid transparent;text-decoration:none;cursor:pointer}
 .sidebar-nav a:hover{opacity:1;background:rgba(255,255,255,.05)}
 .sidebar-nav a.active{opacity:1;background:var(--sidebar-active);font-weight:bold;border-left-color:var(--sidebar-text)}
-.main-content{flex:1;padding:20px;overflow-y:auto;height:100vh}
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px}
+.main-content{flex:1;padding:18px;overflow-y:auto;height:100vh}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px}
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
 .dot-red{background:var(--dot-red)}.dot-blue{background:var(--dot-blue)}.dot-yellow{background:var(--dot-yellow)}
 .modal-mask{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
 .ring-svg{transform:rotate(-90deg)}
-.scroll-area{max-height:360px;overflow-y:auto}
-.scroll-area::-webkit-scrollbar{width:6px}
+.scroll-area{max-height:260px;overflow-y:auto}
+.scroll-area::-webkit-scrollbar{width:5px}
 .scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-.stage-tag{font-size:11px;padding:3px 10px;border-radius:9999px;font-weight:500;display:inline-block}
-.hero-wrap{position:relative;width:100%;height:340px;border-radius:16px;overflow:hidden;cursor:pointer}
-.hero-img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
-.hero-wrap:hover .hero-img{transform:scale(1.02)}
-.hero-plus{position:absolute;top:12px;left:12px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.4);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:300;pointer-events:none}
-.todo-row{font-size:13px}
+.stage-tag{font-size:10.5px;padding:2px 8px;border-radius:9999px;font-weight:500;display:inline-block}
+.hero-img-wrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:14px;overflow:hidden;cursor:pointer;background:#ddd}
+.hero-img{width:100%;height:100%;object-fit:cover;transition:transform .3s;display:block}
+.hero-img-wrap:hover .hero-img{transform:scale(1.03)}
+.hero-plus{position:absolute;top:10px;left:10px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.45);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:300;pointer-events:none}
+.hero-meta{font-size:12px;line-height:1.6}
+.hero-meta .title{font-size:14px;font-weight:bold;margin-bottom:4px}
+.hero-meta .author{opacity:.7}
+.todo-row{font-size:12px}
 .edit-btn{opacity:.4;transition:.2s}
 .todo-row:hover .edit-btn{opacity:1}
-.calendar-mini{background:rgba(0,0,0,.15);border-radius:12px;padding:12px;margin:0 12px 12px}
-.calendar-mini .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:11px}
-.calendar-mini .day{padding:3px 0;border-radius:4px;color:var(--sidebar-text);opacity:.7}
+.calendar-mini{background:rgba(0,0,0,.15);border-radius:10px;padding:10px;margin:0 10px 10px}
+.calendar-mini .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:10px}
+.calendar-mini .day{padding:2px 0;border-radius:3px;color:var(--sidebar-text);opacity:.7}
 .calendar-mini .day.today{background:var(--sidebar-text);color:var(--sidebar-bg);font-weight:bold;opacity:1}
 .calendar-mini .day.empty{opacity:.15}
-@media(max-width:768px){.sidebar{position:fixed;left:-260px;z-index:50;height:100vh}.sidebar.open{left:0}.main-content{padding:12px}.hero-wrap{height:220px}}
+@media(max-width:768px){.sidebar{position:fixed;left:-240px;z-index:50;height:100vh}.sidebar.open{left:0}.main-content{padding:12px}}
 </style>
 </head>
 <body>
 <div id="app" class="flex h-screen overflow-hidden">
 <aside class="sidebar" :class="{'open':sidebarOpen}">
-<div class="p-6 border-b border-white/10">
-<h1 class="text-2xl font-bold leading-tight">立田工作室</h1>
-<h2 class="text-base opacity-80 mt-1">项目指挥台</h2>
+<div class="p-5 border-b border-white/10">
+<h1 class="text-xl font-bold leading-tight">立田工作室</h1>
+<h2 class="text-sm opacity-80 mt-1">项目指挥台</h2>
 </div>
-<nav class="sidebar-nav py-4">
+<nav class="sidebar-nav py-3">
 <a @click="switchView('home')" :class="{'active':currentView==='home'}">主页</a>
 <a @click="switchView('todos')" :class="{'active':currentView==='todos'}">最近待办</a>
 <a @click="switchView('projects')" :class="{'active':currentView==='projects'}">项目总览</a>
@@ -55,9 +58,9 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <a href="https://chat.deepseek.com" target="_blank">DeepSeek</a>
 <a @click="switchView('settings')" :class="{'active':currentView==='settings'}">设置</a>
 </nav>
-<div class="mt-auto pb-4">
+<div class="mt-auto pb-3">
 <div class="calendar-mini">
-<div class="flex justify-between items-center mb-2 px-1">
+<div class="flex justify-between items-center mb-1.5 px-1">
 <span class="text-xs font-bold">{{ currentMonthName }}</span>
 <span class="text-xs opacity-60">{{ todayDate }}</span>
 </div>
@@ -70,10 +73,10 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </aside>
 
 <main class="main-content">
-<div class="flex items-center gap-3 mb-4">
+<div class="flex items-center gap-3 mb-3">
 <button @click="sidebarOpen=!sidebarOpen" class="md:hidden p-2 bg-[var(--card)] rounded-lg border border-[var(--border)]">☰</button>
 <div class="flex-1 relative">
-<input v-model="searchKeyword" @input="doSearch" placeholder="搜索项目、待办..." class="w-full px-4 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-sm focus:outline-none" style="color:var(--text)">
+<input v-model="searchKeyword" @input="doSearch" placeholder="搜索项目、待办..." class="w-full px-4 py-2 rounded-xl border border-[var(--border)] bg-[var(--card)] text-sm focus:outline-none" style="color:var(--text)">
 <div v-if="searchResults.length>0&&searchKeyword" class="absolute top-full left-0 right-0 mt-2 card p-3 max-h-80 overflow-y-auto z-40 shadow-xl">
 <div v-for="(r,idx) in searchResults" :key="idx" class="py-2 border-b border-[var(--border)] last:border-0 cursor-pointer" @click="goToResult(r)">
 <div class="text-xs opacity-50">{{ r.type }}</div>
@@ -81,52 +84,69 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 </div>
-<button v-if="!isAdmin" @click="showLogin=true" class="px-3 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm whitespace-nowrap">管理员入口</button>
-<button v-else @click="isAdmin=false" class="px-3 py-2.5 rounded-xl text-white text-sm whitespace-nowrap font-bold" style="background:var(--primary)">已登录</button>
+<button v-if="!isAdmin" @click="showLogin=true" class="px-3 py-2 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm whitespace-nowrap">管理员入口</button>
+<button v-else @click="isAdmin=false" class="px-3 py-2 rounded-xl text-white text-sm whitespace-nowrap font-bold" style="background:var(--primary)">已登录</button>
 </div>
 
 <div v-if="currentView==='home'">
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-<div class="lg:col-span-2 space-y-4">
-<div class="hero-wrap" @click="pickHero">
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+<!-- 左侧栏：hero + 最近待办 -->
+<div class="lg:col-span-2 space-y-3">
+<!-- Hero 图片 + 来历 -->
+<div class="card p-3">
+<div class="flex gap-3">
+<div class="hero-img-wrap" style="flex:0 0 60%" @click="pickHero">
 <img :src="heroImage" alt="Inspiration" class="hero-img">
 <div class="hero-plus">+</div>
 <input ref="heroInput" type="file" accept="image/*" class="hidden" @change="uploadHero">
 </div>
-<div class="card p-4">
-<div class="flex justify-between items-center mb-3">
+<div class="flex-1 min-w-0 flex flex-col">
+<div class="hero-meta">
+<div class="title" contenteditable="true" @blur="saveHeroMeta('title',$event)">{{ heroMeta.title }}</div>
+<div class="author" contenteditable="true" @blur="saveHeroMeta('author',$event)">{{ heroMeta.author }}</div>
+<div class="author" contenteditable="true" @blur="saveHeroMeta('year',$event)">{{ heroMeta.year }}</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 最近待办（紧凑） -->
+<div class="card p-3">
+<div class="flex justify-between items-center mb-2">
 <h3 class="font-bold text-sm">最近待办</h3>
 <button @click="switchView('todos')" class="text-xs hover:underline" style="color:var(--primary)">全部</button>
 </div>
 <div class="scroll-area space-y-0 pr-1">
-<div v-for="todo in pendingTodos" :key="todo.id" class="todo-row flex items-center gap-2 py-1 border-b border-[var(--border)] last:border-0">
+<div v-for="todo in pendingTodos" :key="todo.id" class="todo-row flex items-center gap-1.5 py-1 border-b border-[var(--border)] last:border-0">
 <span class="dot" :class="getDotColor(todo)"></span>
-<input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="w-3.5 h-3.5 cursor-pointer flex-shrink-0">
-<div class="flex-1 min-w-0 flex items-center gap-2">
+<input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="w-3 h-3 cursor-pointer flex-shrink-0">
+<div class="flex-1 min-w-0 flex items-center gap-1.5">
 <span class="font-medium truncate">{{ todo.task }}</span>
-<span class="text-[11px] opacity-60 truncate">· {{ todo.projectName }}</span>
-<span class="text-[11px] opacity-60 truncate">· {{ todo.owner||'未指定' }}</span>
+<span class="text-[10px] opacity-60 truncate">· {{ todo.projectName }}</span>
+<span class="text-[10px] opacity-60 truncate">· {{ todo.owner||'未指定' }}</span>
 </div>
-<button @click="editTodo(todo)" class="edit-btn text-xs p-1" style="color:var(--primary)">✎</button>
-</div>
-</div>
+<button @click="editTodo(todo)" class="edit-btn text-xs p-0.5" style="color:var(--primary)">✎</button>
 </div>
 </div>
-<div>
-<h3 class="font-bold text-sm mb-3">项目进度</h3>
-<div class="space-y-3">
-<div v-for="proj in projects" :key="proj.id" class="card p-4 cursor-pointer transition flex items-center gap-4" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
-<div class="relative w-16 h-16 flex-shrink-0">
-<svg class="ring-svg w-16 h-16" viewBox="0 0 36 36">
+</div>
+</div>
+
+<!-- 右侧栏：项目进度（大区域） -->
+<div class="lg:col-span-3">
+<h3 class="font-bold text-sm mb-2">项目进度</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<div v-for="proj in projects" :key="proj.id" class="card p-3 cursor-pointer transition flex items-center gap-3" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
+<div class="relative w-14 h-14 flex-shrink-0">
+<svg class="ring-svg w-14 h-14" viewBox="0 0 36 36">
 <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e5e7eb" stroke-width="3"></circle>
 <circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3" stroke="#1a1a1a" :stroke-dasharray="100" :stroke-dashoffset="100-proj.progress" stroke-linecap="round"></circle>
 </svg>
-<div class="absolute inset-0 flex items-center justify-center text-sm font-bold" style="color:var(--text)">{{ proj.progress }}%</div>
+<div class="absolute inset-0 flex items-center justify-center text-xs font-bold" style="color:var(--text)">{{ proj.progress }}%</div>
 </div>
 <div class="flex-1 min-w-0">
-<div class="font-bold text-[15px] truncate">{{ proj.name }}</div>
-<div class="text-xs opacity-60 mt-1">开始：{{ proj.startDate }}</div>
-<span class="stage-tag mt-2" :class="getStageColor(proj.stage)">{{ proj.stage }}</span>
+<div class="font-bold text-sm truncate">{{ proj.name }}</div>
+<div class="text-[11px] opacity-60 mt-0.5">开始：{{ proj.startDate }}</div>
+<span class="stage-tag mt-1.5" :class="getStageColor(proj.stage)">{{ proj.stage }}</span>
 </div>
 </div>
 </div>
@@ -290,6 +310,7 @@ const projCategory={'sl4':'shenling','slzb':'shenling','sl5':'shenling','slgz':'
 const categoryBgColor={'shenling':'rgba(143,163,200,0.12)','industrial':'rgba(163,184,163,0.12)','renovation':'rgba(184,174,200,0.12)','small':'rgba(212,200,168,0.15)','other':'rgba(212,184,184,0.12)'};
 const categoryBorderColor={'shenling':'#8fa3c8','industrial':'#a3b8a3','renovation':'#b8aec8','small':'#d4c8a8','other':'#d4b8b8'};
 const stageColor={'一、前期强排':'bg-gray-200 text-gray-600','二、方案设计':'bg-blue-100 text-blue-700','三、方案深化':'bg-blue-200 text-blue-800','四、报建图':'bg-blue-400 text-white','五、施工图（含幕墙深化）':'bg-indigo-500 text-white','六、室内设计':'bg-orange-300 text-orange-900','七、室内设计施工图':'bg-orange-500 text-white','八、施工中':'bg-gray-700 text-white'};
+
 const defaultProjects=[
 {id:'sl4',name:'申菱四基地',stage:'三、方案深化',owner:'刘文辉',note:'方案重做深化',filed:false,contracted:true,progress:40,startDate:'2026-03'},
 {id:'slzb',name:'申菱总部改造',stage:'八、施工中',owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08'},
@@ -305,6 +326,7 @@ const defaultProjects=[
 {id:'rk',name:'容控小地块厂房加商业',stage:'一、前期强排',owner:'刘文辉',note:'前期方案',filed:false,contracted:false,progress:15,startDate:'2026-09'},
 {id:'sq',name:'社-顺德本土文化策展',stage:'三、方案深化',owner:'梁婷玉',note:'建模阶段',filed:false,contracted:false,progress:30,startDate:'2026-07'}
 ];
+
 const defaultTodos=[
 {id:1,projectName:'申菱总部改造',projectId:'slzb',task:'活动中心方案',type:'design',subTasks:['室内篮球场设计','堆货区改羽毛球或匹克球场','增加卫生间','场地沿路一侧加宽绿化，做人行道，拓宽货车车道，货车闸门拓宽'],done:false,owner:'刘文辉,梁婷玉'},
 {id:2,projectName:'申菱总部改造',projectId:'slzb',task:'10个办公室门需拓宽到1500mm',type:'design',subTasks:[],done:false,owner:'刘文辉,梁婷玉'},
@@ -322,6 +344,13 @@ const defaultTodos=[
 {id:14,projectName:'申菱五基地',projectId:'sl5',task:'方案设计',type:'design',subTasks:['厂房与办公楼之间解决间距问题+模型推敲形体','总平面指标复核'],done:false,owner:'刘文辉,谢启欣'},
 {id:15,projectName:'方普',projectId:'fp',task:'9月29日带甲方走实地项目',type:'design',subTasks:[],done:false,owner:'刘文辉,谢启欣'}
 ];
+
+const defaultHeroMeta={
+title:'《康乃馨、百合、百合、玫瑰》',
+author:'Carnation, Lily, Lily, Rose',
+year:'1885—1886年，美国画家约翰·辛格·萨金特'
+};
+
 createApp({
 setup(){
 const currentView=ref('home');
@@ -337,6 +366,7 @@ const searchResults=ref([]);
 const editingTodo=ref(null);
 const heroImage=ref('./hero.jpg');
 const heroInput=ref(null);
+const heroMeta=ref(JSON.parse(localStorage.getItem('studio_hero_meta'))||defaultHeroMeta);
 const projects=ref(JSON.parse(localStorage.getItem('studio_projects'))||defaultProjects);
 const todos=ref(JSON.parse(localStorage.getItem('studio_todos'))||defaultTodos);
 const newTodo=ref({task:'',projectId:'',owner:'',type:'design'});
@@ -368,6 +398,11 @@ if(file.size>2*1024*1024){alert('图片超过2MB，请压缩');return}
 const reader=new FileReader();
 reader.onload=(ev)=>{heroImage.value=ev.target.result;try{localStorage.setItem('studio_hero',ev.target.result)}catch(err){alert('图片太大')}};
 reader.readAsDataURL(file);
+};
+const saveHeroMeta=(field,event)=>{
+const val=event.target.innerText.trim();
+heroMeta.value[field]=val;
+localStorage.setItem('studio_hero_meta',JSON.stringify(heroMeta.value));
 };
 const doSearch=()=>{
 const kw=searchKeyword.value.trim().toLowerCase();
@@ -402,7 +437,7 @@ projects.value.push({id:'proj-'+Date.now(),name:newProject.value.name,stage:newP
 newProject.value={name:'',stage:stages[0],owner:''};showAddProject.value=false;saveData();
 };
 const goToProject=(projectId)=>{window.location.href=`./checklist.html?project=${projectId}`};
-return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,projects,groupedTodos,pendingTodos,doneTodos,newTodo,newProject,heroImage,heroInput,currentMonthName,todayDate,calendarDays,members,stages,getDotColor,getProjectStyle,getStageColor,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,addProject,goToProject,switchView,pickHero,uploadHero};
+return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,projects,groupedTodos,pendingTodos,doneTodos,newTodo,newProject,heroImage,heroInput,heroMeta,currentMonthName,todayDate,calendarDays,members,stages,getDotColor,getProjectStyle,getStageColor,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,addProject,goToProject,switchView,pickHero,uploadHero,saveHeroMeta};
 }
 }).mount('#app');
 </script>
