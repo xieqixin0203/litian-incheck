@@ -38,6 +38,11 @@ html[data-fontsize="large"]{font-size:24px}
   --completed-bg:#E5DFC0; --future-bg:#0A3323; --future-text:#F7F4D5;
   --btn-secondary:#839958; --btn-dark:#0A3323;
 }
+[data-theme="fresh"]{
+  --bg:#F8EBE8; --text:#5A3735; --card:#FFFFFF; --primary:#B77D77; --border:#E5C7C2;
+  --completed-bg:#E5C7C2; --future-bg:#5A3735; --future-text:#EAC3BE;
+  --btn-secondary:#9E544A; --btn-dark:#5A3735;
+}
 
 *{box-sizing:border-box}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);margin:0;padding:12px;transition:.3s}
@@ -111,6 +116,7 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
         <button @click="setTheme('light')" :class="{active:theme==='light'}">浅色</button>
         <button @click="setTheme('dark')" :class="{active:theme==='dark'}">深色</button>
         <button @click="setTheme('green')" :class="{active:theme==='green'}">雅绿</button>
+        <button @click="setTheme('fresh')" :class="{active:theme==='fresh'}">清新</button>
       </div>
       <button @click="exportData" class="btn-export px-3 py-1.5 rounded-lg text-xs">导出</button>
       <button @click="importData" class="btn-import px-3 py-1.5 rounded-lg text-xs">导入</button>

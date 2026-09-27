@@ -39,6 +39,11 @@ html[data-fontsize="large"]{font-size:24px}
   --sidebar-bg:#0A3323; --sidebar-text:#F7F4D5; --sidebar-active:#105666;
   --dot-red:#D3968C; --dot-blue:#105666; --dot-yellow:#C9B87C;
 }
+[data-theme="fresh"]{
+  --bg:#F8EBE8; --text:#5A3735; --card:#FFFFFF; --primary:#B77D77; --border:#E5C7C2;
+  --sidebar-bg:#5A3735; --sidebar-text:#EAC3BE; --sidebar-active:#9E544A;
+  --dot-red:#9E544A; --dot-blue:#B77D77; --dot-yellow:#EAC3BE;
+}
 
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0;height:100vh;overflow:hidden}
 .sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:240px;transition:.3s;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
@@ -78,6 +83,8 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .calendar-mini .cell.workday{background:rgba(160,160,160,.3)}
 .calendar-mini .cell.today{outline:2px solid var(--sidebar-text);font-weight:bold}
 .calendar-mini .cell .lunar.holiday-name{color:#ffd9d9;font-weight:bold}
+.cal-nav{background:transparent;border:none;color:var(--sidebar-text);opacity:.6;cursor:pointer;font-size:14px;line-height:1;padding:0 4px;font-weight:bold}
+.cal-nav:hover{opacity:1}
 .setting-row{display:flex;align-items:center;padding:6px 14px 2px 14px;gap:4px;flex-wrap:wrap}
 .setting-row button{font-size:11px;padding:4px 8px;border-radius:4px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--sidebar-text);cursor:pointer}
 .setting-row button.active{background:var(--sidebar-active);font-weight:bold}
@@ -146,10 +153,15 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <button @click="setTheme('light')" :class="{active:theme==='light'}">浅色</button>
 <button @click="setTheme('dark')"  :class="{active:theme==='dark'}">深色</button>
 <button @click="setTheme('green')" :class="{active:theme==='green'}">雅绿</button>
+<button @click="setTheme('fresh')" :class="{active:theme==='fresh'}">清新</button>
 </div>
 <div class="calendar-mini">
 <div class="flex justify-between items-center mb-1.5 px-1">
-<span class="text-xs font-bold">{{ currentMonthName }}</span>
+<div class="flex items-center gap-1">
+<button @click="prevMonth" class="cal-nav" title="上个月">‹</button>
+<span class="text-xs font-bold cursor-pointer" @click="resetMonth" title="回到本月">{{ currentMonthName }}</span>
+<button @click="nextMonth" class="cal-nav" title="下个月">›</button>
+</div>
 <span class="text-xs opacity-60">{{ todayDate }}</span>
 </div>
 <div class="grid">
@@ -364,10 +376,11 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <button @click="setFontSize('large')"  :class="['px-3 py-1 rounded', fontSize==='large'?'text-white':'']" :style="fontSize==='large'?'background:var(--primary)':''">大</button>
 </div>
 <p class="text-sm opacity-70 mb-3">主题：</p>
-<div class="flex gap-2">
+<div class="flex gap-2 flex-wrap">
 <button @click="setTheme('light')" :class="['px-3 py-1 rounded', theme==='light'?'text-white':'']" :style="theme==='light'?'background:var(--primary)':''">浅色</button>
 <button @click="setTheme('dark')"  :class="['px-3 py-1 rounded', theme==='dark'?'text-white':'']" :style="theme==='dark'?'background:var(--primary)':''">深色</button>
 <button @click="setTheme('green')" :class="['px-3 py-1 rounded', theme==='green'?'text-white':'']" :style="theme==='green'?'background:var(--primary)':''">雅绿</button>
+<button @click="setTheme('fresh')" :class="['px-3 py-1 rounded', theme==='fresh'?'text-white':'']" :style="theme==='fresh'?'background:var(--primary)':''">清新</button>
 </div>
 </div>
 </div>
@@ -525,7 +538,7 @@ const {createApp,ref,computed,onMounted}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
 const ADMIN_PASSWORD='litian2024';
-const DATA_VERSION='2026-09-27-v11';
+const DATA_VERSION='2026-09-27-v12';
 
 const HOLIDAYS_2026 = {
   '2026-01-01': {type:'holiday', name:'元旦'},'2026-01-02': {type:'holiday', name:'元旦'},'2026-01-03': {type:'holiday', name:'元旦'},
@@ -690,6 +703,7 @@ setup(){
   const currentMonthName=ref('');
   const todayDate=ref('');
   const calendarDays=ref([]);
+  const calendarViewDate=ref(new Date());
 
   const getLunarLabel=(y,m,d)=>{
     try{
@@ -706,9 +720,12 @@ setup(){
 
   const generateCalendar=()=>{
     const now=new Date();
-    const y=now.getFullYear(),m=now.getMonth();
+    const todayY=now.getFullYear(),todayM=now.getMonth(),todayD=now.getDate();
+    const view=calendarViewDate.value;
+    const y=view.getFullYear(),m=view.getMonth();
     currentMonthName.value=`${y}年${m+1}月`;
-    todayDate.value=`${m+1}月${now.getDate()}日`;
+    todayDate.value=`${todayM+1}月${todayD}日`;
+    const isCurrentMonth=(y===todayY&&m===todayM);
     const firstDay=new Date(y,m,1).getDay();
     const daysInMonth=new Date(y,m+1,0).getDate();
     const days=[];
@@ -725,9 +742,28 @@ setup(){
       if(isHoliday) label=h.name;
       else if(isWorkday) label=h.name||'班';
       else label=getLunarLabel(y,m+1,d);
-      days.push({date:d,isCurrent:true,isToday:d===now.getDate(),isWeekend:isWeekend&&!isHoliday,isHoliday,isWorkday,label});
+      days.push({date:d,isCurrent:true,isToday:isCurrentMonth&&d===todayD,isWeekend:isWeekend&&!isHoliday,isHoliday,isWorkday,label});
     }
     calendarDays.value=days;
+  };
+
+  const prevMonth=()=>{
+    const d=new Date(calendarViewDate.value);
+    d.setDate(1);
+    d.setMonth(d.getMonth()-1);
+    calendarViewDate.value=d;
+    generateCalendar();
+  };
+  const nextMonth=()=>{
+    const d=new Date(calendarViewDate.value);
+    d.setDate(1);
+    d.setMonth(d.getMonth()+1);
+    calendarViewDate.value=d;
+    generateCalendar();
+  };
+  const resetMonth=()=>{
+    calendarViewDate.value=new Date();
+    generateCalendar();
   };
 
   onMounted(async()=>{
@@ -830,7 +866,7 @@ setup(){
 
   const goToProject=(projectId)=>{window.location.href=`./checklist.html?project=${projectId}`};
 
-  return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,editingSubTask,editingProject,linkDialogTarget,linkDialogValue,projects,groupedTodos,doneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,theme,getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,editSubTask,saveSubTask,openLinkDialog,saveLink,deleteLink,addProject,editProject,saveProjectEdit,deleteProjectConfirm,toggleFiled,toggleContracted,goToProject,switchView,setFontSize,setTheme,nextHero};
+  return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,editingSubTask,editingProject,linkDialogTarget,linkDialogValue,projects,groupedTodos,doneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,theme,getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,editSubTask,saveSubTask,openLinkDialog,saveLink,deleteLink,addProject,editProject,saveProjectEdit,deleteProjectConfirm,toggleFiled,toggleContracted,goToProject,switchView,setFontSize,setTheme,nextHero,prevMonth,nextMonth,resetMonth};
 }
 }).mount('#app');
 </script>
