@@ -4,17 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>项目检查清单</title>
+<script>
+(function(){
+  try{
+    var f=localStorage.getItem('studio_fontsize_v2')||'medium';
+    var t=localStorage.getItem('studio_theme')||'dark';
+    document.documentElement.setAttribute('data-fontsize',f);
+    document.documentElement.setAttribute('data-theme',t);
+  }catch(e){}
+})();
+</script>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js"></script>
 <style>
+[v-cloak]{display:none !important}
 html{font-size:16px}
-html[data-fontsize="small"]{font-size:14px}
-html[data-fontsize="large"]{font-size:18px}
-html[data-fontsize="xlarge"]{font-size:20px}
-:root{--bg:#eef1f6;--text:#2d3748;--card:#fff;--primary:#7b8bb8;--border:#d8dee9;--completed-bg:#c8d0dc;--future-bg:#5a6678;--future-text:#e8ecf4}
-.dark{--bg:#1a1f2e;--text:#e8ecf4;--card:#252b3d;--primary:#8fa3c8;--border:#3a4258;--completed-bg:#3a4258;--future-bg:#0f1320;--future-text:#6b7590}
+html[data-fontsize="small"]{font-size:16px}
+html[data-fontsize="medium"]{font-size:20px}
+html[data-fontsize="large"]{font-size:24px}
+
+:root,[data-theme="light"]{
+  --bg:#eef1f6; --text:#2d3748; --card:#fff; --primary:#7b8bb8; --border:#d8dee9;
+  --completed-bg:#c8d0dc; --future-bg:#5a6678; --future-text:#e8ecf4;
+  --btn-secondary:#6b7280; --btn-dark:#1f2937;
+}
+[data-theme="dark"]{
+  --bg:#1a1f2e; --text:#e8ecf4; --card:#252b3d; --primary:#8fa3c8; --border:#3a4258;
+  --completed-bg:#3a4258; --future-bg:#0f1320; --future-text:#6b7590;
+  --btn-secondary:#4a5568; --btn-dark:#0f1320;
+}
+[data-theme="green"]{
+  --bg:#F7F4D5; --text:#0A3323; --card:#FFFFFF; --primary:#839958; --border:#D4CFAE;
+  --completed-bg:#E5DFC0; --future-bg:#0A3323; --future-text:#F7F4D5;
+  --btn-secondary:#839958; --btn-dark:#0A3323;
+}
+
 *{box-sizing:border-box}
-body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);margin:0;padding:12px}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);margin:0;padding:12px;transition:.3s}
 .stage-completed{background:var(--completed-bg) !important;opacity:.7}
 .stage-future{background:var(--future-bg) !important}
 .stage-future .stage-title,.stage-future .stage-count{color:var(--future-text) !important}
@@ -48,16 +74,20 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 .btn-sm{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer}
 .btn-sm:hover{background:var(--bg)}
 .btn-primary{font-size:12px;padding:6px 14px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer}
-.fontsize-bar{display:flex;gap:4px;align-items:center}
-.fontsize-bar button{font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer}
-.fontsize-bar button.active{background:var(--primary);color:#fff;font-weight:bold}
+.setting-bar{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.setting-bar button{font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer}
+.setting-bar button.active{background:var(--primary);color:#fff;font-weight:bold}
+.setting-label{font-size:10px;opacity:.6;margin-right:2px}
 .member-check{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:3px 8px;border-radius:9999px;border:1px solid var(--border);cursor:pointer;user-select:none}
 .member-check input{margin:0}
 .member-check.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-export{background:var(--primary);color:#fff}
+.btn-import{background:var(--btn-secondary);color:#fff}
+.btn-home{background:var(--btn-dark);color:#fff}
 </style>
 </head>
 <body>
-<div id="app" class="max-w-5xl mx-auto">
+<div id="app" v-cloak class="max-w-5xl mx-auto">
 
 <header class="mb-3 p-4 rounded-2xl shadow-sm" style="background:var(--card);border:1px solid var(--border)">
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
@@ -70,16 +100,21 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
       </p>
     </div>
     <div class="flex gap-2 flex-wrap items-center">
-      <div class="fontsize-bar">
-        <span style="font-size:11px;opacity:.6">字号</span>
+      <div class="setting-bar">
+        <span class="setting-label">字号</span>
         <button @click="setFontSize('small')" :class="{active:fontSize==='small'}">小</button>
         <button @click="setFontSize('medium')" :class="{active:fontSize==='medium'}">中</button>
         <button @click="setFontSize('large')" :class="{active:fontSize==='large'}">大</button>
-        <button @click="setFontSize('xlarge')" :class="{active:fontSize==='xlarge'}">特大</button>
       </div>
-      <button @click="exportData" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs">导出</button>
-      <button @click="importData" class="bg-gray-500 text-white px-3 py-1.5 rounded-lg text-xs">导入</button>
-      <a href="./index.html" class="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-xs">返回首页</a>
+      <div class="setting-bar">
+        <span class="setting-label">主题</span>
+        <button @click="setTheme('light')" :class="{active:theme==='light'}">浅色</button>
+        <button @click="setTheme('dark')" :class="{active:theme==='dark'}">深色</button>
+        <button @click="setTheme('green')" :class="{active:theme==='green'}">雅绿</button>
+      </div>
+      <button @click="exportData" class="btn-export px-3 py-1.5 rounded-lg text-xs">导出</button>
+      <button @click="importData" class="btn-import px-3 py-1.5 rounded-lg text-xs">导入</button>
+      <a href="./index.html" class="btn-home px-3 py-1.5 rounded-lg text-xs">返回首页</a>
       <input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport">
     </div>
   </div>
@@ -92,7 +127,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 <!-- ============ 检查清单 TAB ============ -->
 <div v-if="activeTab==='checklist'">
 
-  <!-- 合同文书（需密码） -->
   <div class="mb-4 contract-section">
     <div class="px-4 py-3 text-white flex items-center justify-between" style="background:var(--primary)">
       <span class="font-bold text-base">合同文书</span>
@@ -120,7 +154,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
     </div>
   </div>
 
-  <!-- 八个阶段 -->
   <div class="space-y-3">
     <div v-for="(group, stageName) in groupedChecks" :key="stageName"
          class="rounded-xl shadow-sm overflow-hidden"
@@ -247,7 +280,7 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 </div>
 
 <!-- ============ 会议编辑模态框 ============ -->
-<div v-if="showMeetingModal" class="modal-mask" @click.self="closeMeetingModal">
+<div v-if="showMeetingModal" v-cloak class="modal-mask" @click.self="closeMeetingModal">
   <div class="modal-box">
     <h3 class="font-bold text-lg mb-4">{{ editingMeetingId ? '编辑会议纪要' : '新增会议纪要' }}</h3>
 
@@ -323,7 +356,7 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 </div>
 
 <!-- ============ 导入会议模态框 ============ -->
-<div v-if="showImportModal" class="modal-mask" @click.self="showImportModal=false">
+<div v-if="showImportModal" v-cloak class="modal-mask" @click.self="showImportModal=false">
   <div class="modal-box">
     <h3 class="font-bold text-lg mb-2">从 Word / 微信粘贴导入</h3>
     <p class="text-xs opacity-70 mb-3">按以下格式粘贴，可识别三种事项。格式不严格要求，只要每段开头出现「已确认 / 待确认 / 变更」即可。</p>
@@ -346,7 +379,7 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 </div>
 
 <!-- ============ 合同解锁模态框 ============ -->
-<div v-if="showContractLogin" class="modal-mask" @click.self="showContractLogin=false">
+<div v-if="showContractLogin" v-cloak class="modal-mask" @click.self="showContractLogin=false">
   <div class="modal-box" style="max-width:360px">
     <h3 class="font-bold text-lg mb-4">合同文书解锁</h3>
     <input v-model="contractPwd" type="password" placeholder="输入管理员密码" @keyup.enter="doContractUnlock" class="form-input mb-4">
@@ -365,13 +398,12 @@ const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁�
 const projectNameMap={'sl4':'申菱四基地','slzb':'申菱总部改造','sl5':'申菱五基地','slgz':'申菱高州二期','prsp':'屏荣食品顺德新厂','yj':'远江幕墙南海新厂','whg':'顺德文化馆修缮活化','stc':'顺德糖厂','skwj':'顺控危旧房','spmy':'升平名扬里历史街区一期','fp':'方普','rk':'容控小地块厂房加商业','sq':'社-顺德本土文化策展'};
 const stageOrder=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
 
-// 项目当前阶段（数组，可多阶段并行）
 const projectStageMap={
   'sl4':['三、方案深化'],
   'slzb':['六、室内设计','七、室内设计施工图','八、施工中'],
   'sl5':['一、前期强排'],
   'slgz':['八、施工中'],
-  'prsp':['四、报建图'],
+  'prsp':['五、施工图（含幕墙深化）'],
   'yj':['八、施工中'],
   'whg':['四、报建图'],
   'stc':['四、报建图'],
@@ -549,27 +581,24 @@ setup(){
   const checks=ref(initData());
   const projContracted=ref(false);
 
-  // 合同解锁
   const contractUnlocked=ref(false);
   const showContractLogin=ref(false);
   const contractPwd=ref('');
 
-  // 字号
-  const fontSize=ref(localStorage.getItem('checklist_fontsize')||'medium');
-  const setFontSize=(s)=>{fontSize.value=s;localStorage.setItem('checklist_fontsize',s);document.documentElement.setAttribute('data-fontsize',s)};
+  const fontSize=ref(localStorage.getItem('studio_fontsize_v2')||'medium');
+  const setFontSize=(s)=>{fontSize.value=s;localStorage.setItem('studio_fontsize_v2',s);document.documentElement.setAttribute('data-fontsize',s)};
+  const theme=ref(localStorage.getItem('studio_theme')||'dark');
+  const setTheme=(t)=>{theme.value=t;localStorage.setItem('studio_theme',t);document.documentElement.setAttribute('data-theme',t)};
 
-  // 会议
   const meetings=ref([]);
   const showMeetingModal=ref(false);
   const editingMeetingId=ref(null);
   const showConfirmSummary=ref(false);
   const draftMeeting=ref(makeEmptyMeeting());
 
-  // 导入
   const showImportModal=ref(false);
   const importText=ref('');
 
-  // ============ 检查清单云同步 ============
   const loadFromCloud=async()=>{
     try{
       const res=await fetch(`/api/sync?project=${projectKey}`);
@@ -597,10 +626,8 @@ setup(){
     return sorted;
   });
 
-  // 判断某阶段是否属于当前阶段（可能多个）
   const isCurrentStage=(s)=>projectStages.value.includes(s);
 
-  // 阶段样式：已完成 / 当前（高亮）/ 未来
   const getStageClass=(s)=>{
     const thisIdx=stageOrder.indexOf(s);
     const indices=projectStages.value.map(st=>stageOrder.indexOf(st)).filter(i=>i>=0);
@@ -625,7 +652,6 @@ setup(){
   const doneCount=computed(()=>checks.value.filter(i=>i.status==='合格').length);
   const toggleGroup=(name)=>{openGroups.value[name]=!openGroups.value[name]};
 
-  // ============ 会议云同步 ============
   const loadMeetings=async()=>{
     try{
       const res=await fetch(`/api/sync?project=${projectKey}&type=meeting`);
@@ -660,7 +686,6 @@ setup(){
     return arr.length?arr.join('、'):'未填写';
   };
 
-  // ============ 合同解锁 ============
   const openContractLogin=()=>{
     contractPwd.value='';
     showContractLogin.value=true;
@@ -675,7 +700,6 @@ setup(){
     }
   };
 
-  // ============ 会议增删改 ============
   const openAddMeeting=()=>{
     draftMeeting.value=makeEmptyMeeting();
     editingMeetingId.value=null;
@@ -717,7 +741,6 @@ setup(){
     saveMeetings();
   };
 
-  // ============ Word 导出 ============
   const exportMeetingToWord=(mt)=>{
     const esc=(s)=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     const participants=formatParticipants(mt);
@@ -753,7 +776,6 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
     setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
 
-  // ============ 粘贴导入 ============
   const doImport=()=>{
     const text=importText.value||'';
     if(!text.trim()){alert('请粘贴内容');return}
@@ -796,7 +818,6 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
     showMeetingModal.value=true;
   };
 
-  // ============ 导出/导入整个项目 ============
   const exportData=()=>{
     const data={project:currentProject.value,projectKey,checks:checks.value,meetings:meetings.value};
     const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -831,6 +852,7 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
 
   onMounted(async()=>{
     document.documentElement.setAttribute('data-fontsize',fontSize.value);
+    document.documentElement.setAttribute('data-theme',theme.value);
     await Promise.all([loadFromCloud(),loadMeetings()]);
     initOpenGroups();
   });
@@ -848,7 +870,7 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
     formatParticipants,exportMeetingToWord,
     showImportModal,importText,doImport,
     contractUnlocked,showContractLogin,contractPwd,openContractLogin,doContractUnlock,
-    fontSize,setFontSize
+    fontSize,setFontSize,theme,setTheme
   };
 }
 }).mount('#app');

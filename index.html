@@ -4,17 +4,42 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>立田工作室 · 项目指挥台</title>
+<script>
+(function(){
+  try{
+    var f=localStorage.getItem('studio_fontsize_v2')||'medium';
+    var t=localStorage.getItem('studio_theme')||'dark';
+    document.documentElement.setAttribute('data-fontsize',f);
+    document.documentElement.setAttribute('data-theme',t);
+  }catch(e){}
+})();
+</script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/lunar-javascript/1.6.12/lunar.js"></script>
 <style>
 [v-cloak]{display:none !important}
 html{font-size:16px}
-html[data-fontsize="small"]{font-size:14px}
-html[data-fontsize="large"]{font-size:18px}
-html[data-fontsize="xlarge"]{font-size:20px}
-:root{--bg:#eef1f6;--text:#2d3748;--card:#fff;--primary:#7b8bb8;--border:#d8dee9;--sidebar-bg:#3e4a6b;--sidebar-text:#e8ecf4;--sidebar-active:#5b6ba0;--dot-red:#c98a8a;--dot-blue:#8fa3c8;--dot-yellow:#d4c8a8}
-.dark{--bg:#1a1f2e;--text:#e8ecf4;--card:#252b3d;--primary:#8fa3c8;--border:#3a4258;--sidebar-bg:#141824;--sidebar-text:#a8b4d0;--sidebar-active:#3e4a6b;--dot-red:#d4a0a0;--dot-blue:#a8b8d8;--dot-yellow:#e0d4b0}
+html[data-fontsize="small"]{font-size:16px}
+html[data-fontsize="medium"]{font-size:20px}
+html[data-fontsize="large"]{font-size:24px}
+
+:root,[data-theme="light"]{
+  --bg:#eef1f6; --text:#2d3748; --card:#fff; --primary:#7b8bb8; --border:#d8dee9;
+  --sidebar-bg:#3e4a6b; --sidebar-text:#e8ecf4; --sidebar-active:#5b6ba0;
+  --dot-red:#c98a8a; --dot-blue:#8fa3c8; --dot-yellow:#d4c8a8;
+}
+[data-theme="dark"]{
+  --bg:#1a1f2e; --text:#e8ecf4; --card:#252b3d; --primary:#8fa3c8; --border:#3a4258;
+  --sidebar-bg:#141824; --sidebar-text:#a8b4d0; --sidebar-active:#3e4a6b;
+  --dot-red:#d4a0a0; --dot-blue:#a8b8d8; --dot-yellow:#e0d4b0;
+}
+[data-theme="green"]{
+  --bg:#F7F4D5; --text:#0A3323; --card:#FFFFFF; --primary:#839958; --border:#D4CFAE;
+  --sidebar-bg:#0A3323; --sidebar-text:#F7F4D5; --sidebar-active:#105666;
+  --dot-red:#D3968C; --dot-blue:#105666; --dot-yellow:#C9B87C;
+}
+
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0;height:100vh;overflow:hidden}
 .sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:240px;transition:.3s;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
 .sidebar-nav a{display:block;padding:13px 22px;color:var(--sidebar-text);opacity:.75;transition:.2s;font-size:15px;border-left:3px solid transparent;text-decoration:none;cursor:pointer}
@@ -34,7 +59,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .hero-meta{font-size:12px;line-height:1.7;margin-top:8px}
 .hero-meta .author{opacity:.75}
 .todo-project-group{margin-bottom:10px}
-.todo-project-title{font-size:11px;font-weight:bold;opacity:.85;margin-bottom:4px;padding-left:2px;color:var(--primary)}
+.todo-project-title{font-size:14px;font-weight:bold;opacity:.95;margin-top:6px;margin-bottom:6px;padding-left:2px;color:var(--primary)}
 .todo-row{font-size:12px;padding-left:12px;position:relative;display:flex;align-items:center;gap:6px;padding-top:3px;padding-bottom:3px;border-bottom:1px dashed var(--border)}
 .todo-row:last-child{border-bottom:none}
 .todo-row::before{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:var(--border)}
@@ -53,24 +78,40 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .calendar-mini .cell.workday{background:rgba(160,160,160,.3)}
 .calendar-mini .cell.today{outline:2px solid var(--sidebar-text);font-weight:bold}
 .calendar-mini .cell .lunar.holiday-name{color:#ffd9d9;font-weight:bold}
-.fontsize-switch{display:flex;align-items:center;padding:8px 14px 4px 14px;gap:4px}
-.fontsize-switch button{flex:1;font-size:11px;padding:4px 0;border-radius:4px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--sidebar-text);cursor:pointer}
-.fontsize-switch button.active{background:var(--sidebar-active);font-weight:bold}
+.setting-row{display:flex;align-items:center;padding:6px 14px 2px 14px;gap:4px;flex-wrap:wrap}
+.setting-row button{font-size:11px;padding:4px 8px;border-radius:4px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--sidebar-text);cursor:pointer}
+.setting-row button.active{background:var(--sidebar-active);font-weight:bold}
+.setting-label{font-size:10px;opacity:.6;margin-right:4px;color:var(--sidebar-text)}
 .scroll-area{overflow-y:auto;padding-right:4px}
 .scroll-area::-webkit-scrollbar{width:5px}
 .scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 .done-row{cursor:pointer;transition:.15s;border-radius:6px}
 .done-row:hover{background:rgba(127,127,127,.08)}
+.proj-edit-btn{position:absolute;top:8px;right:8px;opacity:.3;cursor:pointer;font-size:14px}
+.card:hover .proj-edit-btn{opacity:1}
+.sub-status-box{
+  display:inline-block;
+  margin-top:4px;
+  padding:3px 10px;
+  border-radius:9999px;
+  border:1px solid var(--primary);
+  background:var(--card);
+  color:var(--primary);
+  font-size:11px;
+  font-weight:500;
+  font-style:italic;
+}
+.status-toggle{transition:.15s}
+.status-toggle.clickable{cursor:pointer}
+.status-toggle.clickable:hover{transform:scale(1.06);box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.hamburger-icon{font-size:24px;line-height:1}
 
-/* ============ 手机端专用（max-width:1024px） ============ */
 @media(max-width:1024px){
   body{height:auto;overflow:auto}
   .main-content{padding:10px;overflow-y:auto;height:auto;min-height:100vh}
   .sidebar{position:fixed;left:-240px;z-index:50;height:100vh}
   .sidebar.open{left:0}
-  /* 手机端整页滚动 */
   .scroll-area{max-height:none;overflow:visible;flex:none}
-  /* 精神零食卡片：手机上图片和文字上下堆叠 */
   .hero-img-wrap{aspect-ratio:16/10}
   .hero-meta{font-size:13px}
 }
@@ -93,12 +134,17 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <a @click="switchView('settings')" :class="{'active':currentView==='settings'}">设置</a>
 </nav>
 <div class="mt-auto pb-3">
-<div class="fontsize-switch">
-<span style="font-size:11px;opacity:.6;margin-right:4px">字号</span>
+<div class="setting-row">
+<span class="setting-label">字号</span>
 <button @click="setFontSize('small')"  :class="{active:fontSize==='small'}">小</button>
 <button @click="setFontSize('medium')" :class="{active:fontSize==='medium'}">中</button>
 <button @click="setFontSize('large')"  :class="{active:fontSize==='large'}">大</button>
-<button @click="setFontSize('xlarge')" :class="{active:fontSize==='xlarge'}">特大</button>
+</div>
+<div class="setting-row">
+<span class="setting-label">主题</span>
+<button @click="setTheme('light')" :class="{active:theme==='light'}">浅色</button>
+<button @click="setTheme('dark')"  :class="{active:theme==='dark'}">深色</button>
+<button @click="setTheme('green')" :class="{active:theme==='green'}">雅绿</button>
 </div>
 <div class="calendar-mini">
 <div class="flex justify-between items-center mb-1.5 px-1">
@@ -120,7 +166,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 
 <main class="main-content">
 <div class="flex items-center gap-3 flex-shrink-0">
-<button @click="sidebarOpen=!sidebarOpen" class="lg:hidden p-2 bg-[var(--card)] rounded-lg border border-[var(--border)]">☰</button>
+<button @click="sidebarOpen=!sidebarOpen" class="lg:hidden p-2 bg-[var(--card)] rounded-lg border border-[var(--border)]"><span class="hamburger-icon">☰</span></button>
 <div class="flex-1 relative">
 <input v-model="searchKeyword" @input="doSearch" placeholder="搜索项目、待办..." class="w-full px-4 py-2 rounded-xl border border-[var(--border)] bg-[var(--card)] text-sm focus:outline-none" style="color:var(--text)">
 <div v-if="searchResults.length>0&&searchKeyword" class="absolute top-full left-0 right-0 mt-2 card p-3 max-h-80 overflow-y-auto z-40 shadow-xl">
@@ -136,9 +182,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 
 <!-- 主页 -->
 <div v-if="currentView==='home'" class="flex flex-col lg:flex-1 lg:min-h-0 lg:flex-row gap-3">
-<!-- 左栏 -->
 <div class="flex flex-col gap-3 lg:w-2/5 lg:min-h-0">
-<!-- 精神零食 -->
 <div class="card p-3 lg:flex-shrink-0">
 <div class="hero-title">精神零食</div>
 <div v-if="currentHero" class="flex flex-col lg:flex-row gap-3">
@@ -157,7 +201,6 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 请在 heroes 文件夹里放入图片，并创建 list.txt
 </div>
 </div>
-<!-- 最近待办 -->
 <div class="card p-3 flex flex-col lg:flex-1 lg:min-h-0">
 <div class="flex justify-between items-center mb-2 flex-shrink-0">
 <h3 class="font-bold text-sm">最近待办</h3>
@@ -179,6 +222,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <span class="opacity-50 text-[10px]">{{ String.fromCharCode(97+idx) }}.</span>
 <span class="truncate flex-1">{{ sub.text }}</span>
 <button @click="openLinkDialog(sub)" class="text-xs p-0.5" :style="sub.link ? '' : 'opacity:.25'" title="附图链接">📎</button>
+<button @click="editSubTask(todo, idx)" class="edit-btn text-xs p-0.5" style="color:var(--primary)" title="编辑小项">✎</button>
 </div>
 </template>
 </div>
@@ -186,12 +230,12 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
-<!-- 右栏 -->
 <div class="flex flex-col lg:w-3/5 lg:min-h-0">
 <h3 class="font-bold text-sm mb-2 flex-shrink-0">项目进度</h3>
 <div class="lg:flex-1 lg:min-h-0 lg:overflow-y-auto pr-1">
 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-<div v-for="proj in projects" :key="proj.id" class="card p-3 cursor-pointer transition flex items-center gap-3" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
+<div v-for="proj in projects" :key="proj.id" class="card p-3 cursor-pointer transition flex items-center gap-3 relative" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
+<div class="proj-edit-btn" @click.stop="editProject(proj)" title="编辑项目">✎</div>
 <div class="relative w-14 h-14 flex-shrink-0">
 <svg class="ring-svg w-14 h-14" viewBox="0 0 36 36">
 <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e5e7eb" stroke-width="3"></circle>
@@ -205,6 +249,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <div class="flex gap-1 flex-wrap mt-1">
 <span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
 </div>
+<div v-if="proj.subStatus" class="sub-status-box">📌 {{ proj.subStatus }}</div>
 </div>
 </div>
 </div>
@@ -238,6 +283,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <span class="opacity-50 text-[10px]">{{ String.fromCharCode(97+idx) }}.</span>
 <span class="flex-1">{{ sub.text }}</span>
 <button @click="openLinkDialog(sub)" class="text-xs p-0.5" :style="sub.link ? '' : 'opacity:.25'">📎</button>
+<button @click="editSubTask(todo, idx)" class="text-xs p-0.5" style="color:var(--primary)" title="编辑">✎</button>
 </div>
 </template>
 </div>
@@ -265,18 +311,31 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <button @click="showAddProject=true" class="px-4 py-2 rounded-lg text-sm text-white" style="background:var(--primary)">+ 新建项目</button>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-<div v-for="proj in projects" :key="proj.id" class="card p-5 cursor-pointer transition" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
+<div v-for="proj in projects" :key="proj.id" class="card p-5 cursor-pointer transition relative" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
+<div class="proj-edit-btn" @click.stop="editProject(proj)" title="编辑项目">✎</div>
 <div class="flex justify-between items-start mb-2">
 <h3 class="font-bold text-base">{{ proj.name }}</h3>
-<div class="flex gap-1 flex-wrap">
+<div class="flex gap-1 flex-wrap pr-6">
 <span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
 </div>
 </div>
 <p class="text-xs opacity-70 mb-1">负责人：{{ proj.owner }}</p>
-<p v-if="proj.note" class="text-xs opacity-60 mb-3 truncate">{{ proj.note }}</p>
+<p v-if="proj.note" class="text-xs opacity-60 mb-1 truncate">{{ proj.note }}</p>
+<div v-if="proj.subStatus" class="sub-status-box mb-3">📌 具体状态：{{ proj.subStatus }}</div>
+<p v-else class="text-xs opacity-40 mb-3">（未填写具体状态）</p>
 <div class="flex gap-2 text-xs">
-<span class="px-2 py-0.5 rounded" :class="proj.filed?'bg-green-100 text-green-700':'bg-gray-100 text-gray-400'">备案: {{ proj.filed?'已':'未' }}</span>
-<span class="px-2 py-0.5 rounded" :class="proj.contracted?'bg-green-100 text-green-700':'bg-gray-100 text-gray-400'">合同: {{ proj.contracted?'已':'未' }}</span>
+<span class="px-2 py-0.5 rounded status-toggle"
+      :class="[proj.filed?'bg-green-100 text-green-700':'bg-gray-100 text-gray-400', isAdmin?'clickable':'']"
+      @click.stop="isAdmin && toggleFiled(proj)"
+      :title="isAdmin?'点击切换备案状态':'管理员登录后可修改'">
+  备案: {{ proj.filed?'已':'未' }}
+</span>
+<span class="px-2 py-0.5 rounded status-toggle"
+      :class="[proj.contracted?'bg-green-100 text-green-700':'bg-gray-100 text-gray-400', isAdmin?'clickable':'']"
+      @click.stop="isAdmin && toggleContracted(proj)"
+      :title="isAdmin?'点击切换合同状态':'管理员登录后可修改'">
+  合同: {{ proj.contracted?'已':'未' }}
+</span>
 </div>
 </div>
 </div>
@@ -296,7 +355,20 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <!-- 设置 -->
 <div v-if="currentView==='settings'" class="flex-1 min-h-0 overflow-y-auto">
 <h1 class="text-xl font-bold mb-4">设置</h1>
-<div class="card p-5"><p class="text-sm opacity-70">系统设置功能待开发...</p></div>
+<div class="card p-5">
+<p class="text-sm opacity-70 mb-3">字号：</p>
+<div class="flex gap-2 mb-4">
+<button @click="setFontSize('small')"  :class="['px-3 py-1 rounded', fontSize==='small'?'text-white':'']" :style="fontSize==='small'?'background:var(--primary)':''">小</button>
+<button @click="setFontSize('medium')" :class="['px-3 py-1 rounded', fontSize==='medium'?'text-white':'']" :style="fontSize==='medium'?'background:var(--primary)':''">中</button>
+<button @click="setFontSize('large')"  :class="['px-3 py-1 rounded', fontSize==='large'?'text-white':'']" :style="fontSize==='large'?'background:var(--primary)':''">大</button>
+</div>
+<p class="text-sm opacity-70 mb-3">主题：</p>
+<div class="flex gap-2">
+<button @click="setTheme('light')" :class="['px-3 py-1 rounded', theme==='light'?'text-white':'']" :style="theme==='light'?'background:var(--primary)':''">浅色</button>
+<button @click="setTheme('dark')"  :class="['px-3 py-1 rounded', theme==='dark'?'text-white':'']" :style="theme==='dark'?'background:var(--primary)':''">深色</button>
+<button @click="setTheme('green')" :class="['px-3 py-1 rounded', theme==='green'?'text-white':'']" :style="theme==='green'?'background:var(--primary)':''">雅绿</button>
+</div>
+</div>
 </div>
 </main>
 
@@ -326,6 +398,21 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
+<!-- 编辑子任务 -->
+<div v-if="editingSubTask" v-cloak class="modal-mask" @click.self="editingSubTask=null">
+<div class="card p-6 w-full max-w-md">
+<h3 class="font-bold text-lg mb-4">编辑小项</h3>
+<div class="space-y-3">
+<input v-model="editingSubTask.text" placeholder="小项内容" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
+<input v-model="editingSubTask.link" placeholder="附图链接（可选）" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
+</div>
+<div class="flex justify-end gap-2 mt-5">
+<button @click="editingSubTask=null" class="px-4 py-2 text-sm">取消</button>
+<button @click="saveSubTask" class="px-4 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">保存</button>
+</div>
+</div>
+</div>
+
 <!-- 编辑待办 -->
 <div v-if="editingTodo" v-cloak class="modal-mask" @click.self="editingTodo=null">
 <div class="card p-6 w-full max-w-md">
@@ -342,6 +429,49 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <div class="flex justify-end gap-2 mt-5">
 <button @click="editingTodo=null" class="px-4 py-2 text-sm">取消</button>
 <button @click="saveTodoEdit" class="px-4 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">保存</button>
+</div>
+</div>
+</div>
+
+<!-- 编辑项目 -->
+<div v-if="editingProject" v-cloak class="modal-mask" @click.self="editingProject=null">
+<div class="card p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+<h3 class="font-bold text-lg mb-4">编辑项目</h3>
+<div class="space-y-3">
+<label class="text-xs opacity-70">项目名称</label>
+<input v-model="editingProject.name" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
+
+<label class="text-xs opacity-70">负责人</label>
+<input v-model="editingProject.owner" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
+
+<label class="text-xs opacity-70">当前阶段（可多选）</label>
+<div class="grid grid-cols-2 gap-1">
+<label v-for="s in stages" :key="s" class="flex items-center gap-2 text-xs p-1 rounded cursor-pointer" :style="editingProject.stage.includes(s)?'background:var(--bg)':''">
+<input type="checkbox" :value="s" v-model="editingProject.stage">
+<span>{{ s }}</span>
+</label>
+</div>
+
+<label class="text-xs opacity-70">具体状态（自由填写）</label>
+<input v-model="editingProject.subStatus" placeholder="如：施工收尾，室内深化中" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
+
+<label class="text-xs opacity-70">进度百分比</label>
+<input v-model.number="editingProject.progress" type="number" min="0" max="100" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
+
+<label class="text-xs opacity-70">备注</label>
+<input v-model="editingProject.note" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
+
+<div class="flex gap-4">
+<label class="flex items-center gap-2 text-xs"><input type="checkbox" v-model="editingProject.filed"> 已备案</label>
+<label class="flex items-center gap-2 text-xs"><input type="checkbox" v-model="editingProject.contracted"> 已入合同</label>
+</div>
+</div>
+<div class="flex justify-between gap-2 mt-5">
+<button @click="deleteProjectConfirm" class="px-4 py-2 text-sm text-red-500">删除项目</button>
+<div class="flex gap-2">
+<button @click="editingProject=null" class="px-4 py-2 text-sm">取消</button>
+<button @click="saveProjectEdit" class="px-4 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">保存</button>
+</div>
 </div>
 </div>
 </div>
@@ -394,7 +524,7 @@ const {createApp,ref,computed,onMounted}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
 const ADMIN_PASSWORD='litian2024';
-const DATA_VERSION='2026-09-26-v8';
+const DATA_VERSION='2026-09-27-v11';
 
 const HOLIDAYS_2026 = {
   '2026-01-01': {type:'holiday', name:'元旦'},'2026-01-02': {type:'holiday', name:'元旦'},'2026-01-03': {type:'holiday', name:'元旦'},
@@ -415,19 +545,19 @@ const categoryBorderColor={'shenling':'#8fa3c8','industrial':'#a3b8a3','renovati
 const stageColor={'一、前期强排':'bg-gray-200 text-gray-600','二、方案设计':'bg-blue-100 text-blue-700','三、方案深化':'bg-blue-200 text-blue-800','四、报建图':'bg-blue-400 text-white','五、施工图（含幕墙深化）':'bg-indigo-500 text-white','六、室内设计':'bg-orange-300 text-orange-900','七、室内设计施工图':'bg-orange-500 text-white','八、施工中':'bg-gray-700 text-white'};
 
 const defaultProjects=[
-{id:'sl4',name:'申菱四基地',stage:['三、方案深化'],owner:'刘文辉',note:'方案重做深化',filed:false,contracted:true,progress:40,startDate:'2026-03'},
-{id:'slzb',name:'申菱总部改造',stage:['六、室内设计','七、室内设计施工图','八、施工中'],owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08'},
-{id:'sl5',name:'申菱五基地',stage:['一、前期强排'],owner:'刘文辉',note:'前期方案',filed:false,contracted:false,progress:10,startDate:'2026-08'},
-{id:'slgz',name:'申菱高州二期',stage:['八、施工中'],owner:'黄建敏',note:'施工中',filed:true,contracted:true,progress:70,startDate:'2025-11'},
-{id:'prsp',name:'屏荣食品顺德新厂',stage:['四、报建图'],owner:'梁婷玉',note:'规划变更，施工图审图',filed:true,contracted:true,progress:60,startDate:'2025-06'},
-{id:'yj',name:'远江幕墙南海新厂',stage:['八、施工中'],owner:'谢启欣',note:'施工中',filed:true,contracted:true,progress:75,startDate:'2025-04'},
-{id:'whg',name:'顺德文化馆修缮活化',stage:['四、报建图'],owner:'欧阳琳',note:'合同签订过程中',filed:false,contracted:false,progress:20,startDate:'2026-05'},
-{id:'stc',name:'顺德糖厂',stage:['四、报建图'],owner:'欧阳琳',note:'合同签订过程中',filed:false,contracted:false,progress:15,startDate:'2026-06'},
-{id:'skwj',name:'顺控危旧房',stage:['五、施工图（含幕墙深化）'],owner:'梁富成',note:'图纸绘制',filed:true,contracted:true,progress:55,startDate:'2026-02'},
-{id:'spmy',name:'升平名扬里历史街区一期',stage:['八、施工中'],owner:'刘文辉',note:'施工中',filed:true,contracted:true,progress:80,startDate:'2025-09'},
-{id:'fp',name:'方普',stage:['一、前期强排'],owner:'刘文辉',note:'前期方案',filed:false,contracted:false,progress:5,startDate:'2026-09'},
-{id:'rk',name:'容控小地块厂房加商业',stage:['一、前期强排'],owner:'刘文辉',note:'前期方案',filed:false,contracted:false,progress:15,startDate:'2026-09'},
-{id:'sq',name:'社-顺德本土文化策展',stage:['三、方案深化'],owner:'梁婷玉',note:'建模阶段',filed:false,contracted:false,progress:30,startDate:'2026-07'}
+{id:'sl4',name:'申菱四基地',stage:['三、方案深化'],subStatus:'方案重做深化',owner:'刘文辉',note:'',filed:false,contracted:true,progress:40,startDate:'2026-03'},
+{id:'slzb',name:'申菱总部改造',stage:['六、室内设计','七、室内设计施工图','八、施工中'],subStatus:'施工收尾，室内深化中',owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08'},
+{id:'sl5',name:'申菱五基地',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:10,startDate:'2026-08'},
+{id:'slgz',name:'申菱高州二期',stage:['八、施工中'],subStatus:'施工中',owner:'黄建敏',note:'',filed:true,contracted:true,progress:70,startDate:'2025-11'},
+{id:'prsp',name:'屏荣食品顺德新厂',stage:['五、施工图（含幕墙深化）'],subStatus:'规划变更+施工图审图，准备室内深化',owner:'梁婷玉',note:'',filed:true,contracted:true,progress:60,startDate:'2025-06'},
+{id:'yj',name:'远江幕墙南海新厂',stage:['八、施工中'],subStatus:'施工中',owner:'谢启欣',note:'',filed:true,contracted:true,progress:75,startDate:'2025-04'},
+{id:'whg',name:'顺德文化馆修缮活化',stage:['四、报建图'],subStatus:'合同签订中',owner:'欧阳琳',note:'',filed:false,contracted:false,progress:20,startDate:'2026-05'},
+{id:'stc',name:'顺德糖厂',stage:['四、报建图'],subStatus:'合同签订中',owner:'欧阳琳',note:'',filed:false,contracted:false,progress:15,startDate:'2026-06'},
+{id:'skwj',name:'顺控危旧房',stage:['五、施工图（含幕墙深化）'],subStatus:'图纸绘制',owner:'梁富成',note:'',filed:true,contracted:true,progress:55,startDate:'2026-02'},
+{id:'spmy',name:'升平名扬里历史街区一期',stage:['八、施工中'],subStatus:'施工中',owner:'刘文辉',note:'',filed:true,contracted:true,progress:80,startDate:'2025-09'},
+{id:'fp',name:'方普',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:5,startDate:'2026-09'},
+{id:'rk',name:'容控小地块厂房加商业',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:15,startDate:'2026-09'},
+{id:'sq',name:'社-顺德本土文化策展',stage:['三、方案深化'],subStatus:'建模阶段',owner:'梁婷玉',note:'',filed:false,contracted:false,progress:30,startDate:'2026-07'}
 ];
 
 const defaultTodos=[
@@ -456,6 +586,14 @@ const migrateTodos = (arr) => {
     subTasks: (t.subTasks || []).map(s => typeof s === 'string' ? {text:s, link:''} : {text:s.text||'', link:s.link||''})
   }));
 };
+const migrateProjects = (arr) => {
+  if(!Array.isArray(arr)) return arr;
+  return arr.map(p => ({
+    ...p,
+    stage: Array.isArray(p.stage) ? p.stage : [p.stage],
+    subStatus: p.subStatus || ''
+  }));
+};
 
 createApp({
 setup(){
@@ -477,13 +615,17 @@ setup(){
   const searchKeyword=ref('');
   const searchResults=ref([]);
   const editingTodo=ref(null);
+  const editingSubTask=ref(null);
+  const editingProject=ref(null);
   const linkDialogTarget=ref(null);
   const linkDialogValue=ref('');
 
-  const fontSize=ref(localStorage.getItem('studio_fontsize')||'medium');
-  const setFontSize=(s)=>{fontSize.value=s;localStorage.setItem('studio_fontsize',s);document.documentElement.setAttribute('data-fontsize',s)};
+  const fontSize=ref(localStorage.getItem('studio_fontsize_v2')||'medium');
+  const setFontSize=(s)=>{fontSize.value=s;localStorage.setItem('studio_fontsize_v2',s);document.documentElement.setAttribute('data-fontsize',s)};
+  const theme=ref(localStorage.getItem('studio_theme')||'dark');
+  const setTheme=(t)=>{theme.value=t;localStorage.setItem('studio_theme',t);document.documentElement.setAttribute('data-theme',t)};
 
-  const projects=ref(JSON.parse(localStorage.getItem('studio_projects'))||defaultProjects);
+  const projects=ref(migrateProjects(JSON.parse(localStorage.getItem('studio_projects'))||defaultProjects));
   const todos=ref(migrateTodos(JSON.parse(localStorage.getItem('studio_todos'))||defaultTodos));
   const newTodo=ref({task:'',projectId:'',owner:'',type:'design'});
   const newProject=ref({name:'',stage:stages[0],owner:''});
@@ -491,22 +633,23 @@ setup(){
 
   const heroes=ref([]);
   const currentHero=ref(null);
+  const heroIndex=ref(0);
 
-const parseListTxt=(text)=>{
-  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
-  return lines.map(line=>{
-    const m=line.match(/^(\d+)\.(.+)$/);
-    if(!m) return null;
-    const id=parseInt(m[1]);
-    const content=m[2];
-    const parts=content.split('|').map(s=>s.trim());
-    const title=parts[0]||'';
-    const englishTitle=parts[1]||'';
-    const year=parts[2]||'';
-    const author=parts[3]||'';
-    return {id, title, englishTitle, year, author, url:`./heroes/${id}.jpg`};
-  }).filter(Boolean);
-};
+  const parseListTxt=(text)=>{
+    const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
+    return lines.map(line=>{
+      const m=line.match(/^(\d+)\.(.+)$/);
+      if(!m) return null;
+      const id=parseInt(m[1]);
+      const content=m[2];
+      const parts=content.split('|').map(s=>s.trim());
+      const title=parts[0]||'';
+      const englishTitle=parts[1]||'';
+      const year=parts[2]||'';
+      const author=parts[3]||'';
+      return {id, title, englishTitle, year, author, url:`./heroes/${id}.jpg`};
+    }).filter(Boolean);
+  };
 
   const loadHeroes=async()=>{
     try{
@@ -525,25 +668,22 @@ const parseListTxt=(text)=>{
     if(heroes.value.length===0){currentHero.value=null;return;}
     const today=new Date().toISOString().slice(0,10);
     const saved=JSON.parse(localStorage.getItem('hero_rotation')||'{}');
-    if(saved.date===today && saved.currentId){
-      const h=heroes.value.find(x=>x.id===saved.currentId);
-      if(h){currentHero.value=h;return;}
+    if(saved.date===today && saved.currentIndex!=null && saved.currentIndex<heroes.value.length){
+      heroIndex.value=saved.currentIndex;
+      currentHero.value=heroes.value[heroIndex.value];
+      return;
     }
-    let usedIds=(saved.usedIds||[]).filter(id=>heroes.value.some(h=>h.id===id));
-    if(usedIds.length>=heroes.value.length) usedIds=[];
-    const remaining=heroes.value.filter(h=>!usedIds.includes(h.id));
-    const picked=remaining[Math.floor(Math.random()*remaining.length)];
-    usedIds.push(picked.id);
-    localStorage.setItem('hero_rotation',JSON.stringify({date:today,currentId:picked.id,usedIds}));
-    currentHero.value=picked;
+    let newIdx=(saved.currentIndex!=null? saved.currentIndex+1 : 0) % heroes.value.length;
+    heroIndex.value=newIdx;
+    currentHero.value=heroes.value[newIdx];
+    localStorage.setItem('hero_rotation',JSON.stringify({date:today,currentIndex:newIdx}));
   };
 
   const nextHero=()=>{
     if(heroes.value.length<2) return;
-    const curId=currentHero.value?currentHero.value.id:null;
-    const others=heroes.value.filter(h=>h.id!==curId);
-    const next=others[Math.floor(Math.random()*others.length)];
-    currentHero.value=next;
+    heroIndex.value=(heroIndex.value+1)%heroes.value.length;
+    currentHero.value=heroes.value[heroIndex.value];
+    localStorage.setItem('hero_rotation',JSON.stringify({date:new Date().toISOString().slice(0,10),currentIndex:heroIndex.value}));
   };
 
   const currentMonthName=ref('');
@@ -589,12 +729,9 @@ const parseListTxt=(text)=>{
     calendarDays.value=days;
   };
 
-  const checkTime=()=>{const h=new Date().getHours();document.documentElement.classList.toggle('dark',h>=18||h<7)};
-
   onMounted(async()=>{
-    checkTime();
     document.documentElement.setAttribute('data-fontsize',fontSize.value);
-    setInterval(checkTime,60000);
+    document.documentElement.setAttribute('data-theme',theme.value);
     generateCalendar();
     await loadHeroes();
   });
@@ -643,21 +780,56 @@ const parseListTxt=(text)=>{
   const editTodo=(todo)=>{editingTodo.value=JSON.parse(JSON.stringify(todo))};
   const saveTodoEdit=()=>{const idx=todos.value.findIndex(t=>t.id===editingTodo.value.id);if(idx>=0)todos.value[idx]={...editingTodo.value};saveData();editingTodo.value=null};
 
+  const editSubTask=(todo, idx)=>{
+    editingSubTask.value={
+      todoId: todo.id,
+      idx: idx,
+      text: todo.subTasks[idx].text,
+      link: todo.subTasks[idx].link||''
+    };
+  };
+  const saveSubTask=()=>{
+    const t=todos.value.find(x=>x.id===editingSubTask.value.todoId);
+    if(t && t.subTasks[editingSubTask.value.idx]){
+      t.subTasks[editingSubTask.value.idx].text=editingSubTask.value.text;
+      t.subTasks[editingSubTask.value.idx].link=editingSubTask.value.link;
+      saveData();
+    }
+    editingSubTask.value=null;
+  };
+
   const openLinkDialog=(target)=>{linkDialogTarget.value=target;linkDialogValue.value=target.link||''};
   const saveLink=()=>{linkDialogTarget.value.link=linkDialogValue.value.trim();saveData();linkDialogTarget.value=null};
   const deleteLink=()=>{if(!confirm('删除此链接？'))return;linkDialogTarget.value.link='';saveData();linkDialogTarget.value=null};
 
   const addProject=()=>{
     if(!newProject.value.name.trim())return alert('请填写项目名称');
-    projects.value.push({id:'proj-'+Date.now(),name:newProject.value.name,stage:[newProject.value.stage],owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7)});
+    projects.value.push({id:'proj-'+Date.now(),name:newProject.value.name,stage:[newProject.value.stage],subStatus:'',owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7)});
     newProject.value={name:'',stage:stages[0],owner:''};
     showAddProject.value=false;
     saveData();
   };
 
+  const editProject=(proj)=>{editingProject.value=JSON.parse(JSON.stringify(proj))};
+  const saveProjectEdit=()=>{
+    const idx=projects.value.findIndex(p=>p.id===editingProject.value.id);
+    if(idx>=0)projects.value[idx]={...editingProject.value};
+    saveData();
+    editingProject.value=null;
+  };
+  const deleteProjectConfirm=()=>{
+    if(!confirm(`确定删除项目「${editingProject.value.name}」？`))return;
+    projects.value=projects.value.filter(p=>p.id!==editingProject.value.id);
+    saveData();
+    editingProject.value=null;
+  };
+
+  const toggleFiled=(proj)=>{proj.filed=!proj.filed;saveData()};
+  const toggleContracted=(proj)=>{proj.contracted=!proj.contracted;saveData()};
+
   const goToProject=(projectId)=>{window.location.href=`./checklist.html?project=${projectId}`};
 
-  return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,linkDialogTarget,linkDialogValue,projects,groupedTodos,doneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,openLinkDialog,saveLink,deleteLink,addProject,goToProject,switchView,setFontSize,nextHero};
+  return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,editingSubTask,editingProject,linkDialogTarget,linkDialogValue,projects,groupedTodos,doneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,theme,getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,editSubTask,saveSubTask,openLinkDialog,saveLink,deleteLink,addProject,editProject,saveProjectEdit,deleteProjectConfirm,toggleFiled,toggleContracted,goToProject,switchView,setFontSize,setTheme,nextHero};
 }
 }).mount('#app');
 </script>
