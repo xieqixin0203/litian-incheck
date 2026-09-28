@@ -72,6 +72,9 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .todo-row:hover .edit-btn{opacity:1}
 .sub-task{font-size:11.5px;padding-left:24px;display:flex;align-items:center;gap:6px;padding-top:2px;padding-bottom:2px;border-bottom:1px dashed var(--border)}
 .sub-task:last-child{border-bottom:none}
+.event-row{display:flex;align-items:flex-start;gap:6px;padding:5px 0;border-bottom:1px dashed var(--border)}
+.event-row:last-child{border-bottom:none}
+.event-row:hover .edit-btn{opacity:1}
 .calendar-mini{background:rgba(0,0,0,.15);border-radius:10px;padding:10px;margin:0 10px 10px}
 .calendar-mini .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:10px}
 .calendar-mini .cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 0;border-radius:4px;color:var(--sidebar-text);min-height:32px}
@@ -196,6 +199,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <!-- 主页 -->
 <div v-if="currentView==='home'" class="flex flex-col lg:flex-1 lg:min-h-0 lg:flex-row gap-3">
 <div class="flex flex-col gap-3 lg:w-2/5 lg:min-h-0">
+<!-- 精神零食 -->
 <div class="card p-3 lg:flex-shrink-0">
 <div class="hero-title">精神零食</div>
 <div v-if="currentHero" class="flex flex-col lg:flex-row gap-3">
@@ -214,6 +218,44 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 请在 heroes 文件夹里放入图片，并创建 list.txt
 </div>
 </div>
+
+<!-- 会议/出差安排 -->
+<div class="card p-3 lg:flex-shrink-0">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-bold text-sm">📅 会议/出差安排</h3>
+<button @click="openAddEvent" class="text-lg hover:opacity-70 leading-none font-bold" style="color:var(--primary)" title="新增">+</button>
+</div>
+<div v-if="activeEvents.length === 0 && doneEvents.length === 0" class="text-xs opacity-50 text-center py-3">
+暂无安排
+</div>
+<div v-else>
+<div class="space-y-1">
+<div v-for="ev in activeEvents" :key="ev.id" class="event-row">
+<input type="checkbox" :checked="ev.done" @change="toggleEvent(ev)" class="mt-0.5 w-3.5 h-3.5 cursor-pointer flex-shrink-0">
+<div class="flex-1 min-w-0">
+<div class="text-xs font-bold truncate">{{ ev.title }}</div>
+<div class="text-[11px] opacity-60 truncate">📍 {{ ev.location || '未填地点' }}</div>
+<div class="text-[11px] font-medium" style="color:var(--primary)">🕐 {{ formatEventTime(ev) }}</div>
+</div>
+<button @click="editEvent(ev)" class="edit-btn text-xs p-0.5" style="color:var(--primary)" title="编辑">✎</button>
+<button @click="deleteEvent(ev)" class="edit-btn text-xs p-0.5 text-red-400" title="删除">✕</button>
+</div>
+</div>
+<div v-if="doneEvents.length > 0" class="mt-2">
+<button @click="showDoneEvents=!showDoneEvents" class="text-xs opacity-50 hover:opacity-100">
+{{ showDoneEvents ? '▼' : '▶' }} 已完成 ({{ doneEvents.length }})
+</button>
+<div v-show="showDoneEvents" class="mt-1 space-y-1">
+<div v-for="ev in doneEvents" :key="ev.id" class="text-[11px] opacity-40 flex items-center gap-2 px-1">
+<span class="line-through truncate flex-1">{{ ev.title }}</span>
+<button @click="toggleEvent(ev)" class="text-[10px] hover:opacity-100" style="color:var(--primary)" title="恢复">↩</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 最近待办 -->
 <div class="card p-3 flex flex-col lg:flex-1 lg:min-h-0">
 <div class="flex justify-between items-center mb-2 flex-shrink-0">
 <h3 class="font-bold text-sm">最近待办</h3>
@@ -358,14 +400,14 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <div v-if="currentView==='memo'" class="flex-1 min-h-0 overflow-y-auto">
 <h1 class="text-xl font-bold mb-4">工作室备忘录</h1>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="card p-5"><h3 class="font-bold text-sm">SketchUp 建模规范</h3><p class="text-xs opacity-70 mt-1">圆弧段数、组件命名、清理标准</p></div>
-<div class="card p-5"><h3 class="font-bold text-sm">AI 效果图关键词库</h3><p class="text-xs opacity-70 mt-1">按项目类型分类的提示词参考</p></div>
-<div class="card p-5"><h3 class="font-bold text-sm">合同模板库</h3><p class="text-xs opacity-70 mt-1">设计合同、分包、变更、验收</p></div>
-<div class="card p-5"><h3 class="font-bold text-sm">会议纪要模板</h3><p class="text-xs opacity-70 mt-1">已确认/待确认事项标准格式</p></div>
 <a href="./materials.html" class="card p-5 hover:shadow-lg transition block">
   <h3 class="font-bold text-sm">📊 材料造价库</h3>
   <p class="text-xs opacity-70 mt-1">市政、景观、立面、幕墙、室内、栏杆</p>
 </a>
+<div class="card p-5"><h3 class="font-bold text-sm">SketchUp 建模规范</h3><p class="text-xs opacity-70 mt-1">圆弧段数、组件命名、清理标准</p></div>
+<div class="card p-5"><h3 class="font-bold text-sm">AI 效果图关键词库</h3><p class="text-xs opacity-70 mt-1">按项目类型分类的提示词参考</p></div>
+<div class="card p-5"><h3 class="font-bold text-sm">合同模板库</h3><p class="text-xs opacity-70 mt-1">设计合同、分包、变更、验收</p></div>
+<div class="card p-5"><h3 class="font-bold text-sm">会议纪要模板</h3><p class="text-xs opacity-70 mt-1">已确认/待确认事项标准格式</p></div>
 </div>
 </div>
 
@@ -398,6 +440,35 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <div class="flex justify-end gap-2">
 <button @click="showLogin=false" class="px-4 py-2 text-sm">取消</button>
 <button @click="doLogin" class="px-4 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">登录</button>
+</div>
+</div>
+</div>
+
+<!-- 会议/出差编辑弹窗 -->
+<div v-if="showEventModal" v-cloak class="modal-mask" @click.self="closeEventModal">
+<div class="card p-6 w-full max-w-md">
+<h3 class="font-bold text-lg mb-4">{{ editingEventId ? '编辑会议/出差' : '新增会议/出差' }}</h3>
+<div class="space-y-3">
+<label class="text-xs opacity-70">主题</label>
+<input v-model="draftEvent.title" placeholder="如：顺德社的观看、营造与地方实践" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
+<label class="text-xs opacity-70">地点</label>
+<input v-model="draftEvent.location" placeholder="如：顺德马岗微木艺术空间" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
+<label class="text-xs opacity-70">日期</label>
+<input v-model="draftEvent.date" type="date" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
+<div class="flex gap-2 items-center">
+<div class="flex-1">
+<label class="text-xs opacity-70">开始时间</label>
+<input v-model="draftEvent.timeStart" type="time" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
+</div>
+<div class="flex-1">
+<label class="text-xs opacity-70">结束时间</label>
+<input v-model="draftEvent.timeEnd" type="time" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
+</div>
+</div>
+</div>
+<div class="flex justify-end gap-2 mt-5">
+<button @click="closeEventModal" class="px-4 py-2 text-sm">取消</button>
+<button @click="saveEvent" class="px-4 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">保存</button>
 </div>
 </div>
 </div>
@@ -542,7 +613,7 @@ const {createApp,ref,computed,onMounted}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
 const ADMIN_PASSWORD='litian2024';
-const DATA_VERSION='2026-09-27-v12';
+const DATA_VERSION='2026-09-28-v13';
 
 const HOLIDAYS_2026 = {
   '2026-01-01': {type:'holiday', name:'元旦'},'2026-01-02': {type:'holiday', name:'元旦'},'2026-01-03': {type:'holiday', name:'元旦'},
@@ -596,6 +667,10 @@ const defaultTodos=[
 {id:15,projectName:'方普',projectId:'fp',task:'9月29日带甲方走实地项目',type:'design',subTasks:[],done:false,owner:'刘文辉,谢启欣',link:''}
 ];
 
+const defaultEvents=[
+  {id:'ev-default-1',title:'顺德"社"的观看、营造与地方实践',location:'顺德马岗微木艺术空间',date:'2026-10-01',timeStart:'15:00',timeEnd:'17:00',done:false}
+];
+
 const migrateTodos = (arr) => {
   if(!Array.isArray(arr)) return arr;
   return arr.map(t => ({
@@ -610,6 +685,18 @@ const migrateProjects = (arr) => {
     ...p,
     stage: Array.isArray(p.stage) ? p.stage : [p.stage],
     subStatus: p.subStatus || ''
+  }));
+};
+const migrateEvents = (arr) => {
+  if(!Array.isArray(arr)) return [];
+  return arr.map(e => ({
+    id: e.id || 'ev-'+Date.now()+Math.random(),
+    title: e.title || '',
+    location: e.location || '',
+    date: e.date || '',
+    timeStart: e.timeStart || '',
+    timeEnd: e.timeEnd || '',
+    done: !!e.done
   }));
 };
 
@@ -649,6 +736,100 @@ setup(){
   const newProject=ref({name:'',stage:stages[0],owner:''});
   const switchView=(v)=>{currentView.value=v;sidebarOpen.value=false};
 
+  // ============ 会议/出差安排 ============
+  const events=ref([]);
+  const showEventModal=ref(false);
+  const editingEventId=ref(null);
+  const draftEvent=ref({title:'',location:'',date:'',timeStart:'',timeEnd:''});
+  const showDoneEvents=ref(false);
+
+  const loadEvents=async()=>{
+    try{
+      const res=await fetch('/api/sync?type=events&project=global');
+      const data=await res.json();
+      if(Array.isArray(data)&&data.length){
+        events.value=migrateEvents(data);
+      }else{
+        events.value=migrateEvents(defaultEvents);
+        saveEvents();
+      }
+    }catch(e){
+      console.warn('会议/出差读取失败，使用默认数据',e);
+      events.value=migrateEvents(defaultEvents);
+    }
+  };
+  const saveEvents=async()=>{
+    try{
+      await fetch('/api/sync?type=events&project=global',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(events.value)
+      });
+    }catch(e){console.warn('会议/出差保存失败',e)}
+  };
+
+  const activeEvents=computed(()=>{
+    return events.value.filter(e=>!e.done).sort((a,b)=>{
+      const dc=(a.date||'').localeCompare(b.date||'');
+      if(dc!==0) return dc;
+      return (a.timeStart||'').localeCompare(b.timeStart||'');
+    });
+  });
+  const doneEvents=computed(()=>events.value.filter(e=>e.done));
+
+  const formatEventTime=(ev)=>{
+    if(!ev.date) return '未填写时间';
+    const parts=ev.date.split('-');
+    let s='';
+    if(parts.length===3){
+      s=`${parseInt(parts[0])}年${parseInt(parts[1])}月${parseInt(parts[2])}日`;
+    }else{
+      s=ev.date;
+    }
+    if(ev.timeStart){
+      s+=' '+ev.timeStart;
+      if(ev.timeEnd) s+='-'+ev.timeEnd;
+    }
+    return s;
+  };
+
+  const openAddEvent=()=>{
+    draftEvent.value={title:'',location:'',date:'',timeStart:'',timeEnd:''};
+    editingEventId.value=null;
+    showEventModal.value=true;
+  };
+  const editEvent=(ev)=>{
+    draftEvent.value={title:ev.title,location:ev.location,date:ev.date,timeStart:ev.timeStart,timeEnd:ev.timeEnd};
+    editingEventId.value=ev.id;
+    showEventModal.value=true;
+  };
+  const closeEventModal=()=>{
+    showEventModal.value=false;
+    editingEventId.value=null;
+  };
+  const saveEvent=()=>{
+    if(!draftEvent.value.title.trim()){alert('请填写主题');return}
+    if(!draftEvent.value.date){alert('请填写日期');return}
+    if(editingEventId.value){
+      const idx=events.value.findIndex(e=>e.id===editingEventId.value);
+      if(idx>=0)events.value[idx]={...events.value[idx],...draftEvent.value};
+    }else{
+      events.value.push({id:'ev-'+Date.now(),...draftEvent.value,done:false});
+    }
+    saveEvents();
+    closeEventModal();
+  };
+  const toggleEvent=(ev)=>{
+    ev.done=!ev.done;
+    saveEvents();
+  };
+  const deleteEvent=(ev)=>{
+    if(!confirm(`确定删除「${ev.title}」？`))return;
+    events.value=events.value.filter(e=>e.id!==ev.id);
+    saveEvents();
+  };
+
+  // ============ 精神零食 ============
   const heroes=ref([]);
   const currentHero=ref(null);
   const heroIndex=ref(0);
@@ -704,6 +885,7 @@ setup(){
     localStorage.setItem('hero_rotation',JSON.stringify({date:new Date().toISOString().slice(0,10),currentIndex:heroIndex.value}));
   };
 
+  // ============ 日历 ============
   const currentMonthName=ref('');
   const todayDate=ref('');
   const calendarDays=ref([]);
@@ -774,7 +956,7 @@ setup(){
     document.documentElement.setAttribute('data-fontsize',fontSize.value);
     document.documentElement.setAttribute('data-theme',theme.value);
     generateCalendar();
-    await loadHeroes();
+    await Promise.all([loadHeroes(), loadEvents()]);
   });
 
   const doSearch=()=>{
@@ -870,7 +1052,10 @@ setup(){
 
   const goToProject=(projectId)=>{window.location.href=`./checklist.html?project=${projectId}`};
 
-  return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,editingSubTask,editingProject,linkDialogTarget,linkDialogValue,projects,groupedTodos,doneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,theme,getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,editSubTask,saveSubTask,openLinkDialog,saveLink,deleteLink,addProject,editProject,saveProjectEdit,deleteProjectConfirm,toggleFiled,toggleContracted,goToProject,switchView,setFontSize,setTheme,nextHero,prevMonth,nextMonth,resetMonth};
+  return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,editingSubTask,editingProject,linkDialogTarget,linkDialogValue,projects,groupedTodos,doneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,theme,
+    events,activeEvents,doneEvents,showEventModal,editingEventId,draftEvent,showDoneEvents,
+    openAddEvent,editEvent,closeEventModal,saveEvent,toggleEvent,deleteEvent,formatEventTime,
+    getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,editSubTask,saveSubTask,openLinkDialog,saveLink,deleteLink,addProject,editProject,saveProjectEdit,deleteProjectConfirm,toggleFiled,toggleContracted,goToProject,switchView,setFontSize,setTheme,nextHero,prevMonth,nextMonth,resetMonth};
 }
 }).mount('#app');
 </script>
