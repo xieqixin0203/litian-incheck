@@ -116,7 +116,6 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .status-toggle.clickable{cursor:pointer}
 .status-toggle.clickable:hover{transform:scale(1.06);box-shadow:0 2px 6px rgba(0,0,0,.15)}
 .hamburger-icon{font-size:24px;line-height:1}
-.loading-mask{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100;color:var(--text);font-size:14px;opacity:.7}
 
 @media(max-width:1024px){
   body{height:auto;overflow:auto}
@@ -130,7 +129,6 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </style>
 </head>
 <body>
-<div v-if="initialLoading" class="loading-mask">加载中…</div>
 <div id="app" v-cloak class="flex h-screen overflow-hidden">
 <aside class="sidebar" :class="{'open':sidebarOpen}">
 <div class="p-5 border-b border-white/10">
@@ -452,7 +450,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 <div class="card p-5 mt-4">
 <p class="text-sm opacity-70 mb-3">数据状态：</p>
-<p class="text-xs opacity-60">所有项目、待办、会议/出差安排已启用云端同步。任何设备上的修改会自动同步到所有设备。</p>
+<p class="text-xs opacity-60">项目、待办、会议/出差安排已启用云端同步。任何设备上的修改会自动同步到所有设备。</p>
 </div>
 </div>
 </main>
@@ -734,7 +732,6 @@ setup(){
     localStorage.setItem('studio_data_version',DATA_VERSION);
   }
 
-  const initialLoading=ref(true);
   const currentView=ref('home');
   const sidebarOpen=ref(false);
   const showAddTodo=ref(false);
@@ -762,30 +759,12 @@ setup(){
   const switchView=(v)=>{currentView.value=v;sidebarOpen.value=false};
 
   // ============ 项目 & 待办 云同步 ============
-  const loadProjectsFromCloud=async()=>{
-    try{
-      const res=await fetch('/api/sync?type=projects&project=global');
-      const data=await res.json();
-      if(Array.isArray(data)&&data.length){
-        projects.value=migrateProjects(data);
-      }
-    }catch(e){console.warn('项目读取失败',e)}
-  };
   const saveProjectsToCloud=async()=>{
     try{
       await fetch('/api/sync?type=projects&project=global',{
         method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(projects.value)
       });
     }catch(e){console.warn('项目保存失败',e)}
-  };
-  const loadTodosFromCloud=async()=>{
-    try{
-      const res=await fetch('/api/sync?type=todos&project=global');
-      const data=await res.json();
-      if(Array.isArray(data)){
-        todos.value=migrateTodos(data);
-      }
-    }catch(e){console.warn('待办读取失败',e)}
   };
   const saveTodosToCloud=async()=>{
     try{
@@ -795,36 +774,28 @@ setup(){
     }catch(e){console.warn('待办保存失败',e)}
   };
 
-  const initCloudSync=async()=>{
-    // 关键：KV 空时，用当前浏览器 localStorage 的数据作为初始版本推上去
+  const loadProjectsAndTodosFromCloud=async()=>{
     try{
       const r1=await fetch('/api/sync?type=projects&project=global');
       const d1=await r1.json();
       if(Array.isArray(d1)&&d1.length){
         projects.value=migrateProjects(d1);
+        localStorage.setItem('studio_projects',JSON.stringify(projects.value));
       }else{
-        // KV 空 → 用本地数据推上去
-        const localP=JSON.parse(localStorage.getItem('studio_projects'));
-        if(Array.isArray(localP)&&localP.length){
-          projects.value=migrateProjects(localP);
-        }
         await saveProjectsToCloud();
       }
+    }catch(e){console.warn('项目云同步失败，使用本地数据',e)}
+
+    try{
       const r2=await fetch('/api/sync?type=todos&project=global');
       const d2=await r2.json();
       if(Array.isArray(d2)){
         todos.value=migrateTodos(d2);
+        localStorage.setItem('studio_todos',JSON.stringify(todos.value));
       }else{
-        const localT=JSON.parse(localStorage.getItem('studio_todos'));
-        if(Array.isArray(localT)&&localT.length){
-          todos.value=migrateTodos(localT);
-        }
         await saveTodosToCloud();
       }
-    }catch(e){
-      console.warn('云同步初始化失败，使用本地数据',e);
-    }
-    initialLoading.value=false;
+    }catch(e){console.warn('待办云同步失败，使用本地数据',e)}
   };
 
   // ============ 会议/出差安排 ============
@@ -1040,11 +1011,13 @@ setup(){
     generateCalendar();
   };
 
-  onMounted(async()=>{
+  onMounted(()=>{
     document.documentElement.setAttribute('data-fontsize',fontSize.value);
     document.documentElement.setAttribute('data-theme',theme.value);
     generateCalendar();
-    await Promise.all([loadHeroes(), loadEvents(), initCloudSync()]);
+    loadHeroes();
+    loadEvents();
+    loadProjectsAndTodosFromCloud();
   });
 
   const doSearch=()=>{
@@ -1163,7 +1136,7 @@ setup(){
 
   const goToProject=(projectId)=>{window.location.href=`./checklist.html?project=${projectId}`};
 
-  return{initialLoading,currentView,sidebarOpen,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,editingSubTask,editingProject,linkDialogTarget,linkDialogValue,projects,pendingTodos,doneTodos,groupedTodos,groupedDoneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,theme,
+  return{currentView,sidebarOpen,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,editingSubTask,editingProject,linkDialogTarget,linkDialogValue,projects,pendingTodos,doneTodos,groupedTodos,groupedDoneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,theme,
     events,activeEvents,doneEvents,showEventModal,editingEventId,draftEvent,
     openAddEvent,editEvent,closeEventModal,saveEvent,toggleEvent,deleteEvent,formatEventTimeShort,
     getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,editSubTask,saveSubTask,openLinkDialog,saveLink,deleteLink,addProject,editProject,saveProjectEdit,deleteProjectConfirm,toggleFiled,toggleContracted,goToProject,switchView,setFontSize,setTheme,nextHero,prevMonth,nextMonth,resetMonth};
