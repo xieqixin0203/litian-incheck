@@ -116,6 +116,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .status-toggle.clickable{cursor:pointer}
 .status-toggle.clickable:hover{transform:scale(1.06);box-shadow:0 2px 6px rgba(0,0,0,.15)}
 .hamburger-icon{font-size:24px;line-height:1}
+.loading-mask{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100;color:var(--text);font-size:14px;opacity:.7}
 
 @media(max-width:1024px){
   body{height:auto;overflow:auto}
@@ -129,6 +130,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </style>
 </head>
 <body>
+<div v-if="initialLoading" class="loading-mask">加载中…</div>
 <div id="app" v-cloak class="flex h-screen overflow-hidden">
 <aside class="sidebar" :class="{'open':sidebarOpen}">
 <div class="p-5 border-b border-white/10">
@@ -201,7 +203,6 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <!-- 主页 -->
 <div v-if="currentView==='home'" class="flex flex-col lg:flex-1 lg:min-h-0 lg:flex-row gap-3">
 <div class="flex flex-col gap-3 lg:w-2/5 lg:min-h-0">
-<!-- 精神零食 -->
 <div class="card p-3 lg:flex-shrink-0">
 <div class="hero-title">精神零食</div>
 <div v-if="currentHero" class="flex flex-col lg:flex-row gap-3">
@@ -221,7 +222,6 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
-<!-- 会议/出差安排 -->
 <div class="card p-3 lg:flex-shrink-0">
 <div class="flex justify-between items-center mb-2">
 <h3 class="font-bold text-sm">会议/出差安排</h3>
@@ -244,7 +244,6 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
-<!-- 最近待办 -->
 <div class="card p-3 flex flex-col lg:flex-1 lg:min-h-0">
 <div class="flex justify-between items-center mb-2 flex-shrink-0">
 <h3 class="font-bold text-sm">最近待办</h3>
@@ -344,7 +343,6 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <div v-if="currentView==='archive'" class="flex-1 min-h-0 overflow-y-auto">
 <h1 class="text-xl font-bold mb-4">📦 已归档</h1>
 
-<!-- 会议/出差已完成 -->
 <div class="card p-4 mb-4">
 <h3 class="font-bold text-sm mb-3 pb-2 border-b" style="border-color:var(--border)">会议/出差安排 · 已完成 ({{ doneEvents.length }})</h3>
 <div v-if="doneEvents.length === 0" class="text-xs opacity-50 text-center py-4">暂无已完成</div>
@@ -363,7 +361,6 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 
-<!-- 待办已完成 -->
 <div class="card p-4">
 <h3 class="font-bold text-sm mb-3 pb-2 border-b" style="border-color:var(--border)">最近待办 · 已完成 ({{ doneTodos.length }})</h3>
 <div v-if="doneTodos.length === 0" class="text-xs opacity-50 text-center py-4">暂无已完成</div>
@@ -452,6 +449,10 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <button @click="setTheme('green')" :class="['px-3 py-1 rounded', theme==='green'?'text-white':'']" :style="theme==='green'?'background:var(--primary)':''">雅绿</button>
 <button @click="setTheme('fresh')" :class="['px-3 py-1 rounded', theme==='fresh'?'text-white':'']" :style="theme==='fresh'?'background:var(--primary)':''">清新</button>
 </div>
+</div>
+<div class="card p-5 mt-4">
+<p class="text-sm opacity-70 mb-3">数据状态：</p>
+<p class="text-xs opacity-60">所有项目、待办、会议/出差安排已启用云端同步。任何设备上的修改会自动同步到所有设备。</p>
 </div>
 </div>
 </main>
@@ -733,6 +734,7 @@ setup(){
     localStorage.setItem('studio_data_version',DATA_VERSION);
   }
 
+  const initialLoading=ref(true);
   const currentView=ref('home');
   const sidebarOpen=ref(false);
   const showAddTodo=ref(false);
@@ -759,6 +761,72 @@ setup(){
   const newProject=ref({name:'',stage:stages[0],owner:''});
   const switchView=(v)=>{currentView.value=v;sidebarOpen.value=false};
 
+  // ============ 项目 & 待办 云同步 ============
+  const loadProjectsFromCloud=async()=>{
+    try{
+      const res=await fetch('/api/sync?type=projects&project=global');
+      const data=await res.json();
+      if(Array.isArray(data)&&data.length){
+        projects.value=migrateProjects(data);
+      }
+    }catch(e){console.warn('项目读取失败',e)}
+  };
+  const saveProjectsToCloud=async()=>{
+    try{
+      await fetch('/api/sync?type=projects&project=global',{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(projects.value)
+      });
+    }catch(e){console.warn('项目保存失败',e)}
+  };
+  const loadTodosFromCloud=async()=>{
+    try{
+      const res=await fetch('/api/sync?type=todos&project=global');
+      const data=await res.json();
+      if(Array.isArray(data)){
+        todos.value=migrateTodos(data);
+      }
+    }catch(e){console.warn('待办读取失败',e)}
+  };
+  const saveTodosToCloud=async()=>{
+    try{
+      await fetch('/api/sync?type=todos&project=global',{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(todos.value)
+      });
+    }catch(e){console.warn('待办保存失败',e)}
+  };
+
+  const initCloudSync=async()=>{
+    // 关键：KV 空时，用当前浏览器 localStorage 的数据作为初始版本推上去
+    try{
+      const r1=await fetch('/api/sync?type=projects&project=global');
+      const d1=await r1.json();
+      if(Array.isArray(d1)&&d1.length){
+        projects.value=migrateProjects(d1);
+      }else{
+        // KV 空 → 用本地数据推上去
+        const localP=JSON.parse(localStorage.getItem('studio_projects'));
+        if(Array.isArray(localP)&&localP.length){
+          projects.value=migrateProjects(localP);
+        }
+        await saveProjectsToCloud();
+      }
+      const r2=await fetch('/api/sync?type=todos&project=global');
+      const d2=await r2.json();
+      if(Array.isArray(d2)){
+        todos.value=migrateTodos(d2);
+      }else{
+        const localT=JSON.parse(localStorage.getItem('studio_todos'));
+        if(Array.isArray(localT)&&localT.length){
+          todos.value=migrateTodos(localT);
+        }
+        await saveTodosToCloud();
+      }
+    }catch(e){
+      console.warn('云同步初始化失败，使用本地数据',e);
+    }
+    initialLoading.value=false;
+  };
+
   // ============ 会议/出差安排 ============
   const events=ref([]);
   const showEventModal=ref(false);
@@ -783,9 +851,7 @@ setup(){
   const saveEvents=async()=>{
     try{
       await fetch('/api/sync?type=events&project=global',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(events.value)
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(events.value)
       });
     }catch(e){console.warn('会议/出差保存失败',e)}
   };
@@ -978,7 +1044,7 @@ setup(){
     document.documentElement.setAttribute('data-fontsize',fontSize.value);
     document.documentElement.setAttribute('data-theme',theme.value);
     generateCalendar();
-    await Promise.all([loadHeroes(), loadEvents()]);
+    await Promise.all([loadHeroes(), loadEvents(), initCloudSync()]);
   });
 
   const doSearch=()=>{
@@ -1016,7 +1082,12 @@ setup(){
   const getProjStages=(proj)=>Array.isArray(proj.stage)?proj.stage:[proj.stage];
   const getRingGray=(p)=>{if(p<25)return '#c8c8c8';if(p<50)return '#a0a0a0';if(p<75)return '#6b6b6b';return '#2a2a2a'};
 
-  const saveData=()=>{localStorage.setItem('studio_projects',JSON.stringify(projects.value));localStorage.setItem('studio_todos',JSON.stringify(todos.value))};
+  const saveData=()=>{
+    localStorage.setItem('studio_projects',JSON.stringify(projects.value));
+    localStorage.setItem('studio_todos',JSON.stringify(todos.value));
+    saveProjectsToCloud();
+    saveTodosToCloud();
+  };
   const doLogin=()=>{if(loginPwd.value===ADMIN_PASSWORD){isAdmin.value=true;showLogin.value=false;loginPwd.value=''}else alert('密码错误')};
 
   const addTodo=()=>{
@@ -1092,7 +1163,7 @@ setup(){
 
   const goToProject=(projectId)=>{window.location.href=`./checklist.html?project=${projectId}`};
 
-  return{currentView,sidebarOpen,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,editingSubTask,editingProject,linkDialogTarget,linkDialogValue,projects,pendingTodos,doneTodos,groupedTodos,groupedDoneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,theme,
+  return{initialLoading,currentView,sidebarOpen,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,editingSubTask,editingProject,linkDialogTarget,linkDialogValue,projects,pendingTodos,doneTodos,groupedTodos,groupedDoneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,theme,
     events,activeEvents,doneEvents,showEventModal,editingEventId,draftEvent,
     openAddEvent,editEvent,closeEventModal,saveEvent,toggleEvent,deleteEvent,formatEventTimeShort,
     getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,editSubTask,saveSubTask,openLinkDialog,saveLink,deleteLink,addProject,editProject,saveProjectEdit,deleteProjectConfirm,toggleFiled,toggleContracted,goToProject,switchView,setFontSize,setTheme,nextHero,prevMonth,nextMonth,resetMonth};
