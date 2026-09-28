@@ -69,12 +69,13 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .todo-row:last-child{border-bottom:none}
 .todo-row::before{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:var(--border)}
 .edit-btn{opacity:.4;transition:.2s}
-.todo-row:hover .edit-btn{opacity:1}
+.todo-row:hover .edit-btn,.event-row:hover .edit-btn{opacity:1}
 .sub-task{font-size:11.5px;padding-left:24px;display:flex;align-items:center;gap:6px;padding-top:2px;padding-bottom:2px;border-bottom:1px dashed var(--border)}
 .sub-task:last-child{border-bottom:none}
 .event-row{display:flex;align-items:flex-start;gap:6px;padding:5px 0;border-bottom:1px dashed var(--border)}
 .event-row:last-child{border-bottom:none}
-.event-row:hover .edit-btn{opacity:1}
+.arch-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px dashed var(--border);font-size:13px}
+.arch-row:last-child{border-bottom:none}
 .calendar-mini{background:rgba(0,0,0,.15);border-radius:10px;padding:10px;margin:0 10px 10px}
 .calendar-mini .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:10px}
 .calendar-mini .cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 0;border-radius:4px;color:var(--sidebar-text);min-height:32px}
@@ -140,6 +141,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <a @click="switchView('todos')" :class="{'active':currentView==='todos'}">最近待办</a>
 <a @click="switchView('projects')" :class="{'active':currentView==='projects'}">项目总览</a>
 <a @click="switchView('memo')" :class="{'active':currentView==='memo'}">备忘录</a>
+<a @click="switchView('archive')" :class="{'active':currentView==='archive'}">已归档</a>
 <a href="https://pan.tencent.com" target="_blank">云盘</a>
 <a href="https://chat.deepseek.com" target="_blank">DeepSeek</a>
 <a @click="switchView('settings')" :class="{'active':currentView==='settings'}">设置</a>
@@ -222,35 +224,22 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <!-- 会议/出差安排 -->
 <div class="card p-3 lg:flex-shrink-0">
 <div class="flex justify-between items-center mb-2">
-<h3 class="font-bold text-sm">📅 会议/出差安排</h3>
+<h3 class="font-bold text-sm">会议/出差安排</h3>
 <button @click="openAddEvent" class="text-lg hover:opacity-70 leading-none font-bold" style="color:var(--primary)" title="新增">+</button>
 </div>
-<div v-if="activeEvents.length === 0 && doneEvents.length === 0" class="text-xs opacity-50 text-center py-3">
-暂无安排
-</div>
+<div v-if="activeEvents.length === 0" class="text-xs opacity-50 text-center py-2">暂无安排</div>
 <div v-else>
-<div class="space-y-1">
 <div v-for="ev in activeEvents" :key="ev.id" class="event-row">
 <input type="checkbox" :checked="ev.done" @change="toggleEvent(ev)" class="mt-0.5 w-3.5 h-3.5 cursor-pointer flex-shrink-0">
 <div class="flex-1 min-w-0">
-<div class="text-xs font-bold truncate">{{ ev.title }}</div>
+<div class="flex items-baseline gap-2">
+<span class="text-xs font-bold truncate flex-1">{{ ev.title }}</span>
+<span class="text-[11px] font-medium flex-shrink-0" style="color:var(--primary)">{{ formatEventTimeShort(ev) }}</span>
+</div>
 <div class="text-[11px] opacity-60 truncate">📍 {{ ev.location || '未填地点' }}</div>
-<div class="text-[11px] font-medium" style="color:var(--primary)">🕐 {{ formatEventTime(ev) }}</div>
 </div>
 <button @click="editEvent(ev)" class="edit-btn text-xs p-0.5" style="color:var(--primary)" title="编辑">✎</button>
 <button @click="deleteEvent(ev)" class="edit-btn text-xs p-0.5 text-red-400" title="删除">✕</button>
-</div>
-</div>
-<div v-if="doneEvents.length > 0" class="mt-2">
-<button @click="showDoneEvents=!showDoneEvents" class="text-xs opacity-50 hover:opacity-100">
-{{ showDoneEvents ? '▼' : '▶' }} 已完成 ({{ doneEvents.length }})
-</button>
-<div v-show="showDoneEvents" class="mt-1 space-y-1">
-<div v-for="ev in doneEvents" :key="ev.id" class="text-[11px] opacity-40 flex items-center gap-2 px-1">
-<span class="line-through truncate flex-1">{{ ev.title }}</span>
-<button @click="toggleEvent(ev)" class="text-[10px] hover:opacity-100" style="color:var(--primary)" title="恢复">↩</button>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -262,6 +251,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <button @click="switchView('todos')" class="text-xs hover:underline" style="color:var(--primary)">全部</button>
 </div>
 <div class="scroll-area lg:flex-1 lg:min-h-0">
+<div v-if="pendingTodos.length === 0" class="text-xs opacity-50 text-center py-3">暂无待办</div>
 <div v-for="(group,projName) in groupedTodos" :key="projName" class="todo-project-group">
 <div class="todo-project-title">{{ projName }}</div>
 <template v-for="todo in group" :key="todo.id">
@@ -316,8 +306,12 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <div v-if="currentView==='todos'" class="flex-1 min-h-0 overflow-y-auto">
 <div class="flex justify-between items-center mb-4">
 <h1 class="text-xl font-bold">最近待办</h1>
+<div class="flex gap-2">
+<button @click="switchView('archive')" class="px-3 py-2 rounded-lg text-xs" style="background:var(--bg);color:var(--text)">📦 已归档 ({{ doneTodos.length }})</button>
 <button @click="showAddTodo=true" class="px-4 py-2 rounded-lg text-sm text-white" style="background:var(--primary)">+ 新建待办</button>
 </div>
+</div>
+<div v-if="pendingTodos.length === 0" class="card p-8 text-center opacity-50 text-sm">暂无待办</div>
 <div class="space-y-3">
 <div v-for="(group,projName) in groupedTodos" :key="projName" class="card p-4">
 <div class="todo-project-title" style="font-size:13px;margin-bottom:8px">{{ projName }}</div>
@@ -344,16 +338,46 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 </div>
 </div>
 </div>
-<div v-if="doneTodos.length>0" class="mt-6">
-<button @click="showDone=!showDone" class="text-sm opacity-60">{{ showDone?'▼':'▶' }} 已完成 ({{ doneTodos.length }})</button>
-<div v-show="showDone" class="mt-2 space-y-1">
-<div v-for="todo in doneTodos" :key="todo.id"
-     class="done-row flex items-center gap-2 text-xs opacity-50 px-2 py-1"
-     @click="toggleTodo(todo)"
-     title="点击可恢复为待办">
-  <span class="line-through truncate flex-1">{{ todo.task }}</span>
-  <span class="text-[10px]">由 {{ todo.completedBy||'未知' }} 完成</span>
-  <span class="text-[10px]" style="color:var(--primary)">↩ 恢复</span>
+</div>
+
+<!-- 已归档 -->
+<div v-if="currentView==='archive'" class="flex-1 min-h-0 overflow-y-auto">
+<h1 class="text-xl font-bold mb-4">📦 已归档</h1>
+
+<!-- 会议/出差已完成 -->
+<div class="card p-4 mb-4">
+<h3 class="font-bold text-sm mb-3 pb-2 border-b" style="border-color:var(--border)">会议/出差安排 · 已完成 ({{ doneEvents.length }})</h3>
+<div v-if="doneEvents.length === 0" class="text-xs opacity-50 text-center py-4">暂无已完成</div>
+<div v-else>
+<div v-for="ev in doneEvents" :key="ev.id" class="arch-row">
+<div class="flex-1 min-w-0">
+<div class="flex items-baseline gap-2">
+<span class="text-sm truncate flex-1 opacity-60 line-through">{{ ev.title }}</span>
+<span class="text-[11px] opacity-50 flex-shrink-0">{{ formatEventTimeShort(ev) }}</span>
+</div>
+<div class="text-[11px] opacity-50 truncate">📍 {{ ev.location || '未填地点' }}</div>
+</div>
+<button @click="toggleEvent(ev)" class="text-xs px-2 py-1 rounded" style="color:var(--primary)" title="恢复">↩ 恢复</button>
+<button @click="deleteEvent(ev)" class="text-xs px-2 py-1 rounded text-red-400" title="删除">✕</button>
+</div>
+</div>
+</div>
+
+<!-- 待办已完成 -->
+<div class="card p-4">
+<h3 class="font-bold text-sm mb-3 pb-2 border-b" style="border-color:var(--border)">最近待办 · 已完成 ({{ doneTodos.length }})</h3>
+<div v-if="doneTodos.length === 0" class="text-xs opacity-50 text-center py-4">暂无已完成</div>
+<div v-else>
+<div v-for="(group,projName) in groupedDoneTodos" :key="projName" class="mb-3 last:mb-0">
+<div class="todo-project-title" style="font-size:12px;margin-bottom:6px">{{ projName }}</div>
+<div v-for="todo in group" :key="todo.id" class="arch-row">
+<div class="flex-1 min-w-0">
+<div class="text-sm truncate opacity-60 line-through">{{ todo.task }}</div>
+<div class="text-[11px] opacity-50">由 {{ todo.completedBy||'未知' }} 完成</div>
+</div>
+<button @click="toggleTodo(todo)" class="text-xs px-2 py-1 rounded" style="color:var(--primary)" title="恢复">↩ 恢复</button>
+<button v-if="isAdmin" @click="deleteTodo(todo)" class="text-xs px-2 py-1 rounded text-red-400" title="删除">✕</button>
+</div>
 </div>
 </div>
 </div>
@@ -711,7 +735,6 @@ setup(){
 
   const currentView=ref('home');
   const sidebarOpen=ref(false);
-  const showDone=ref(false);
   const showAddTodo=ref(false);
   const showAddProject=ref(false);
   const showLogin=ref(false);
@@ -741,7 +764,6 @@ setup(){
   const showEventModal=ref(false);
   const editingEventId=ref(null);
   const draftEvent=ref({title:'',location:'',date:'',timeStart:'',timeEnd:''});
-  const showDoneEvents=ref(false);
 
   const loadEvents=async()=>{
     try{
@@ -777,7 +799,7 @@ setup(){
   });
   const doneEvents=computed(()=>events.value.filter(e=>e.done));
 
-  const formatEventTime=(ev)=>{
+  const formatEventTimeShort=(ev)=>{
     if(!ev.date) return '未填写时间';
     const parts=ev.date.split('-');
     let s='';
@@ -968,8 +990,26 @@ setup(){
     searchResults.value=results.slice(0,20);
   };
   const goToResult=(r)=>{searchKeyword.value='';searchResults.value=[];goToProject(r.projectId)};
-  const groupedTodos=computed(()=>{const g={};todos.value.filter(t=>!t.done).forEach(t=>{if(!g[t.projectName])g[t.projectName]=[];g[t.projectName].push(t)});return g});
+
+  const pendingTodos=computed(()=>todos.value.filter(t=>!t.done));
   const doneTodos=computed(()=>todos.value.filter(t=>t.done));
+  const groupedTodos=computed(()=>{
+    const g={};
+    pendingTodos.value.forEach(t=>{
+      if(!g[t.projectName])g[t.projectName]=[];
+      g[t.projectName].push(t);
+    });
+    return g;
+  });
+  const groupedDoneTodos=computed(()=>{
+    const g={};
+    doneTodos.value.forEach(t=>{
+      if(!g[t.projectName])g[t.projectName]=[];
+      g[t.projectName].push(t);
+    });
+    return g;
+  });
+
   const getDotColor=(todo)=>{if(todo.type==='design'||todo.type==='meeting')return 'dot-red';if(todo.type==='process')return 'dot-blue';if(todo.type==='contract')return 'dot-yellow';return 'dot-red'};
   const getProjectStyle=(proj)=>{const c=projCategory[proj.id]||'other';return {background:categoryBgColor[c],borderLeft:'4px solid '+categoryBorderColor[c]}};
   const getStageColor=(stage)=>stageColor[stage]||'bg-gray-100 text-gray-500';
@@ -1052,9 +1092,9 @@ setup(){
 
   const goToProject=(projectId)=>{window.location.href=`./checklist.html?project=${projectId}`};
 
-  return{currentView,sidebarOpen,showDone,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,editingSubTask,editingProject,linkDialogTarget,linkDialogValue,projects,groupedTodos,doneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,theme,
-    events,activeEvents,doneEvents,showEventModal,editingEventId,draftEvent,showDoneEvents,
-    openAddEvent,editEvent,closeEventModal,saveEvent,toggleEvent,deleteEvent,formatEventTime,
+  return{currentView,sidebarOpen,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,editingSubTask,editingProject,linkDialogTarget,linkDialogValue,projects,pendingTodos,doneTodos,groupedTodos,groupedDoneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,theme,
+    events,activeEvents,doneEvents,showEventModal,editingEventId,draftEvent,
+    openAddEvent,editEvent,closeEventModal,saveEvent,toggleEvent,deleteEvent,formatEventTimeShort,
     getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,editSubTask,saveSubTask,openLinkDialog,saveLink,deleteLink,addProject,editProject,saveProjectEdit,deleteProjectConfirm,toggleFiled,toggleContracted,goToProject,switchView,setFontSize,setTheme,nextHero,prevMonth,nextMonth,resetMonth};
 }
 }).mount('#app');
