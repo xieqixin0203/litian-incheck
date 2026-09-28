@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>材料造价库</title>
+<script>
+(function(){
+  try{
+    var f=localStorage.getItem('studio_fontsize_v2')||'medium';
+    var t=localStorage.getItem('studio_theme')||'dark';
+    document.documentElement.setAttribute('data-fontsize',f);
+    document.documentElement.setAttribute('data-theme',t);
+  }catch(e){}
+})();
+</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js"></script>
+<style>
+[v-cloak]{display:none !important}
+html{font-size:16px}
+html[data-fontsize="small"]{font-size:16px}
+html[data-fontsize="medium"]{font-size:20px}
+html[data-fontsize="large"]{font-size:24px}
+
+:root,[data-theme="light"]{
+  --bg:#eef1f6; --text:#2d3748; --card:#fff; --primary:#7b8bb8; --border:#d8dee9;
+  --btn-secondary:#6b7280; --btn-dark:#1f2937;
+}
+[data-theme="dark"]{
+  --bg:#1a1f2e; --text:#e8ecf4; --card:#252b3d; --primary:#8fa3c8; --border:#3a4258;
+  --btn-secondary:#4a5568; --btn-dark:#0f1320;
+}
+[data-theme="green"]{
+  --bg:#F7F4D5; --text:#0A3323; --card:#FFFFFF; --primary:#839958; --border:#D4CFAE;
+  --btn-secondary:#839958; --btn-dark:#0A3323;
+}
+[data-theme="fresh"]{
+  --bg:#F8EBE8; --text:#5A3735; --card:#FFFFFF; --primary:#B77D77; --border:#E5C7C2;
+  --btn-secondary:#9E544A; --btn-dark:#5A3735;
+}
+
+*{box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);margin:0;padding:12px;transition:.3s}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px}
+select,input,textarea{background:transparent;color:var(--text);font-size:13px}
+.dark select,.dark input,.dark textarea{background-color:#252b3d}
+.btn-export{background:var(--primary);color:#fff}
+.btn-import{background:var(--btn-secondary);color:#fff}
+.btn-home{background:var(--btn-dark);color:#fff}
+.btn-edit{background:var(--primary);color:#fff}
+.btn-sm{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer}
+.btn-sm:hover{background:var(--bg)}
+.btn-primary{font-size:12px;padding:6px 14px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer}
+.cat-title{font-size:16px;font-weight:bold;padding:10px 16px;background:var(--primary);color:#fff;border-radius:10px 10px 0 0;display:flex;justify-content:space-between;align-items:center}
+.cat-body{background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;overflow:hidden}
+.mat-row{display:flex;align-items:center;gap:12px;padding:8px 16px;border-bottom:1px dashed var(--border);font-size:13px}
+.mat-row:last-child{border-bottom:none}
+.mat-name{font-weight:bold;flex-shrink:0;min-width:180px}
+.mat-price{color:var(--primary);font-weight:bold;flex-shrink:0;min-width:130px}
+.mat-note{opacity:.7;font-size:12px;flex:1}
+.modal-mask{background:rgba(0,0,0,.5);position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;padding:16px;overflow-y:auto}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.form-label{font-size:12px;font-weight:bold;opacity:.7;margin-bottom:4px;display:block}
+.form-input{width:100%;border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;background:transparent;color:var(--text)}
+@media(max-width:768px){
+  .mat-row{flex-direction:column;align-items:flex-start;gap:4px}
+  .mat-name,.mat-price{min-width:0}
+}
+</style>
+</head>
+<body>
+<div id="app" v-cloak class="max-w-5xl mx-auto">
+
+<header class="mb-4 p-4 rounded-2xl shadow-sm" style="background:var(--card);border:1px solid var(--border)">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-bold" style="color:var(--primary)">📊 材料造价库</h1>
+      <p class="text-xs mt-1 opacity-70">综合单价含人工、材料、辅材、管理费、税金；实际价格随地区、品牌、施工难度浮动，仅供方案阶段估算参考。</p>
+    </div>
+    <div class="flex gap-2 flex-wrap items-center">
+      <button v-if="!isEditing" @click="isEditing=true" class="btn-edit px-3 py-1.5 rounded-lg text-xs">✎ 编辑模式</button>
+      <button v-else @click="isEditing=false" class="btn-edit px-3 py-1.5 rounded-lg text-xs">✔ 完成编辑</button>
+      <button @click="exportData" class="btn-export px-3 py-1.5 rounded-lg text-xs">导出</button>
+      <button @click="importData" class="btn-import px-3 py-1.5 rounded-lg text-xs">导入</button>
+      <a href="./index.html" class="btn-home px-3 py-1.5 rounded-lg text-xs">返回首页</a>
+      <input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport">
+    </div>
+  </div>
+</header>
+
+<div v-if="loading" class="card p-8 text-center opacity-60 text-sm">加载中…</div>
+
+<div v-else class="space-y-4">
+  <div v-for="cat in categories" :key="cat.key">
+    <div class="cat-title">
+      <span>{{ cat.label }}</span>
+      <span class="text-xs opacity-80">{{ getItemsByCat(cat.key).length }} 条</span>
+    </div>
+    <div class="cat-body">
+      <div v-if="getItemsByCat(cat.key).length === 0" class="p-4 text-xs opacity-50 text-center">暂无条目</div>
+      <div v-for="item in getItemsByCat(cat.key)" :key="item.id" class="mat-row">
+        <span class="mat-name">{{ item.name }}</span>
+        <span class="mat-price">{{ item.price }}</span>
+        <span class="mat-note">{{ item.note }}</span>
+        <template v-if="isEditing">
+          <button @click="editItem(item)" class="btn-sm">✎</button>
+          <button @click="deleteItem(item)" class="btn-sm" style="color:#dc2626">🗑</button>
+        </template>
+      </div>
+      <div v-if="isEditing" class="p-3 text-center">
+        <button @click="openAdd(cat.key)" class="btn-sm" style="color:var(--primary)">+ 新增材料</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 编辑/新增弹窗 -->
+<div v-if="showItemModal" v-cloak class="modal-mask" @click.self="closeItemModal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-4">{{ editingItemId ? '编辑材料' : '新增材料' }}</h3>
+    <div class="mb-3">
+      <label class="form-label">分类</label>
+      <select v-model="draftItem.category" class="form-input">
+        <option v-for="cat in categories" :key="cat.key" :value="cat.key">{{ cat.label }}</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">材料/做法名称</label>
+      <input v-model="draftItem.name" class="form-input" placeholder="如：真石漆（普通）">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">综合单价</label>
+      <input v-model="draftItem.price" class="form-input" placeholder="如：约59元/㎡">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">备注（可选）</label>
+      <input v-model="draftItem.note" class="form-input" placeholder="如：含腻子、底漆、面漆、人工">
+    </div>
+    <div class="flex justify-end gap-2 mt-5">
+      <button @click="closeItemModal" class="btn-sm">取消</button>
+      <button @click="saveItem" class="btn-primary">保存</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const {createApp,ref,computed,onMounted}=Vue;
+
+const categories=[
+  {key:'municipal', label:'一、市政路面'},
+  {key:'landscape', label:'二、景观绿化'},
+  {key:'facade', label:'三、立面材质'},
+  {key:'curtain', label:'四、幕墙与窗料'},
+  {key:'ceiling', label:'五、室内-吊顶'},
+  {key:'wall', label:'六、室内-墙身'},
+  {key:'floor', label:'七、室内-地面'},
+  {key:'railing', label:'八、栏杆'}
+];
+
+const seedData=[
+  // 市政路面
+  {id:'m-001',category:'municipal',name:'沥青路面（40mm+80mm+250mm三合土）',price:'约151元/㎡',note:'含材料、人工、机械、管理费'},
+  {id:'m-002',category:'municipal',name:'水泥稳定石屑基层（50厚）',price:'约15-20元/㎡',note:'仅基层，不含面层'},
+  {id:'m-003',category:'municipal',name:'路侧石/平石',price:'约110-268元/m',note:'价格指数波动大'},
+
+  // 景观绿化
+  {id:'m-011',category:'landscape',name:'种植土回填及改良',price:'17-18元/㎡',note:'含土壤改良拌和'},
+  {id:'m-012',category:'landscape',name:'绿化用地整理',price:'3-4元/㎡',note:'场地平整'},
+  {id:'m-013',category:'landscape',name:'绿地地形塑造',price:'7.5-8元/㎡',note:'不含土壤及改良材料费'},
+  {id:'m-014',category:'landscape',name:'乔木栽植（胸径6-8cm）',price:'90-100元/株',note:'含2年养护，苗木甲供'},
+  {id:'m-015',category:'landscape',name:'乔木栽植（胸径12-16cm）',price:'200-210元/株',note:'含2年养护，苗木甲供'},
+  {id:'m-016',category:'landscape',name:'垂直绿化（钢结构）',price:'500-800元/㎡',note:'定制钢结构，含承重防腐'},
+
+  // 立面材质
+  {id:'m-021',category:'facade',name:'真石漆（普通）',price:'约59元/㎡',note:'含腻子、底漆、面漆、人工'},
+  {id:'m-022',category:'facade',name:'真石漆（仿石）',price:'约74元/㎡',note:'效果更接近石材'},
+  {id:'m-023',category:'facade',name:'普通涂料',price:'约23元/㎡',note:'最经济的立面做法'},
+  {id:'m-024',category:'facade',name:'弹性涂料',price:'约39元/㎡',note:'抗裂性优于普通涂料'},
+  {id:'m-025',category:'facade',name:'多彩漆',price:'约74元/㎡',note:'仿花岗岩效果'},
+  {id:'m-026',category:'facade',name:'PK砖（贴墙）',price:'约137元/㎡',note:'含人工、材料、管理费'},
+  {id:'m-027',category:'facade',name:'纸皮砖',price:'约60-70元/㎡',note:'估算参考区间'},
+  {id:'m-028',category:'facade',name:'青砖贴片',price:'约200-300元/㎡',note:'传统工艺'},
+  {id:'m-029',category:'facade',name:'金属夹芯板',price:'约70-220元/㎡',note:'50mm厚约70-71元/㎡，三明治夹芯板约180-200元/㎡，TPO夹芯板约80-220元/㎡'},
+  {id:'m-030',category:'facade',name:'青砖砌筑',price:'约820-1180元/㎡',note:'1/4砖约892，1砖约1036，1砖以上约1177元/㎡'},
+  {id:'m-031',category:'facade',name:'天然石材（墙面干挂）',price:'约380-800元/㎡',note:'常见花岗岩干挂综合价，进口或异形可达1200+元/㎡'},
+  {id:'m-032',category:'facade',name:'大规格瓷砖（墙面）',price:'约210-420元/㎡',note:'750×1500mm规格，含材料与铺贴'},
+
+  // 幕墙与窗料
+  {id:'m-041',category:'curtain',name:'普通铝合金窗（70系列单玻）',price:'约430-470元/㎡',note:'固定/平开/推拉不同'},
+  {id:'m-042',category:'curtain',name:'普通铝合金窗（70系列中空）',price:'约510-550元/㎡',note:'保温隔音更好'},
+  {id:'m-043',category:'curtain',name:'断桥铝合金窗（85系列中空）',price:'约595-740元/㎡',note:'含镀膜中空玻璃'},
+  {id:'m-044',category:'curtain',name:'系统铝合金窗（高性能）',price:'约1000-1500元/㎡',note:'水密性、气密性、抗风压性好'},
+  {id:'m-045',category:'curtain',name:'框架式玻璃幕墙（综合）',price:'约600-900元/㎡',note:'价格区间大，取决于玻璃和框架'},
+  {id:'m-046',category:'curtain',name:'单元式玻璃幕墙',price:'约1500元/㎡',note:'工厂预制，现场安装快'},
+  {id:'m-047',category:'curtain',name:'氟碳漆铝板（幕墙）',price:'约600-750元/㎡',note:'2.5mm氟碳喷涂铝单板，特殊造型800-1000元/㎡'},
+  {id:'m-048',category:'curtain',name:'阳极氧化铝板（幕墙）',price:'约500-1000元/㎡',note:'国产，进口可达1000-3000元/㎡'},
+  {id:'m-049',category:'curtain',name:'不锈钢板（幕墙/装饰）',price:'约295元/㎡',note:'装饰保温一体化板，含安装'},
+
+  // 室内-吊顶
+  {id:'m-061',category:'ceiling',name:'普通石膏板吊顶',price:'70-130元/㎡',note:'含龙骨、人工、辅材'},
+  {id:'m-062',category:'ceiling',name:'防水石膏板吊顶',price:'80-150元/㎡',note:'厨卫适用'},
+  {id:'m-063',category:'ceiling',name:'防火石膏板吊顶',price:'90-160元/㎡',note:'公共空间'},
+  {id:'m-064',category:'ceiling',name:'铝扣板（拉丝铝板）',price:'110-180元/㎡',note:'办公楼、会议室'},
+  {id:'m-065',category:'ceiling',name:'铝方通/条形板',price:'90-160元/㎡',note:'通道、开放式走廊'},
+  {id:'m-066',category:'ceiling',name:'铝单板（2.0-3.0mm）',price:'230-380元/㎡',note:'商场、酒店'},
+  {id:'m-067',category:'ceiling',name:'铝蜂窝板',price:'300-450元/㎡',note:'商场中庭、展馆'},
+  {id:'m-068',category:'ceiling',name:'纺锤形吊顶',price:'约160元/㎡',note:'藤条造型悬挂吊顶参考，看造型复杂度'},
+  {id:'m-069',category:'ceiling',name:'拉网板吊顶',price:'约30-150元/㎡',note:'铝合金拉网板，随厚度和表面处理浮动'},
+  {id:'m-070',category:'ceiling',name:'木纹热转印吊顶',price:'约60-180元/㎡',note:'木纹转印铝方通/铝扣板，含龙骨'},
+  {id:'m-071',category:'ceiling',name:'双层灯膜吊顶',price:'约350元/㎡',note:'含轻钢龙骨、透光灯膜、不锈钢收边条'},
+  {id:'m-072',category:'ceiling',name:'裸顶喷漆',price:'约40-120元/㎡',note:'包工包料，含腻子、底漆、面漆'},
+  {id:'m-073',category:'ceiling',name:'聚酯纤维吸音板',price:'约25-120元/㎡',note:'9mm常规25-40，高密度40-70，加厚阻燃70-120'},
+  {id:'m-074',category:'ceiling',name:'聚酯纤维格栅',price:'约40-120元/㎡',note:'吸音格栅吊顶，含安装'},
+
+  // 室内-墙身
+  {id:'m-081',category:'wall',name:'内墙抹灰（20mm混合砂浆）',price:'约31元/㎡',note:'含税全费用'},
+  {id:'m-082',category:'wall',name:'防水砂浆抹灰（卫生间）',price:'约33元/㎡',note:'18mm厚'},
+  {id:'m-083',category:'wall',name:'乳胶漆（含基层处理）',price:'约70元/㎡',note:'铲墙皮+墙锢+基层+乳胶漆'},
+  {id:'m-084',category:'wall',name:'无机涂料',price:'约35元/㎡',note:'综合单价'},
+  {id:'m-085',category:'wall',name:'轻钢龙骨石膏板隔墙',price:'约110元/㎡',note:'含龙骨、石膏板、人工'},
+  {id:'m-086',category:'wall',name:'天然石材（墙身干挂）',price:'约350-800元/㎡',note:'中档偏下石材干挂，含龙骨、加工、安装'},
+  {id:'m-087',category:'wall',name:'护墙板（普通颜色）',price:'约80-450元/㎡',note:'竹木纤维板80-120，复合材料板200-450'},
+  {id:'m-088',category:'wall',name:'护墙板（木纹）',price:'约250-600元/㎡',note:'实木护墙板，含安装'},
+  {id:'m-089',category:'wall',name:'长城金属板',price:'约120-190元/㎡',note:'铝合金长城板，含安装'},
+
+  // 室内-地面
+  {id:'m-101',category:'floor',name:'地砖800×800（铺贴综合）',price:'约121元/㎡',note:'含人工35+瓷砖约47+辅材'},
+  {id:'m-102',category:'floor',name:'地砖600×600（铺贴综合）',price:'约117元/㎡',note:'含人工35+瓷砖约47+辅材'},
+  {id:'m-103',category:'floor',name:'强化复合地板',price:'80-180元/㎡',note:'含铺装'},
+  {id:'m-104',category:'floor',name:'实木复合地板',price:'180-350元/㎡',note:'含铺装'},
+  {id:'m-105',category:'floor',name:'实木地板',price:'200-500元/㎡',note:'含铺装'},
+  {id:'m-106',category:'floor',name:'天然石材（大理石地面）',price:'约120-420元/㎡',note:'国产经济型大理石，含铺贴'},
+  {id:'m-107',category:'floor',name:'天然石材（花岗岩地面）',price:'约80-200元/㎡',note:'经济型国产花岗岩，含铺贴'},
+  {id:'m-108',category:'floor',name:'普通地毯（化纤满铺）',price:'约150-400元/㎡',note:'含材料与铺装'},
+  {id:'m-109',category:'floor',name:'PVC方块地毯',price:'约20-100元/㎡',note:'PVC底背+丙纶/尼龙毯面，含安装'},
+
+  // 栏杆
+  {id:'m-121',category:'railing',name:'全玻璃U槽栏杆',price:'约1400-1600元/㎡',note:'定额综合单价，含钢化玻璃、U型槽、安装'},
+  {id:'m-122',category:'railing',name:'玻璃加金属栏杆',price:'约250-750元/㎡',note:'全框式550-750，半框式约250-350'},
+  {id:'m-123',category:'railing',name:'氟碳金属栏杆',price:'约300-620元/㎡',note:'常温氟碳喷涂钢制约301-380，不锈钢氟碳约616'}
+];
+
+createApp({
+setup(){
+  const loading=ref(true);
+  const items=ref([]);
+  const isEditing=ref(false);
+  const showItemModal=ref(false);
+  const editingItemId=ref(null);
+  const draftItem=ref({category:'municipal',name:'',price:'',note:''});
+  const fileInput=ref(null);
+
+  const loadFromCloud=async()=>{
+    try{
+      const res=await fetch('/api/sync?type=materials&project=global');
+      const data=await res.json();
+      if(Array.isArray(data)&&data.length){
+        items.value=data;
+      }else{
+        items.value=JSON.parse(JSON.stringify(seedData));
+      }
+    }catch(e){
+      console.warn('材料库读取失败，使用默认数据',e);
+      items.value=JSON.parse(JSON.stringify(seedData));
+    }
+    loading.value=false;
+  };
+
+  const saveToCloud=async()=>{
+    try{
+      await fetch('/api/sync?type=materials&project=global',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(items.value)
+      });
+    }catch(e){console.warn('材料库保存失败',e)}
+  };
+
+  const getItemsByCat=(cat)=>{
+    return items.value.filter(i=>i.category===cat);
+  };
+
+  const openAdd=(cat)=>{
+    draftItem.value={category:cat,name:'',price:'',note:''};
+    editingItemId.value=null;
+    showItemModal.value=true;
+  };
+
+  const editItem=(item)=>{
+    draftItem.value={...item};
+    editingItemId.value=item.id;
+    showItemModal.value=true;
+  };
+
+  const closeItemModal=()=>{
+    showItemModal.value=false;
+    editingItemId.value=null;
+  };
+
+  const saveItem=()=>{
+    if(!draftItem.value.name.trim()){alert('请填写材料名称');return}
+    if(!draftItem.value.price.trim()){alert('请填写综合单价');return}
+    if(editingItemId.value){
+      const idx=items.value.findIndex(i=>i.id===editingItemId.value);
+      if(idx>=0)items.value[idx]={...draftItem.value,id:editingItemId.value};
+    }else{
+      items.value.push({...draftItem.value,id:'m-'+Date.now()});
+    }
+    saveToCloud();
+    closeItemModal();
+  };
+
+  const deleteItem=(item)=>{
+    if(!confirm(`确定删除「${item.name}」？`))return;
+    items.value=items.value.filter(i=>i.id!==item.id);
+    saveToCloud();
+  };
+
+  const exportData=()=>{
+    const blob=new Blob([JSON.stringify(items.value,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`材料造价库_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+  };
+  const importData=()=>{fileInput.value.click()};
+  const handleImport=(e)=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    const reader=new FileReader();
+    reader.onload=(ev)=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        if(Array.isArray(data)){
+          if(confirm('确认导入？将覆盖当前数据。')){
+            items.value=data;
+            saveToCloud();
+          }
+        }else{alert('文件格式不正确')}
+      }catch(err){alert('导入失败：'+err.message)}
+    };
+    reader.readAsText(file);
+  };
+
+  onMounted(()=>{
+    loadFromCloud();
+  });
+
+  return{
+    loading,items,isEditing,
+    categories,
+    showItemModal,editingItemId,draftItem,
+    getItemsByCat,openAdd,editItem,closeItemModal,saveItem,deleteItem,
+    exportData,importData,handleImport,fileInput
+  };
+}
+}).mount('#app');
+</script>
+</body>
+</html>
