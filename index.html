@@ -14,6 +14,9 @@
   }catch(e){}
 })();
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/lunar-javascript/1.6.12/lunar.js"></script>
@@ -25,614 +28,831 @@ html[data-fontsize="medium"]{font-size:20px}
 html[data-fontsize="large"]{font-size:24px}
 
 :root,[data-theme="light"]{
-  --bg:#eef1f6; --text:#2d3748; --card:#fff; --primary:#7b8bb8; --border:#d8dee9;
-  --sidebar-bg:#3e4a6b; --sidebar-text:#e8ecf4; --sidebar-active:#5b6ba0;
+  --bg:#f6f5f4; --text:#1a1a1a; --text-secondary:#5d5b54; --text-tertiary:#787671;
+  --card:#ffffff; --primary:#7b8bb8; --primary-pressed:#5b6ba0; --primary-deep:#3e4a6b;
+  --border:#e5e3df; --border-strong:#c8c4be;
+  --sidebar-bg:#3e4a6b; --sidebar-text:#e8ecf4;
+  --sidebar-active:#5b6ba0;
+  --highlight-bg:#7b8bb8;
   --dot-red:#c98a8a; --dot-blue:#8fa3c8; --dot-yellow:#d4c8a8;
+  --tag-bg:#e6e0f5; --tag-text:#3a2a99;
+  --success:#1aae39; --warning:#dd5b00; --error:#e03131;
 }
 [data-theme="dark"]{
-  --bg:#1a1f2e; --text:#e8ecf4; --card:#252b3d; --primary:#8fa3c8; --border:#3a4258;
-  --sidebar-bg:#141824; --sidebar-text:#a8b4d0; --sidebar-active:#3e4a6b;
+  --bg:#1a1f2e; --text:#e8ecf4; --text-secondary:#a8b4d0; --text-tertiary:#6b7590;
+  --card:#252b3d; --primary:#8fa3c8; --primary-pressed:#6b80a8; --primary-deep:#3e4a6b;
+  --border:#3a4258; --border-strong:#5a6678;
+  --sidebar-bg:#141824; --sidebar-text:#a8b4d0;
+  --sidebar-active:#3e4a6b;
+  --highlight-bg:#8fa3c8;
   --dot-red:#d4a0a0; --dot-blue:#a8b8d8; --dot-yellow:#e0d4b0;
+  --tag-bg:#252b3d; --tag-text:#a8b4d0;
+  --success:#4ade80; --warning:#fb923c; --error:#f87171;
 }
 [data-theme="green"]{
-  --bg:#F7F4D5; --text:#0A3323; --card:#FFFFFF; --primary:#839958; --border:#D4CFAE;
-  --sidebar-bg:#0A3323; --sidebar-text:#F7F4D5; --sidebar-active:#105666;
+  --bg:#F7F4D5; --text:#0A3323; --text-secondary:#3e5a45; --text-tertiary:#6b7c6b;
+  --card:#FFFFFF; --primary:#839958; --primary-pressed:#6b7a48; --primary-deep:#4a5830;
+  --border:#D4CFAE; --border-strong:#a8a380;
+  --sidebar-bg:#0A3323; --sidebar-text:#F7F4D5;
+  --sidebar-active:#105666;
+  --highlight-bg:#839958;
   --dot-red:#D3968C; --dot-blue:#105666; --dot-yellow:#C9B87C;
+  --tag-bg:#e6e0c0; --tag-text:#4a5830;
+  --success:#68b988; --warning:#d4a868; --error:#c97070;
 }
 [data-theme="fresh"]{
-  --bg:#F8EBE8; --text:#5A3735; --card:#FFFFFF; --primary:#B77D77; --border:#E5C7C2;
-  --sidebar-bg:#5A3735; --sidebar-text:#EAC3BE; --sidebar-active:#9E544A;
+  --bg:#F8EBE8; --text:#5A3735; --text-secondary:#8a6560; --text-tertiary:#a88a85;
+  --card:#FFFFFF; --primary:#B77D77; --primary-pressed:#9E544A; --primary-deep:#5A3735;
+  --border:#E5C7C2; --border-strong:#c7a29c;
+  --sidebar-bg:#5A3735; --sidebar-text:#EAC3BE;
+  --sidebar-active:#9E544A;
+  --highlight-bg:#B77D77;
   --dot-red:#9E544A; --dot-blue:#B77D77; --dot-yellow:#EAC3BE;
+  --tag-bg:#f5e0dc; --tag-text:#8a3a30;
+  --success:#68b988; --warning:#d99a68; --error:#c97070;
 }
 
-body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0;height:100vh;overflow:hidden}
-.sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:240px;transition:.3s;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
-.sidebar-nav a{display:block;padding:13px 22px;color:var(--sidebar-text);opacity:.75;transition:.2s;font-size:15px;border-left:3px solid transparent;text-decoration:none;cursor:pointer}
-.sidebar-nav a:hover{opacity:1;background:rgba(255,255,255,.05)}
-.sidebar-nav a.active{opacity:1;background:var(--sidebar-active);font-weight:bold;border-left-color:var(--sidebar-text)}
-.main-content{flex:1;padding:16px;overflow:hidden;height:100vh;display:flex;flex-direction:column;gap:12px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px}
-.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
-.dot-red{background:var(--dot-red)}.dot-blue{background:var(--dot-blue)}.dot-yellow{background:var(--dot-yellow)}
-.modal-mask{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
-.ring-svg{transform:rotate(-90deg)}
-.stage-tag{font-size:10.5px;padding:2px 8px;border-radius:9999px;font-weight:500;display:inline-block}
-.hero-title{font-size:14px;font-weight:bold;margin-bottom:6px;letter-spacing:1px}
-.hero-img-wrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:#ddd;cursor:pointer}
-.hero-img{width:100%;height:100%;object-fit:cover;transition:transform .3s;display:block}
-.hero-img-wrap:hover .hero-img{transform:scale(1.03)}
-.hero-meta{font-size:12px;line-height:1.7;margin-top:8px}
-.hero-meta .author{opacity:.75}
-.todo-project-group{margin-bottom:10px}
-.todo-project-title{font-size:14px;font-weight:bold;opacity:.95;margin-top:6px;margin-bottom:6px;padding-left:2px;color:var(--primary)}
-.todo-row{font-size:12px;padding-left:12px;position:relative;display:flex;align-items:center;gap:6px;padding-top:3px;padding-bottom:3px;border-bottom:1px dashed var(--border)}
-.todo-row:last-child{border-bottom:none}
-.todo-row::before{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:var(--border)}
-.edit-btn{opacity:.4;transition:.2s}
-.todo-row:hover .edit-btn,.event-row:hover .edit-btn{opacity:1}
-.sub-task{font-size:11.5px;padding-left:24px;display:flex;align-items:center;gap:6px;padding-top:2px;padding-bottom:2px;border-bottom:1px dashed var(--border)}
-.sub-task:last-child{border-bottom:none}
-.event-row{display:flex;align-items:flex-start;gap:6px;padding:5px 0;border-bottom:1px dashed var(--border)}
-.event-row:last-child{border-bottom:none}
-.arch-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px dashed var(--border);font-size:13px}
-.arch-row:last-child{border-bottom:none}
-.calendar-mini{background:rgba(0,0,0,.15);border-radius:10px;padding:10px;margin:0 10px 10px}
-.calendar-mini .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:10px}
-.calendar-mini .cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 0;border-radius:4px;color:var(--sidebar-text);min-height:32px}
-.calendar-mini .cell .dnum{font-size:11px;line-height:1.1}
-.calendar-mini .cell .lunar{font-size:8.5px;line-height:1.1;opacity:.75;margin-top:1px}
-.calendar-mini .cell.empty{opacity:.15}
-.calendar-mini .cell.weekend{background:rgba(143,163,200,.18)}
-.calendar-mini .cell.holiday{background:rgba(229,62,62,.35);color:#fff}
-.calendar-mini .cell.workday{background:rgba(160,160,160,.3)}
-.calendar-mini .cell.today{outline:2px solid var(--sidebar-text);font-weight:bold}
-.calendar-mini .cell .lunar.holiday-name{color:#ffd9d9;font-weight:bold}
-.cal-nav{background:transparent;border:none;color:var(--sidebar-text);opacity:.6;cursor:pointer;font-size:14px;line-height:1;padding:0 4px;font-weight:bold}
-.cal-nav:hover{opacity:1}
-.setting-row{display:flex;align-items:center;padding:6px 14px 2px 14px;gap:4px;flex-wrap:wrap}
-.setting-row button{font-size:11px;padding:4px 8px;border-radius:4px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--sidebar-text);cursor:pointer}
-.setting-row button.active{background:var(--sidebar-active);font-weight:bold}
-.setting-label{font-size:10px;opacity:.6;margin-right:4px;color:var(--sidebar-text)}
-.scroll-area{overflow-y:auto;padding-right:4px}
-.scroll-area::-webkit-scrollbar{width:5px}
-.scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-.done-row{cursor:pointer;transition:.15s;border-radius:6px}
-.done-row:hover{background:rgba(127,127,127,.08)}
-.proj-edit-btn{position:absolute;top:8px;right:8px;opacity:.3;cursor:pointer;font-size:14px}
-.card:hover .proj-edit-btn{opacity:1}
-.sub-status-box{
-  display:inline-block;
-  margin-top:4px;
-  padding:3px 10px;
-  border-radius:9999px;
-  border:1px solid var(--primary);
-  background:var(--card);
-  color:var(--primary);
-  font-size:11px;
-  font-weight:500;
-  font-style:italic;
+*{box-sizing:border-box}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);transition:.3s;margin:0;height:100vh;overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  font-feature-settings:"cv11","ss01";
 }
+
+/* ============ 侧栏 ============ */
+.sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:248px;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;transition:.3s}
+.sidebar-brand{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-brand h1{font-size:18px;font-weight:700;letter-spacing:-0.3px;line-height:1.2;margin:0}
+.sidebar-brand .en{font-size:10.5px;opacity:.55;letter-spacing:2.5px;margin-top:3px;font-weight:500}
+.sidebar-brand h2{font-size:13px;opacity:.7;margin:10px 0 0;font-weight:500}
+
+.sidebar-nav{position:relative;padding:8px 10px;flex:1}
+.sidebar-nav a{
+  display:flex;align-items:center;padding:11px 14px;
+  color:var(--sidebar-text);opacity:.7;
+  font-size:14.5px;font-weight:500;
+  text-decoration:none;cursor:pointer;
+  position:relative;z-index:1;
+  transition:opacity .25s,color .25s;
+  border-radius:8px;
+  -webkit-tap-highlight-color:transparent;
+}
+.sidebar-nav a span{position:relative;z-index:1;transition:transform .3s cubic-bezier(0.34, 1.56, 0.64, 1)}
+.sidebar-nav a:hover{opacity:1}
+.sidebar-nav a.active{opacity:1;font-weight:600}
+.sidebar-nav a.active span{transform:translateX(2px)}
+.nav-highlight{
+  position:absolute;z-index:0;
+  background:var(--highlight-bg);
+  border-radius:8px;
+  box-shadow:0 4px 14px -4px var(--highlight-bg);
+  transition:top .42s cubic-bezier(0.34, 1.56, 0.64, 1),
+             left .42s cubic-bezier(0.34, 1.56, 0.64, 1),
+             width .42s cubic-bezier(0.34, 1.56, 0.64, 1),
+             height .42s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events:none;
+}
+
+/* ============ 侧栏底部设置 ============ */
+.sidebar-bottom{padding:0 10px 12px}
+.setting-row{display:flex;align-items:center;padding:5px 4px;gap:4px;flex-wrap:wrap}
+.setting-label{font-size:10.5px;opacity:.5;margin-right:4px;color:var(--sidebar-text);font-weight:500}
+.setting-row button{
+  font-size:11px;padding:4px 9px;border-radius:6px;
+  border:1px solid rgba(255,255,255,.12);
+  background:transparent;color:var(--sidebar-text);cursor:pointer;
+  font-weight:500;transition:.15s;
+}
+.setting-row button:hover{background:rgba(255,255,255,.06)}
+.setting-row button.active{background:var(--sidebar-active);border-color:var(--sidebar-active);font-weight:600}
+
+/* ============ 日历 ============ */
+.calendar-mini{background:rgba(0,0,0,.18);border-radius:10px;padding:10px;margin-top:8px}
+.calendar-mini .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.calendar-mini .cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 0;border-radius:5px;color:var(--sidebar-text);min-height:34px;transition:.15s}
+.calendar-mini .cell .dnum{font-size:11.5px;line-height:1.1;font-weight:500}
+.calendar-mini .cell .lunar{font-size:8.5px;line-height:1.1;opacity:.7;margin-top:1px}
+.calendar-mini .cell.empty{opacity:.15}
+.calendar-mini .cell.weekend{background:rgba(143,163,200,.15)}
+.calendar-mini .cell.holiday{background:rgba(229,62,62,.32);color:#fff}
+.calendar-mini .cell.workday{background:rgba(160,160,160,.25)}
+.calendar-mini .cell.today{outline:1.5px solid var(--sidebar-text);font-weight:600}
+.calendar-mini .cell .lunar.holiday-name{color:#ffd9d9;font-weight:600}
+.cal-nav{background:transparent;border:none;color:var(--sidebar-text);opacity:.5;cursor:pointer;font-size:14px;line-height:1;padding:0 4px;font-weight:700;transition:.15s}
+.cal-nav:hover{opacity:1}
+
+/* ============ 主内容区 ============ */
+.main-content{flex:1;padding:20px 24px;overflow:hidden;height:100vh;display:flex;flex-direction:column;gap:14px}
+
+/* ============ 卡片 ============ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;transition:.2s}
+
+/* ============ 顶部栏 ============ */
+.topbar{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.search-btn{
+  flex:1;display:flex;align-items:center;gap:10px;
+  padding:9px 14px;background:var(--card);border:1px solid var(--border);
+  border-radius:8px;cursor:pointer;color:var(--text-tertiary);
+  font-size:14px;transition:.15s;text-align:left;
+}
+.search-btn:hover{border-color:var(--border-strong)}
+.search-btn .kbd{margin-left:auto;font-size:11px;opacity:.5;border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-weight:500}
+.hamburger{font-size:22px;line-height:1;padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text)}
+.admin-btn{padding:8px 14px;border-radius:8px;font-size:13.5px;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;white-space:nowrap;transition:.15s}
+.admin-btn:hover{border-color:var(--border-strong)}
+.admin-btn.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+/* ============ 徽标/标签 ============ */
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot-red{background:var(--dot-red)}.dot-blue{background:var(--dot-blue)}.dot-yellow{background:var(--dot-yellow)}
+.stage-tag{font-size:10.5px;padding:2.5px 9px;border-radius:9999px;font-weight:500;display:inline-block;letter-spacing:0}
+.sub-status-box{
+  display:inline-block;margin-top:5px;padding:3px 10px;border-radius:6px;
+  background:var(--tag-bg);color:var(--tag-text);
+  font-size:11px;font-weight:500;
+}
+
+/* ============ 精神零食 ============ */
+.hero-title{font-size:14px;font-weight:600;margin-bottom:10px;letter-spacing:-0.2px}
+.hero-img-wrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#ddd;cursor:pointer}
+.hero-img{width:100%;height:100%;object-fit:cover;transition:transform .4s;display:block}
+.hero-img-wrap:hover .hero-img{transform:scale(1.03)}
+.hero-meta{font-size:13px;line-height:1.7;margin-top:10px}
+.hero-meta .author{opacity:.65}
+
+/* ============ 待办 ============ */
+.todo-project-group{margin-bottom:12px}
+.todo-project-title{font-size:13.5px;font-weight:700;margin:8px 0 6px;padding-left:2px;color:var(--primary);letter-spacing:-0.2px}
+.todo-row{font-size:12.5px;padding-left:14px;position:relative;display:flex;align-items:center;gap:7px;padding-top:4px;padding-bottom:4px;border-bottom:1px dashed var(--border);transition:.15s}
+.todo-row:last-child{border-bottom:none}
+.todo-row::before{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:var(--border-strong)}
+.todo-row:hover .edit-btn{opacity:1}
+.edit-btn{opacity:0;transition:.2s;color:var(--text-tertiary);background:none;border:none;cursor:pointer;padding:2px 4px;font-size:12px}
+.sub-task{font-size:12px;padding-left:26px;display:flex;align-items:center;gap:6px;padding-top:3px;padding-bottom:3px;border-bottom:1px dashed var(--border)}
+.sub-task:last-child{border-bottom:none}
+
+/* ============ 会议/出差 ============ */
+.event-row{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px dashed var(--border);transition:.15s}
+.event-row:last-child{border-bottom:none}
+.event-row:hover .edit-btn{opacity:1}
+
+/* ============ 归档 ============ */
+.arch-row{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px dashed var(--border);font-size:13px}
+.arch-row:last-child{border-bottom:none}
+
+/* ============ 滚动条 ============ */
+.scroll-area{overflow-y:auto;padding-right:4px}
+.scroll-area::-webkit-scrollbar{width:6px}
+.scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.scroll-area::-webkit-scrollbar-thumb:hover{background:var(--border-strong)}
+
+/* ============ 模态框 ============ */
+.modal-mask{background:rgba(15,15,15,.55);backdrop-filter:blur(8px);position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:60;padding:16px;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:rgba(15,15,15,.2) 0 24px 48px -8px;animation:popIn .22s cubic-bezier(0.34,1.4,0.64,1)}
+@keyframes popIn{from{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-title{font-size:17px;font-weight:600;margin:0 0 18px;letter-spacing:-0.3px}
+.form-label{font-size:12px;font-weight:600;opacity:.7;margin-bottom:5px;display:block;letter-spacing:0}
+.form-input{width:100%;border:1px solid var(--border-strong);border-radius:8px;padding:9px 12px;font-size:14px;background:var(--card);color:var(--text);transition:.15s;font-family:inherit;outline:none}
+.form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent)}
+.form-input::placeholder{color:var(--text-tertiary)}
+
+.btn-primary{font-size:13.5px;padding:9px 18px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-weight:500;transition:.15s;font-family:inherit}
+.btn-primary:hover{background:var(--primary-pressed)}
+.btn-primary:active{transform:scale(.98)}
+.btn-secondary{font-size:13.5px;padding:9px 18px;border-radius:8px;background:transparent;color:var(--text);border:1px solid var(--border-strong);cursor:pointer;font-weight:500;transition:.15s;font-family:inherit}
+.btn-secondary:hover{background:var(--bg)}
+.btn-ghost{font-size:12px;padding:5px 10px;border-radius:6px;background:transparent;color:var(--text-secondary);border:1px solid var(--border);cursor:pointer;font-weight:500;transition:.15s;font-family:inherit}
+.btn-ghost:hover{background:var(--bg);color:var(--text)}
+
+/* ============ 搜索命令面板 ============ */
+.search-overlay{
+  position:fixed;inset:0;z-index:80;
+  background:rgba(15,15,15,.5);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding-top:12vh;
+  animation:fadeIn .15s ease;
+}
+.search-panel{
+  width:100%;max-width:600px;margin:0 16px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  box-shadow:rgba(15,15,15,.3) 0 24px 48px -8px;
+  animation:popIn .2s cubic-bezier(0.34,1.4,0.64,1);
+  max-height:70vh;display:flex;flex-direction:column;
+}
+.search-input-wrap{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.search-input-wrap svg{flex-shrink:0;opacity:.4}
+.search-input{flex:1;border:none;outline:none;background:transparent;color:var(--text);font-size:15px;font-family:inherit;padding:0;font-weight:500}
+.search-input::placeholder{color:var(--text-tertiary);font-weight:400}
+.search-results{overflow-y:auto;padding:8px;flex:1}
+.search-results::-webkit-scrollbar{width:6px}
+.search-results::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.search-group-label{font-size:10.5px;font-weight:700;opacity:.45;padding:8px 12px 4px;letter-spacing:1px;text-transform:uppercase}
+.search-result-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:8px;cursor:pointer;
+  transition:.1s;
+}
+.search-result-item.active{background:color-mix(in srgb, var(--primary) 15%, transparent)}
+.search-result-item.active .result-title{color:var(--primary);font-weight:600}
+.result-type{font-size:10.5px;padding:2px 7px;border-radius:5px;font-weight:600;flex-shrink:0;background:var(--tag-bg);color:var(--tag-text)}
+.result-title{font-size:13.5px;font-weight:500;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.result-desc{font-size:11.5px;color:var(--text-tertiary);flex-shrink:0;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.result-title mark, .result-desc mark{background:color-mix(in srgb, var(--primary) 30%, transparent);color:var(--primary-deep);font-weight:700;padding:0 2px;border-radius:3px}
+.search-empty{padding:40px 20px;text-align:center;color:var(--text-tertiary);font-size:13px}
+.search-footer{padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:14px;font-size:11px;color:var(--text-tertiary);opacity:.8}
+.search-footer .k{display:inline-block;padding:1px 5px;border:1px solid var(--border);border-radius:4px;margin-right:3px;font-weight:600;font-size:10px}
+
+/* ============ 项目卡片 ============ */
+.proj-edit-btn{position:absolute;top:10px;right:10px;opacity:0;cursor:pointer;color:var(--text-tertiary);background:none;border:none;padding:4px;font-size:13px;transition:.2s;border-radius:5px}
+.card:hover .proj-edit-btn{opacity:1}
+.proj-edit-btn:hover{background:var(--bg);color:var(--text)}
+.ring-svg{transform:rotate(-90deg)}
+
+/* ============ 状态标签 ============ */
 .status-toggle{transition:.15s}
 .status-toggle.clickable{cursor:pointer}
-.status-toggle.clickable:hover{transform:scale(1.06);box-shadow:0 2px 6px rgba(0,0,0,.15)}
-.hamburger-icon{font-size:24px;line-height:1}
+.status-toggle.clickable:hover{transform:scale(1.05)}
 
+/* ============ 响应式 ============ */
 @media(max-width:1024px){
   body{height:auto;overflow:auto}
-  .main-content{padding:10px;overflow-y:auto;height:auto;min-height:100vh}
-  .sidebar{position:fixed;left:-240px;z-index:50;height:100vh}
+  .main-content{padding:14px;overflow-y:auto;height:auto;min-height:100vh;gap:12px}
+  .sidebar{position:fixed;left:-248px;z-index:50;height:100vh;box-shadow:8px 0 32px rgba(0,0,0,.2)}
   .sidebar.open{left:0}
   .scroll-area{max-height:none;overflow:visible;flex:none}
   .hero-img-wrap{aspect-ratio:16/10}
-  .hero-meta{font-size:13px}
+  .search-panel{max-height:80vh}
+  .search-overlay{padding-top:6vh}
+  .result-desc{display:none}
+}
+@media(max-width:480px){
+  .topbar{gap:8px}
+  .admin-btn{padding:7px 10px;font-size:12.5px}
+  .search-btn .kbd{display:none}
 }
 </style>
 </head>
 <body>
 <div id="app" v-cloak class="flex h-screen overflow-hidden">
+
+<!-- ============ 侧栏 ============ -->
 <aside class="sidebar" :class="{'open':sidebarOpen}">
-<div class="p-5 border-b border-white/10">
-<h1 class="text-xl font-bold leading-tight">立田工作室</h1>
-<p class="text-xs opacity-60 mt-0.5" style="letter-spacing:2px">LITIAN STUDIO</p>
-<h2 class="text-sm opacity-80 mt-2">项目指挥台</h2>
-</div>
-<nav class="sidebar-nav py-3">
-<a @click="switchView('home')" :class="{'active':currentView==='home'}">主页</a>
-<a @click="switchView('todos')" :class="{'active':currentView==='todos'}">最近待办</a>
-<a @click="switchView('projects')" :class="{'active':currentView==='projects'}">项目总览</a>
-<a @click="switchView('memo')" :class="{'active':currentView==='memo'}">备忘录</a>
-<a @click="switchView('archive')" :class="{'active':currentView==='archive'}">已归档</a>
-<a href="https://pan.tencent.com" target="_blank">云盘</a>
-<a href="https://chat.deepseek.com" target="_blank">DeepSeek</a>
-<a @click="switchView('settings')" :class="{'active':currentView==='settings'}">设置</a>
-</nav>
-<div class="mt-auto pb-3">
-<div class="setting-row">
-<span class="setting-label">字号</span>
-<button @click="setFontSize('small')"  :class="{active:fontSize==='small'}">小</button>
-<button @click="setFontSize('medium')" :class="{active:fontSize==='medium'}">中</button>
-<button @click="setFontSize('large')"  :class="{active:fontSize==='large'}">大</button>
-</div>
-<div class="setting-row">
-<span class="setting-label">主题</span>
-<button @click="setTheme('light')" :class="{active:theme==='light'}">浅色</button>
-<button @click="setTheme('dark')"  :class="{active:theme==='dark'}">深色</button>
-<button @click="setTheme('green')" :class="{active:theme==='green'}">雅绿</button>
-<button @click="setTheme('fresh')" :class="{active:theme==='fresh'}">清新</button>
-</div>
-<div class="calendar-mini">
-<div class="flex justify-between items-center mb-1.5 px-1">
-<div class="flex items-center gap-1">
-<button @click="prevMonth" class="cal-nav" title="上个月">‹</button>
-<span class="text-xs font-bold cursor-pointer" @click="resetMonth" title="回到本月">{{ currentMonthName }}</span>
-<button @click="nextMonth" class="cal-nav" title="下个月">›</button>
-</div>
-<span class="text-xs opacity-60">{{ todayDate }}</span>
-</div>
-<div class="grid">
-<div v-for="d in ['日','一','二','三','四','五','六']" :key="d" class="font-bold opacity-50" style="font-size:10px">{{ d }}</div>
-<div v-for="(cell,idx) in calendarDays" :key="idx"
-     class="cell"
-     :class="{empty:!cell.isCurrent,weekend:cell.isWeekend,holiday:cell.isHoliday,workday:cell.isWorkday,today:cell.isToday}">
-  <span class="dnum">{{ cell.date }}</span>
-  <span class="lunar" :class="{'holiday-name':cell.isHoliday}">{{ cell.label }}</span>
-</div>
-</div>
-</div>
-</div>
+  <div class="sidebar-brand">
+    <h1>立田工作室</h1>
+    <div class="en">LITIAN STUDIO</div>
+    <h2>项目指挥台</h2>
+  </div>
+
+  <nav class="sidebar-nav" ref="navRef">
+    <div class="nav-highlight" v-show="highlightReady" :style="highlightStyle"></div>
+    <a v-for="item in navItems" :key="item.key"
+       :ref="el => setNavRef(el, item.key)"
+       @click="switchView(item.key)"
+       :class="{'active': currentView===item.key}">
+      <span>{{ item.label }}</span>
+    </a>
+    <a href="https://pan.tencent.com" target="_blank"><span>云盘</span></a>
+    <a href="https://chat.deepseek.com" target="_blank"><span>DeepSeek</span></a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="setting-row">
+      <span class="setting-label">字号</span>
+      <button @click="setFontSize('small')"  :class="{active:fontSize==='small'}">小</button>
+      <button @click="setFontSize('medium')" :class="{active:fontSize==='medium'}">中</button>
+      <button @click="setFontSize('large')"  :class="{active:fontSize==='large'}">大</button>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">主题</span>
+      <button @click="setTheme('light')" :class="{active:theme==='light'}">浅</button>
+      <button @click="setTheme('dark')"  :class="{active:theme==='dark'}">深</button>
+      <button @click="setTheme('green')" :class="{active:theme==='green'}">绿</button>
+      <button @click="setTheme('fresh')" :class="{active:theme==='fresh'}">粉</button>
+    </div>
+    <div class="calendar-mini">
+      <div class="flex justify-between items-center mb-1.5 px-1">
+        <div class="flex items-center gap-1">
+          <button @click="prevMonth" class="cal-nav">‹</button>
+          <span class="text-xs font-bold cursor-pointer" @click="resetMonth">{{ currentMonthName }}</span>
+          <button @click="nextMonth" class="cal-nav">›</button>
+        </div>
+        <span class="text-xs opacity-60">{{ todayDate }}</span>
+      </div>
+      <div class="grid">
+        <div v-for="d in ['日','一','二','三','四','五','六']" :key="d" class="font-bold opacity-50" style="font-size:10px">{{ d }}</div>
+        <div v-for="(cell,idx) in calendarDays" :key="idx"
+             class="cell"
+             :class="{empty:!cell.isCurrent,weekend:cell.isWeekend,holiday:cell.isHoliday,workday:cell.isWorkday,today:cell.isToday}">
+          <span class="dnum">{{ cell.date }}</span>
+          <span class="lunar" :class="{'holiday-name':cell.isHoliday}">{{ cell.label }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </aside>
 
+<!-- ============ 主内容区 ============ -->
 <main class="main-content">
-<div class="flex items-center gap-3 flex-shrink-0">
-<button @click="sidebarOpen=!sidebarOpen" class="lg:hidden p-2 bg-[var(--card)] rounded-lg border border-[var(--border)]"><span class="hamburger-icon">☰</span></button>
-<div class="flex-1 relative">
-<input v-model="searchKeyword" @input="doSearch" placeholder="搜索项目、待办..." class="w-full px-4 py-2 rounded-xl border border-[var(--border)] bg-[var(--card)] text-sm focus:outline-none" style="color:var(--text)">
-<div v-if="searchResults.length>0&&searchKeyword" class="absolute top-full left-0 right-0 mt-2 card p-3 max-h-80 overflow-y-auto z-40 shadow-xl">
-<div v-for="(r,idx) in searchResults" :key="idx" class="py-2 border-b border-[var(--border)] last:border-0 cursor-pointer" @click="goToResult(r)">
-<div class="text-xs opacity-50">{{ r.type }}</div>
-<div class="text-sm font-medium">{{ r.title }}</div>
-</div>
-</div>
-</div>
-<button v-if="!isAdmin" @click="showLogin=true" class="px-3 py-2 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm whitespace-nowrap">管理员入口</button>
-<button v-else @click="isAdmin=false" class="px-3 py-2 rounded-xl text-white text-sm whitespace-nowrap font-bold" style="background:var(--primary)">已登录</button>
-</div>
+  <div class="topbar">
+    <button @click="sidebarOpen=!sidebarOpen" class="hamburger lg:hidden">☰</button>
+    <button class="search-btn" @click="openSearch">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <span>搜索项目、待办、会议、页面...</span>
+      <span class="kbd">⌘K</span>
+    </button>
+    <button v-if="!isAdmin" @click="showLogin=true" class="admin-btn">管理员入口</button>
+    <button v-else @click="isAdmin=false" class="admin-btn on">已登录</button>
+  </div>
 
-<!-- 主页 -->
-<div v-if="currentView==='home'" class="flex flex-col lg:flex-1 lg:min-h-0 lg:flex-row gap-3">
-<div class="flex flex-col gap-3 lg:w-2/5 lg:min-h-0">
-<div class="card p-3 lg:flex-shrink-0">
-<div class="hero-title">精神零食</div>
-<div v-if="currentHero" class="flex flex-col lg:flex-row gap-3">
-<div class="hero-img-wrap lg:flex-[0_0_58%]" @click="nextHero">
-<img :src="currentHero.url" alt="Inspiration" class="hero-img" loading="lazy">
-</div>
-<div class="flex-1 min-w-0">
-<div class="hero-meta">
-<div class="font-bold">{{ currentHero.title }}</div>
-<div v-if="currentHero.englishTitle" class="author">{{ currentHero.englishTitle }}</div>
-<div v-if="currentHero.year" class="author">{{ currentHero.year }}<span v-if="currentHero.author">，{{ currentHero.author }}</span></div>
-</div>
-</div>
-</div>
-<div v-else class="text-xs opacity-50 text-center py-4">
-请在 heroes 文件夹里放入图片，并创建 list.txt
-</div>
-</div>
+  <!-- ========== 主页 ========== -->
+  <div v-if="currentView==='home'" class="flex flex-col lg:flex-1 lg:min-h-0 lg:flex-row gap-4">
+    <div class="flex flex-col gap-4 lg:w-2/5 lg:min-h-0">
+      <div class="card p-4 lg:flex-shrink-0">
+        <div class="hero-title">精神零食</div>
+        <div v-if="currentHero" class="flex flex-col lg:flex-row gap-4">
+          <div class="hero-img-wrap lg:flex-[0_0_58%]" @click="nextHero">
+            <img :src="currentHero.url" alt="" class="hero-img" loading="lazy">
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="hero-meta">
+              <div class="font-bold">{{ currentHero.title }}</div>
+              <div v-if="currentHero.englishTitle" class="author">{{ currentHero.englishTitle }}</div>
+              <div v-if="currentHero.year" class="author">{{ currentHero.year }}<span v-if="currentHero.author">，{{ currentHero.author }}</span></div>
+            </div>
+          </div>
+        </div>
+        <div v-else class="text-xs opacity-50 text-center py-6">请在 heroes 文件夹里放入图片和 list.txt</div>
+      </div>
 
-<div class="card p-3 lg:flex-shrink-0">
-<div class="flex justify-between items-center mb-2">
-<h3 class="font-bold text-sm">会议/出差安排</h3>
-<button @click="openAddEvent" class="text-lg hover:opacity-70 leading-none font-bold" style="color:var(--primary)" title="新增">+</button>
-</div>
-<div v-if="activeEvents.length === 0" class="text-xs opacity-50 text-center py-2">暂无安排</div>
-<div v-else>
-<div v-for="ev in activeEvents" :key="ev.id" class="event-row">
-<input type="checkbox" :checked="ev.done" @change="toggleEvent(ev)" class="mt-0.5 w-3.5 h-3.5 cursor-pointer flex-shrink-0">
-<div class="flex-1 min-w-0">
-<div class="flex items-baseline gap-2">
-<span class="text-xs font-bold truncate flex-1">{{ ev.title }}</span>
-<span class="text-[11px] font-medium flex-shrink-0" style="color:var(--primary)">{{ formatEventTimeShort(ev) }}</span>
-</div>
-<div class="text-[11px] opacity-60 truncate">📍 {{ ev.location || '未填地点' }}</div>
-</div>
-<button @click="editEvent(ev)" class="edit-btn text-xs p-0.5" style="color:var(--primary)" title="编辑">✎</button>
-<button @click="deleteEvent(ev)" class="edit-btn text-xs p-0.5 text-red-400" title="删除">✕</button>
-</div>
-</div>
-</div>
+      <div class="card p-4 lg:flex-shrink-0">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-bold text-sm">会议/出差安排</h3>
+          <button @click="openAddEvent" class="btn-ghost" style="font-size:15px;padding:2px 9px;line-height:1">+</button>
+        </div>
+        <div v-if="activeEvents.length === 0" class="text-xs opacity-50 text-center py-3">暂无安排</div>
+        <div v-else>
+          <div v-for="ev in activeEvents" :key="ev.id" class="event-row">
+            <input type="checkbox" @change="toggleEvent(ev)" class="mt-0.5 w-4 h-4 cursor-pointer flex-shrink-0" style="accent-color:var(--primary)">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline gap-2">
+                <span class="text-[13px] font-semibold truncate flex-1">{{ ev.title }}</span>
+                <span class="text-[11px] font-medium flex-shrink-0" style="color:var(--primary)">{{ formatEventTimeShort(ev) }}</span>
+              </div>
+              <div class="text-[11px] opacity-55 truncate mt-0.5">📍 {{ ev.location || '未填地点' }}</div>
+            </div>
+            <button @click="editEvent(ev)" class="edit-btn">✎</button>
+            <button @click="deleteEvent(ev)" class="edit-btn" style="color:var(--error)">✕</button>
+          </div>
+        </div>
+      </div>
 
-<div class="card p-3 flex flex-col lg:flex-1 lg:min-h-0">
-<div class="flex justify-between items-center mb-2 flex-shrink-0">
-<h3 class="font-bold text-sm">最近待办</h3>
-<button @click="switchView('todos')" class="text-xs hover:underline" style="color:var(--primary)">全部</button>
-</div>
-<div class="scroll-area lg:flex-1 lg:min-h-0">
-<div v-if="pendingTodos.length === 0" class="text-xs opacity-50 text-center py-3">暂无待办</div>
-<div v-for="(group,projName) in groupedTodos" :key="projName" class="todo-project-group">
-<div class="todo-project-title">{{ projName }}</div>
-<template v-for="todo in group" :key="todo.id">
-<div class="todo-row">
-<span class="dot" :class="getDotColor(todo)"></span>
-<input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="w-3 h-3 cursor-pointer flex-shrink-0">
-<span class="font-medium truncate flex-1">{{ todo.task }}</span>
-<span class="text-[10px] opacity-60 truncate">· {{ todo.owner||'未指定' }}</span>
-<button @click="openLinkDialog(todo)" class="text-xs p-0.5" :style="todo.link ? '' : 'opacity:.25'" title="附图链接">📎</button>
-<button @click="editTodo(todo)" class="edit-btn text-xs p-0.5" style="color:var(--primary)">✎</button>
-</div>
-<div v-for="(sub,idx) in todo.subTasks" :key="idx" class="sub-task">
-<span class="opacity-50 text-[10px]">{{ String.fromCharCode(97+idx) }}.</span>
-<span class="truncate flex-1">{{ sub.text }}</span>
-<button @click="openLinkDialog(sub)" class="text-xs p-0.5" :style="sub.link ? '' : 'opacity:.25'" title="附图链接">📎</button>
-<button @click="editSubTask(todo, idx)" class="edit-btn text-xs p-0.5" style="color:var(--primary)" title="编辑小项">✎</button>
-</div>
-</template>
-</div>
-</div>
-</div>
-</div>
+      <div class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
+        <div class="flex justify-between items-center mb-3 flex-shrink-0">
+          <h3 class="font-bold text-sm">最近待办</h3>
+          <button @click="switchView('todos')" class="text-xs hover:underline font-medium" style="color:var(--primary)">全部 →</button>
+        </div>
+        <div class="scroll-area lg:flex-1 lg:min-h-0">
+          <div v-if="pendingTodos.length === 0" class="text-xs opacity-50 text-center py-4">暂无待办</div>
+          <div v-for="(group,projName) in groupedTodos" :key="projName" class="todo-project-group">
+            <div class="todo-project-title">{{ projName }}</div>
+            <template v-for="todo in group" :key="todo.id">
+              <div class="todo-row">
+                <span class="dot" :class="getDotColor(todo)"></span>
+                <input type="checkbox" @change="toggleTodo(todo)" class="w-3.5 h-3.5 cursor-pointer flex-shrink-0" style="accent-color:var(--primary)">
+                <span class="font-medium truncate flex-1">{{ todo.task }}</span>
+                <span class="text-[10.5px] opacity-55 truncate">· {{ todo.owner||'未指定' }}</span>
+                <button @click="openLinkDialog(todo)" class="edit-btn" :style="todo.link ? '' : 'opacity:.2'">📎</button>
+                <button @click="editTodo(todo)" class="edit-btn">✎</button>
+              </div>
+              <div v-for="(sub,idx) in todo.subTasks" :key="idx" class="sub-task">
+                <span class="opacity-45 text-[10px]">{{ String.fromCharCode(97+idx) }}.</span>
+                <span class="truncate flex-1">{{ sub.text }}</span>
+                <button @click="openLinkDialog(sub)" class="edit-btn" :style="sub.link ? '' : 'opacity:.2'">📎</button>
+                <button @click="editSubTask(todo, idx)" class="edit-btn">✎</button>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div class="flex flex-col lg:w-3/5 lg:min-h-0">
-<h3 class="font-bold text-sm mb-2 flex-shrink-0">项目进度</h3>
-<div class="lg:flex-1 lg:min-h-0 lg:overflow-y-auto pr-1">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-<div v-for="proj in projects" :key="proj.id" class="card p-3 cursor-pointer transition flex items-center gap-3 relative" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
-<div class="proj-edit-btn" @click.stop="editProject(proj)" title="编辑项目">✎</div>
-<div class="relative w-14 h-14 flex-shrink-0">
-<svg class="ring-svg w-14 h-14" viewBox="0 0 36 36">
-<circle cx="18" cy="18" r="15.9" fill="none" stroke="#e5e7eb" stroke-width="3"></circle>
-<circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3" :stroke="getRingGray(proj.progress)" :stroke-dasharray="100" :stroke-dashoffset="100-proj.progress" stroke-linecap="round"></circle>
-</svg>
-<div class="absolute inset-0 flex items-center justify-center text-xs font-bold" style="color:var(--text)">{{ proj.progress }}%</div>
-</div>
-<div class="flex-1 min-w-0">
-<div class="font-bold text-sm truncate">{{ proj.name }}</div>
-<div class="text-[11px] opacity-60 mt-0.5">开始：{{ proj.startDate }}</div>
-<div class="flex gap-1 flex-wrap mt-1">
-<span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
-</div>
-<div v-if="proj.subStatus" class="sub-status-box">📌 {{ proj.subStatus }}</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+    <div class="flex flex-col lg:w-3/5 lg:min-h-0">
+      <h3 class="font-bold text-sm mb-3 flex-shrink-0">项目进度</h3>
+      <div class="lg:flex-1 lg:min-h-0 lg:overflow-y-auto pr-1">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div v-for="proj in projects" :key="proj.id" class="card p-4 cursor-pointer transition flex items-center gap-3 relative" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
+            <button @click.stop="editProject(proj)" class="proj-edit-btn">✎</button>
+            <div class="relative w-14 h-14 flex-shrink-0">
+              <svg class="ring-svg w-14 h-14" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--border)" stroke-width="3"></circle>
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3" :stroke="getRingGray(proj.progress)" :stroke-dasharray="100" :stroke-dashoffset="100-proj.progress" stroke-linecap="round"></circle>
+              </svg>
+              <div class="absolute inset-0 flex items-center justify-center text-xs font-bold">{{ proj.progress }}%</div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-bold text-sm truncate">{{ proj.name }}</div>
+              <div class="text-[11px] opacity-55 mt-1">开始：{{ proj.startDate }}</div>
+              <div class="flex gap-1 flex-wrap mt-1.5">
+                <span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
+              </div>
+              <div v-if="proj.subStatus" class="sub-status-box">📌 {{ proj.subStatus }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<!-- 最近待办详情页 -->
-<div v-if="currentView==='todos'" class="flex-1 min-h-0 overflow-y-auto">
-<div class="flex justify-between items-center mb-4">
-<h1 class="text-xl font-bold">最近待办</h1>
-<div class="flex gap-2">
-<button @click="switchView('archive')" class="px-3 py-2 rounded-lg text-xs" style="background:var(--bg);color:var(--text)">📦 已归档 ({{ doneTodos.length }})</button>
-<button @click="showAddTodo=true" class="px-4 py-2 rounded-lg text-sm text-white" style="background:var(--primary)">+ 新建待办</button>
-</div>
-</div>
-<div v-if="pendingTodos.length === 0" class="card p-8 text-center opacity-50 text-sm">暂无待办</div>
-<div class="space-y-3">
-<div v-for="(group,projName) in groupedTodos" :key="projName" class="card p-4">
-<div class="todo-project-title" style="font-size:13px;margin-bottom:8px">{{ projName }}</div>
-<div>
-<template v-for="todo in group" :key="todo.id">
-<div class="text-[13px] flex items-start gap-2 py-1">
-<span class="dot mt-1.5" :class="getDotColor(todo)"></span>
-<input type="checkbox" :checked="todo.done" @change="toggleTodo(todo)" class="mt-0.5 w-4 h-4 cursor-pointer flex-shrink-0">
-<div class="flex-1">
-<span class="font-medium">{{ todo.task }}</span>
-<span class="text-[11px] opacity-60 ml-2">· {{ todo.owner||'未指定' }}</span>
-</div>
-<button @click="openLinkDialog(todo)" class="text-xs p-1" :style="todo.link ? '' : 'opacity:.25'">📎</button>
-<button @click="editTodo(todo)" class="text-xs p-1" style="color:var(--primary)">✎</button>
-<button v-if="isAdmin" @click="deleteTodo(todo)" class="text-xs text-red-400 hover:text-red-600 p-1">✕</button>
-</div>
-<div v-for="(sub,idx) in todo.subTasks" :key="idx" class="sub-task">
-<span class="opacity-50 text-[10px]">{{ String.fromCharCode(97+idx) }}.</span>
-<span class="flex-1">{{ sub.text }}</span>
-<button @click="openLinkDialog(sub)" class="text-xs p-0.5" :style="sub.link ? '' : 'opacity:.25'">📎</button>
-<button @click="editSubTask(todo, idx)" class="text-xs p-0.5" style="color:var(--primary)" title="编辑">✎</button>
-</div>
-</template>
-</div>
-</div>
-</div>
-</div>
+  <!-- ========== 最近待办 ========== -->
+  <div v-if="currentView==='todos'" class="flex-1 min-h-0 overflow-y-auto">
+    <div class="flex justify-between items-center mb-5">
+      <h1 class="text-2xl font-bold" style="letter-spacing:-0.5px">最近待办</h1>
+      <div class="flex gap-2">
+        <button @click="switchView('archive')" class="btn-ghost">📦 已归档 ({{ doneTodos.length }})</button>
+        <button @click="showAddTodo=true" class="btn-primary">+ 新建待办</button>
+      </div>
+    </div>
+    <div v-if="pendingTodos.length === 0" class="card p-10 text-center opacity-50 text-sm">暂无待办</div>
+    <div class="space-y-3">
+      <div v-for="(group,projName) in groupedTodos" :key="projName" class="card p-5">
+        <div class="todo-project-title" style="font-size:14px;margin-bottom:10px">{{ projName }}</div>
+        <div>
+          <template v-for="todo in group" :key="todo.id">
+            <div class="text-[13.5px] flex items-start gap-2 py-1.5">
+              <span class="dot mt-1.5" :class="getDotColor(todo)"></span>
+              <input type="checkbox" @change="toggleTodo(todo)" class="mt-0.5 w-4 h-4 cursor-pointer flex-shrink-0" style="accent-color:var(--primary)">
+              <div class="flex-1">
+                <span class="font-medium">{{ todo.task }}</span>
+                <span class="text-[11px] opacity-55 ml-2">· {{ todo.owner||'未指定' }}</span>
+              </div>
+              <button @click="openLinkDialog(todo)" class="btn-ghost">📎</button>
+              <button @click="editTodo(todo)" class="btn-ghost">✎</button>
+              <button v-if="isAdmin" @click="deleteTodo(todo)" class="btn-ghost" style="color:var(--error)">✕</button>
+            </div>
+            <div v-for="(sub,idx) in todo.subTasks" :key="idx" class="sub-task">
+              <span class="opacity-45 text-[10px]">{{ String.fromCharCode(97+idx) }}.</span>
+              <span class="flex-1">{{ sub.text }}</span>
+              <button @click="openLinkDialog(sub)" class="btn-ghost">📎</button>
+              <button @click="editSubTask(todo, idx)" class="btn-ghost">✎</button>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<!-- 已归档 -->
-<div v-if="currentView==='archive'" class="flex-1 min-h-0 overflow-y-auto">
-<h1 class="text-xl font-bold mb-4">📦 已归档</h1>
+  <!-- ========== 已归档 ========== -->
+  <div v-if="currentView==='archive'" class="flex-1 min-h-0 overflow-y-auto">
+    <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-0.5px">📦 已归档</h1>
 
-<div class="card p-4 mb-4">
-<h3 class="font-bold text-sm mb-3 pb-2 border-b" style="border-color:var(--border)">会议/出差安排 · 已完成 ({{ doneEvents.length }})</h3>
-<div v-if="doneEvents.length === 0" class="text-xs opacity-50 text-center py-4">暂无已完成</div>
-<div v-else>
-<div v-for="ev in doneEvents" :key="ev.id" class="arch-row">
-<div class="flex-1 min-w-0">
-<div class="flex items-baseline gap-2">
-<span class="text-sm truncate flex-1 opacity-60 line-through">{{ ev.title }}</span>
-<span class="text-[11px] opacity-50 flex-shrink-0">{{ formatEventTimeShort(ev) }}</span>
-</div>
-<div class="text-[11px] opacity-50 truncate">📍 {{ ev.location || '未填地点' }}</div>
-</div>
-<button @click="toggleEvent(ev)" class="text-xs px-2 py-1 rounded" style="color:var(--primary)" title="恢复">↩ 恢复</button>
-<button @click="deleteEvent(ev)" class="text-xs px-2 py-1 rounded text-red-400" title="删除">✕</button>
-</div>
-</div>
-</div>
+    <div class="card p-5 mb-4">
+      <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">会议/出差安排 · 已完成 ({{ doneEvents.length }})</h3>
+      <div v-if="doneEvents.length === 0" class="text-xs opacity-50 text-center py-5">暂无已完成</div>
+      <div v-else>
+        <div v-for="ev in doneEvents" :key="ev.id" class="arch-row">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-baseline gap-2">
+              <span class="text-sm truncate flex-1 opacity-55 line-through">{{ ev.title }}</span>
+              <span class="text-[11px] opacity-45 flex-shrink-0">{{ formatEventTimeShort(ev) }}</span>
+            </div>
+            <div class="text-[11px] opacity-45 truncate mt-0.5">📍 {{ ev.location || '未填地点' }}</div>
+          </div>
+          <button @click="toggleEvent(ev)" class="btn-ghost" style="color:var(--primary)">↩ 恢复</button>
+          <button @click="deleteEvent(ev)" class="btn-ghost" style="color:var(--error)">✕</button>
+        </div>
+      </div>
+    </div>
 
-<div class="card p-4">
-<h3 class="font-bold text-sm mb-3 pb-2 border-b" style="border-color:var(--border)">最近待办 · 已完成 ({{ doneTodos.length }})</h3>
-<div v-if="doneTodos.length === 0" class="text-xs opacity-50 text-center py-4">暂无已完成</div>
-<div v-else>
-<div v-for="(group,projName) in groupedDoneTodos" :key="projName" class="mb-3 last:mb-0">
-<div class="todo-project-title" style="font-size:12px;margin-bottom:6px">{{ projName }}</div>
-<div v-for="todo in group" :key="todo.id" class="arch-row">
-<div class="flex-1 min-w-0">
-<div class="text-sm truncate opacity-60 line-through">{{ todo.task }}</div>
-<div class="text-[11px] opacity-50">由 {{ todo.completedBy||'未知' }} 完成</div>
-</div>
-<button @click="toggleTodo(todo)" class="text-xs px-2 py-1 rounded" style="color:var(--primary)" title="恢复">↩ 恢复</button>
-<button v-if="isAdmin" @click="deleteTodo(todo)" class="text-xs px-2 py-1 rounded text-red-400" title="删除">✕</button>
-</div>
-</div>
-</div>
-</div>
-</div>
+    <div class="card p-5">
+      <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">最近待办 · 已完成 ({{ doneTodos.length }})</h3>
+      <div v-if="doneTodos.length === 0" class="text-xs opacity-50 text-center py-5">暂无已完成</div>
+      <div v-else>
+        <div v-for="(group,projName) in groupedDoneTodos" :key="projName" class="mb-4 last:mb-0">
+          <div class="todo-project-title" style="font-size:12.5px;margin-bottom:6px">{{ projName }}</div>
+          <div v-for="todo in group" :key="todo.id" class="arch-row">
+            <div class="flex-1 min-w-0">
+              <div class="text-sm truncate opacity-55 line-through">{{ todo.task }}</div>
+              <div class="text-[11px] opacity-45">由 {{ todo.completedBy||'未知' }} 完成</div>
+            </div>
+            <button @click="toggleTodo(todo)" class="btn-ghost" style="color:var(--primary)">↩ 恢复</button>
+            <button v-if="isAdmin" @click="deleteTodo(todo)" class="btn-ghost" style="color:var(--error)">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<!-- 项目总览 -->
-<div v-if="currentView==='projects'" class="flex-1 min-h-0 overflow-y-auto">
-<div class="flex justify-between items-center mb-4">
-<h1 class="text-xl font-bold">项目总览</h1>
-<button @click="showAddProject=true" class="px-4 py-2 rounded-lg text-sm text-white" style="background:var(--primary)">+ 新建项目</button>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-<div v-for="proj in projects" :key="proj.id" class="card p-5 cursor-pointer transition relative" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
-<div class="proj-edit-btn" @click.stop="editProject(proj)" title="编辑项目">✎</div>
-<div class="flex justify-between items-start mb-2">
-<h3 class="font-bold text-base">{{ proj.name }}</h3>
-<div class="flex gap-1 flex-wrap pr-6">
-<span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
-</div>
-</div>
-<p class="text-xs opacity-70 mb-1">负责人：{{ proj.owner }}</p>
-<p v-if="proj.note" class="text-xs opacity-60 mb-1 truncate">{{ proj.note }}</p>
-<div v-if="proj.subStatus" class="sub-status-box mb-3">📌 具体状态：{{ proj.subStatus }}</div>
-<p v-else class="text-xs opacity-40 mb-3">（未填写具体状态）</p>
-<div class="flex gap-2 text-xs">
-<span class="px-2 py-0.5 rounded status-toggle"
-      :class="[proj.filed?'bg-green-100 text-green-700':'bg-gray-100 text-gray-400', isAdmin?'clickable':'']"
-      @click.stop="isAdmin && toggleFiled(proj)"
-      :title="isAdmin?'点击切换备案状态':'管理员登录后可修改'">
-  备案: {{ proj.filed?'已':'未' }}
-</span>
-<span class="px-2 py-0.5 rounded status-toggle"
-      :class="[proj.contracted?'bg-green-100 text-green-700':'bg-gray-100 text-gray-400', isAdmin?'clickable':'']"
-      @click.stop="isAdmin && toggleContracted(proj)"
-      :title="isAdmin?'点击切换合同状态':'管理员登录后可修改'">
-  合同: {{ proj.contracted?'已':'未' }}
-</span>
-</div>
-</div>
-</div>
-</div>
+  <!-- ========== 项目总览 ========== -->
+  <div v-if="currentView==='projects'" class="flex-1 min-h-0 overflow-y-auto">
+    <div class="flex justify-between items-center mb-5">
+      <h1 class="text-2xl font-bold" style="letter-spacing:-0.5px">项目总览</h1>
+      <button @click="showAddProject=true" class="btn-primary">+ 新建项目</button>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div v-for="proj in projects" :key="proj.id" class="card p-5 cursor-pointer transition relative" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
+        <button @click.stop="editProject(proj)" class="proj-edit-btn">✎</button>
+        <div class="flex justify-between items-start mb-3">
+          <h3 class="font-bold text-base" style="letter-spacing:-0.2px">{{ proj.name }}</h3>
+          <div class="flex gap-1 flex-wrap pr-6 justify-end">
+            <span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
+          </div>
+        </div>
+        <p class="text-xs opacity-65 mb-1">负责人：{{ proj.owner }}</p>
+        <p v-if="proj.note" class="text-xs opacity-55 mb-2 truncate">{{ proj.note }}</p>
+        <div v-if="proj.subStatus" class="sub-status-box mb-3">📌 具体状态：{{ proj.subStatus }}</div>
+        <p v-else class="text-xs opacity-40 mb-3">（未填写具体状态）</p>
+        <div class="flex gap-2 text-xs">
+          <span class="px-2.5 py-1 rounded-md font-medium status-toggle"
+                :class="[proj.filed?'bg-green-100 text-green-700':'bg-gray-100 text-gray-500', isAdmin?'clickable':'']"
+                @click.stop="isAdmin && toggleFiled(proj)">
+            备案: {{ proj.filed?'已':'未' }}
+          </span>
+          <span class="px-2.5 py-1 rounded-md font-medium status-toggle"
+                :class="[proj.contracted?'bg-green-100 text-green-700':'bg-gray-100 text-gray-500', isAdmin?'clickable':'']"
+                @click.stop="isAdmin && toggleContracted(proj)">
+            合同: {{ proj.contracted?'已':'未' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<!-- 备忘录 -->
-<div v-if="currentView==='memo'" class="flex-1 min-h-0 overflow-y-auto">
-<h1 class="text-xl font-bold mb-4">工作室备忘录</h1>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<a href="./materials.html" class="card p-5 hover:shadow-lg transition block">
-  <h3 class="font-bold text-sm">📊 材料造价库</h3>
-  <p class="text-xs opacity-70 mt-1">市政、景观、立面、幕墙、室内、栏杆</p>
-</a>
-<div class="card p-5"><h3 class="font-bold text-sm">SketchUp 建模规范</h3><p class="text-xs opacity-70 mt-1">圆弧段数、组件命名、清理标准</p></div>
-<div class="card p-5"><h3 class="font-bold text-sm">AI 效果图关键词库</h3><p class="text-xs opacity-70 mt-1">按项目类型分类的提示词参考</p></div>
-<div class="card p-5"><h3 class="font-bold text-sm">合同模板库</h3><p class="text-xs opacity-70 mt-1">设计合同、分包、变更、验收</p></div>
-<div class="card p-5"><h3 class="font-bold text-sm">会议纪要模板</h3><p class="text-xs opacity-70 mt-1">已确认/待确认事项标准格式</p></div>
-</div>
-</div>
+  <!-- ========== 备忘录 ========== -->
+  <div v-if="currentView==='memo'" class="flex-1 min-h-0 overflow-y-auto">
+    <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-0.5px">工作室备忘录</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <a href="./materials.html" class="card p-6 hover:shadow-lg transition block">
+        <h3 class="font-bold text-sm mb-1">📊 材料造价库</h3>
+        <p class="text-xs opacity-65">市政、景观、立面、幕墙、室内、栏杆</p>
+      </a>
+      <div class="card p-6"><h3 class="font-bold text-sm mb-1">SketchUp 建模规范</h3><p class="text-xs opacity-65">圆弧段数、组件命名、清理标准</p></div>
+      <div class="card p-6"><h3 class="font-bold text-sm mb-1">AI 效果图关键词库</h3><p class="text-xs opacity-65">按项目类型分类的提示词参考</p></div>
+      <div class="card p-6"><h3 class="font-bold text-sm mb-1">合同模板库</h3><p class="text-xs opacity-65">设计合同、分包、变更、验收</p></div>
+      <div class="card p-6"><h3 class="font-bold text-sm mb-1">会议纪要模板</h3><p class="text-xs opacity-65">已确认/待确认事项标准格式</p></div>
+    </div>
+  </div>
 
-<!-- 设置 -->
-<div v-if="currentView==='settings'" class="flex-1 min-h-0 overflow-y-auto">
-<h1 class="text-xl font-bold mb-4">设置</h1>
-<div class="card p-5">
-<p class="text-sm opacity-70 mb-3">字号：</p>
-<div class="flex gap-2 mb-4">
-<button @click="setFontSize('small')"  :class="['px-3 py-1 rounded', fontSize==='small'?'text-white':'']" :style="fontSize==='small'?'background:var(--primary)':''">小</button>
-<button @click="setFontSize('medium')" :class="['px-3 py-1 rounded', fontSize==='medium'?'text-white':'']" :style="fontSize==='medium'?'background:var(--primary)':''">中</button>
-<button @click="setFontSize('large')"  :class="['px-3 py-1 rounded', fontSize==='large'?'text-white':'']" :style="fontSize==='large'?'background:var(--primary)':''">大</button>
-</div>
-<p class="text-sm opacity-70 mb-3">主题：</p>
-<div class="flex gap-2 flex-wrap">
-<button @click="setTheme('light')" :class="['px-3 py-1 rounded', theme==='light'?'text-white':'']" :style="theme==='light'?'background:var(--primary)':''">浅色</button>
-<button @click="setTheme('dark')"  :class="['px-3 py-1 rounded', theme==='dark'?'text-white':'']" :style="theme==='dark'?'background:var(--primary)':''">深色</button>
-<button @click="setTheme('green')" :class="['px-3 py-1 rounded', theme==='green'?'text-white':'']" :style="theme==='green'?'background:var(--primary)':''">雅绿</button>
-<button @click="setTheme('fresh')" :class="['px-3 py-1 rounded', theme==='fresh'?'text-white':'']" :style="theme==='fresh'?'background:var(--primary)':''">清新</button>
-</div>
-</div>
-<div class="card p-5 mt-4">
-<p class="text-sm opacity-70 mb-3">数据状态：</p>
-<p class="text-xs opacity-60">项目、待办、会议/出差安排已启用云端同步。任何设备上的修改会自动同步到所有设备。</p>
-</div>
-</div>
+  <!-- ========== 设置 ========== -->
+  <div v-if="currentView==='settings'" class="flex-1 min-h-0 overflow-y-auto">
+    <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-0.5px">设置</h1>
+    <div class="card p-6">
+      <p class="text-sm font-semibold mb-3">字号</p>
+      <div class="flex gap-2 mb-6">
+        <button @click="setFontSize('small')"  :class="['btn-ghost', fontSize==='small'?'btn-primary':'']">小</button>
+        <button @click="setFontSize('medium')" :class="['btn-ghost', fontSize==='medium'?'btn-primary':'']">中</button>
+        <button @click="setFontSize('large')"  :class="['btn-ghost', fontSize==='large'?'btn-primary':'']">大</button>
+      </div>
+      <p class="text-sm font-semibold mb-3">主题</p>
+      <div class="flex gap-2 flex-wrap">
+        <button @click="setTheme('light')" :class="['btn-ghost', theme==='light'?'btn-primary':'']">浅色</button>
+        <button @click="setTheme('dark')"  :class="['btn-ghost', theme==='dark'?'btn-primary':'']">深色</button>
+        <button @click="setTheme('green')" :class="['btn-ghost', theme==='green'?'btn-primary':'']">雅绿</button>
+        <button @click="setTheme('fresh')" :class="['btn-ghost', theme==='fresh'?'btn-primary':'']">清新</button>
+      </div>
+      <div class="mt-6 pt-6" style="border-top:1px solid var(--border)">
+        <p class="text-xs opacity-60">项目、待办、会议/出差已启用云端同步。任何设备上的修改自动同步到所有设备。</p>
+      </div>
+    </div>
+  </div>
 </main>
 
-<!-- 登录 -->
+<!-- ============ 搜索命令面板 ============ -->
+<transition name="fade">
+  <div v-if="showSearch" class="search-overlay" @click.self="closeSearch">
+    <div class="search-panel">
+      <div class="search-input-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        <input ref="searchInput" v-model="searchQuery" @input="onSearchInput" @keydown.down.prevent="searchNext" @keydown.up.prevent="searchPrev" @keydown.enter.prevent="searchConfirm" @keydown.esc="closeSearch" placeholder="搜索项目、待办、会议、页面..." class="search-input">
+      </div>
+      <div class="search-results">
+        <div v-if="searchResults.length === 0" class="search-empty">
+          {{ searchQuery ? '无匹配结果' : '暂无内容' }}
+        </div>
+        <template v-else>
+          <div v-if="!searchQuery" class="search-group-label">快速跳转</div>
+          <div v-else class="search-group-label">{{ searchResults.length }} 个结果</div>
+          <div v-for="(r,idx) in searchResults" :key="r.type+idx"
+               class="search-result-item"
+               :class="{'active': idx===searchActiveIndex}"
+               @click="selectResult(r)"
+               @mouseenter="searchActiveIndex = idx">
+            <span class="result-type">{{ r.typeLabel }}</span>
+            <span class="result-title" v-html="highlightMatch(r.title, searchQuery)"></span>
+            <span v-if="r.desc" class="result-desc" v-html="highlightMatch(r.desc, searchQuery)"></span>
+          </div>
+        </template>
+      </div>
+      <div class="search-footer">
+        <span><span class="k">↑↓</span>选择</span>
+        <span><span class="k">↵</span>跳转</span>
+        <span><span class="k">esc</span>关闭</span>
+      </div>
+    </div>
+  </div>
+</transition>
+
+<!-- ============ 登录 ============ -->
 <div v-if="showLogin" v-cloak class="modal-mask" @click.self="showLogin=false">
-<div class="card p-6 w-full max-w-sm">
-<h3 class="font-bold text-lg mb-4">管理员登录</h3>
-<input v-model="loginPwd" type="password" placeholder="输入密码" @keyup.enter="doLogin" class="w-full border rounded-lg p-2 text-sm border-[var(--border)] mb-4" style="background:transparent;color:var(--text)">
-<div class="flex justify-end gap-2">
-<button @click="showLogin=false" class="px-4 py-2 text-sm">取消</button>
-<button @click="doLogin" class="px-4 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">登录</button>
-</div>
-</div>
+  <div class="modal-card" style="max-width:360px">
+    <h3 class="modal-title">管理员登录</h3>
+    <input v-model="loginPwd" type="password" placeholder="输入密码" @keyup.enter="doLogin" class="form-input mb-4">
+    <div class="flex justify-end gap-2">
+      <button @click="showLogin=false" class="btn-secondary">取消</button>
+      <button @click="doLogin" class="btn-primary">登录</button>
+    </div>
+  </div>
 </div>
 
-<!-- 会议/出差编辑弹窗 -->
+<!-- ============ 会议/出差编辑 ============ -->
 <div v-if="showEventModal" v-cloak class="modal-mask" @click.self="closeEventModal">
-<div class="card p-6 w-full max-w-md">
-<h3 class="font-bold text-lg mb-4">{{ editingEventId ? '编辑会议/出差' : '新增会议/出差' }}</h3>
-<div class="space-y-3">
-<label class="text-xs opacity-70">主题</label>
-<input v-model="draftEvent.title" placeholder="如：顺德社的观看、营造与地方实践" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<label class="text-xs opacity-70">地点</label>
-<input v-model="draftEvent.location" placeholder="如：顺德马岗微木艺术空间" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<label class="text-xs opacity-70">日期</label>
-<input v-model="draftEvent.date" type="date" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<div class="flex gap-2 items-center">
-<div class="flex-1">
-<label class="text-xs opacity-70">开始时间</label>
-<input v-model="draftEvent.timeStart" type="time" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-</div>
-<div class="flex-1">
-<label class="text-xs opacity-70">结束时间</label>
-<input v-model="draftEvent.timeEnd" type="time" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-</div>
-</div>
-</div>
-<div class="flex justify-end gap-2 mt-5">
-<button @click="closeEventModal" class="px-4 py-2 text-sm">取消</button>
-<button @click="saveEvent" class="px-4 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">保存</button>
-</div>
-</div>
+  <div class="modal-card">
+    <h3 class="modal-title">{{ editingEventId ? '编辑会议/出差' : '新增会议/出差' }}</h3>
+    <div class="space-y-3">
+      <div>
+        <label class="form-label">主题</label>
+        <input v-model="draftEvent.title" placeholder="如：顺德社的观看、营造与地方实践" class="form-input">
+      </div>
+      <div>
+        <label class="form-label">地点</label>
+        <input v-model="draftEvent.location" placeholder="如：顺德马岗微木艺术空间" class="form-input">
+      </div>
+      <div>
+        <label class="form-label">日期</label>
+        <input v-model="draftEvent.date" type="date" class="form-input">
+      </div>
+      <div class="flex gap-2">
+        <div class="flex-1">
+          <label class="form-label">开始时间</label>
+          <input v-model="draftEvent.timeStart" type="time" class="form-input">
+        </div>
+        <div class="flex-1">
+          <label class="form-label">结束时间</label>
+          <input v-model="draftEvent.timeEnd" type="time" class="form-input">
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 mt-6">
+      <button @click="closeEventModal" class="btn-secondary">取消</button>
+      <button @click="saveEvent" class="btn-primary">保存</button>
+    </div>
+  </div>
 </div>
 
-<!-- 附图链接弹窗 -->
+<!-- ============ 附图链接 ============ -->
 <div v-if="linkDialogTarget" v-cloak class="modal-mask" @click.self="linkDialogTarget=null">
-<div class="card p-6 w-full max-w-md">
-<h3 class="font-bold text-lg mb-4">附图链接</h3>
-<input v-model="linkDialogValue" placeholder="粘贴云盘 URL" class="w-full border rounded-lg p-2 text-sm border-[var(--border)] mb-4" style="background:transparent;color:var(--text)">
-<div class="flex justify-end gap-2 flex-wrap">
-<a v-if="linkDialogTarget.link" :href="linkDialogTarget.link" target="_blank" class="px-3 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">打开</a>
-<button v-if="linkDialogTarget.link" @click="deleteLink" class="px-3 py-2 text-sm text-red-500">删除</button>
-<button @click="saveLink" class="px-3 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">保存</button>
-<button @click="linkDialogTarget=null" class="px-3 py-2 text-sm">取消</button>
-</div>
-</div>
+  <div class="modal-card">
+    <h3 class="modal-title">附图链接</h3>
+    <input v-model="linkDialogValue" placeholder="粘贴云盘 URL" class="form-input mb-4">
+    <div class="flex justify-end gap-2 flex-wrap">
+      <a v-if="linkDialogTarget.link" :href="linkDialogTarget.link" target="_blank" class="btn-primary" style="text-decoration:none">打开</a>
+      <button v-if="linkDialogTarget.link" @click="deleteLink" class="btn-secondary" style="color:var(--error)">删除</button>
+      <button @click="saveLink" class="btn-primary">保存</button>
+      <button @click="linkDialogTarget=null" class="btn-secondary">取消</button>
+    </div>
+  </div>
 </div>
 
-<!-- 编辑子任务 -->
+<!-- ============ 编辑子任务 ============ -->
 <div v-if="editingSubTask" v-cloak class="modal-mask" @click.self="editingSubTask=null">
-<div class="card p-6 w-full max-w-md">
-<h3 class="font-bold text-lg mb-4">编辑小项</h3>
-<div class="space-y-3">
-<input v-model="editingSubTask.text" placeholder="小项内容" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<input v-model="editingSubTask.link" placeholder="附图链接（可选）" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-</div>
-<div class="flex justify-end gap-2 mt-5">
-<button @click="editingSubTask=null" class="px-4 py-2 text-sm">取消</button>
-<button @click="saveSubTask" class="px-4 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">保存</button>
-</div>
-</div>
+  <div class="modal-card">
+    <h3 class="modal-title">编辑小项</h3>
+    <div class="space-y-3">
+      <input v-model="editingSubTask.text" placeholder="小项内容" class="form-input">
+      <input v-model="editingSubTask.link" placeholder="附图链接（可选）" class="form-input">
+    </div>
+    <div class="flex justify-end gap-2 mt-6">
+      <button @click="editingSubTask=null" class="btn-secondary">取消</button>
+      <button @click="saveSubTask" class="btn-primary">保存</button>
+    </div>
+  </div>
 </div>
 
-<!-- 编辑待办 -->
+<!-- ============ 编辑待办 ============ -->
 <div v-if="editingTodo" v-cloak class="modal-mask" @click.self="editingTodo=null">
-<div class="card p-6 w-full max-w-md">
-<h3 class="font-bold text-lg mb-4">编辑待办</h3>
-<div class="space-y-3">
-<input v-model="editingTodo.task" placeholder="待办内容" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<input v-model="editingTodo.owner" placeholder="负责人（多个逗号隔开）" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<select v-model="editingTodo.type" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<option value="design">设计/会议/指标（红点）</option>
-<option value="process">工艺跟进（蓝点）</option>
-<option value="contract">合同跟进（黄点）</option>
-</select>
-</div>
-<div class="flex justify-end gap-2 mt-5">
-<button @click="editingTodo=null" class="px-4 py-2 text-sm">取消</button>
-<button @click="saveTodoEdit" class="px-4 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">保存</button>
-</div>
-</div>
+  <div class="modal-card">
+    <h3 class="modal-title">编辑待办</h3>
+    <div class="space-y-3">
+      <input v-model="editingTodo.task" placeholder="待办内容" class="form-input">
+      <input v-model="editingTodo.owner" placeholder="负责人（多个逗号隔开）" class="form-input">
+      <select v-model="editingTodo.type" class="form-input">
+        <option value="design">设计/会议/指标（红点）</option>
+        <option value="process">工艺跟进（蓝点）</option>
+        <option value="contract">合同跟进（黄点）</option>
+      </select>
+    </div>
+    <div class="flex justify-end gap-2 mt-6">
+      <button @click="editingTodo=null" class="btn-secondary">取消</button>
+      <button @click="saveTodoEdit" class="btn-primary">保存</button>
+    </div>
+  </div>
 </div>
 
-<!-- 编辑项目 -->
+<!-- ============ 编辑项目 ============ -->
 <div v-if="editingProject" v-cloak class="modal-mask" @click.self="editingProject=null">
-<div class="card p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-<h3 class="font-bold text-lg mb-4">编辑项目</h3>
-<div class="space-y-3">
-<label class="text-xs opacity-70">项目名称</label>
-<input v-model="editingProject.name" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-
-<label class="text-xs opacity-70">负责人</label>
-<input v-model="editingProject.owner" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-
-<label class="text-xs opacity-70">当前阶段（可多选）</label>
-<div class="grid grid-cols-2 gap-1">
-<label v-for="s in stages" :key="s" class="flex items-center gap-2 text-xs p-1 rounded cursor-pointer" :style="editingProject.stage.includes(s)?'background:var(--bg)':''">
-<input type="checkbox" :value="s" v-model="editingProject.stage">
-<span>{{ s }}</span>
-</label>
+  <div class="modal-card" style="max-width:520px">
+    <h3 class="modal-title">编辑项目</h3>
+    <div class="space-y-3">
+      <div>
+        <label class="form-label">项目名称</label>
+        <input v-model="editingProject.name" class="form-input">
+      </div>
+      <div>
+        <label class="form-label">负责人</label>
+        <input v-model="editingProject.owner" class="form-input">
+      </div>
+      <div>
+        <label class="form-label">当前阶段（可多选）</label>
+        <div class="grid grid-cols-2 gap-1.5">
+          <label v-for="s in stages" :key="s" class="flex items-center gap-2 text-xs p-2 rounded cursor-pointer transition" :style="editingProject.stage.includes(s)?'background:var(--tag-bg);color:var(--tag-text);font-weight:600':''">
+            <input type="checkbox" :value="s" v-model="editingProject.stage" style="accent-color:var(--primary)">
+            <span>{{ s }}</span>
+          </label>
+        </div>
+      </div>
+      <div>
+        <label class="form-label">具体状态</label>
+        <input v-model="editingProject.subStatus" placeholder="如：施工收尾，室内深化中" class="form-input">
+      </div>
+      <div>
+        <label class="form-label">进度百分比</label>
+        <input v-model.number="editingProject.progress" type="number" min="0" max="100" class="form-input">
+      </div>
+      <div>
+        <label class="form-label">备注</label>
+        <input v-model="editingProject.note" class="form-input">
+      </div>
+      <div class="flex gap-4 pt-1">
+        <label class="flex items-center gap-2 text-xs cursor-pointer"><input type="checkbox" v-model="editingProject.filed" style="accent-color:var(--primary)"> 已备案</label>
+        <label class="flex items-center gap-2 text-xs cursor-pointer"><input type="checkbox" v-model="editingProject.contracted" style="accent-color:var(--primary)"> 已入合同</label>
+      </div>
+    </div>
+    <div class="flex justify-between gap-2 mt-6">
+      <button @click="deleteProjectConfirm" class="btn-ghost" style="color:var(--error)">删除项目</button>
+      <div class="flex gap-2">
+        <button @click="editingProject=null" class="btn-secondary">取消</button>
+        <button @click="saveProjectEdit" class="btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<label class="text-xs opacity-70">具体状态（自由填写）</label>
-<input v-model="editingProject.subStatus" placeholder="如：施工收尾，室内深化中" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-
-<label class="text-xs opacity-70">进度百分比</label>
-<input v-model.number="editingProject.progress" type="number" min="0" max="100" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-
-<label class="text-xs opacity-70">备注</label>
-<input v-model="editingProject.note" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-
-<div class="flex gap-4">
-<label class="flex items-center gap-2 text-xs"><input type="checkbox" v-model="editingProject.filed"> 已备案</label>
-<label class="flex items-center gap-2 text-xs"><input type="checkbox" v-model="editingProject.contracted"> 已入合同</label>
-</div>
-</div>
-<div class="flex justify-between gap-2 mt-5">
-<button @click="deleteProjectConfirm" class="px-4 py-2 text-sm text-red-500">删除项目</button>
-<div class="flex gap-2">
-<button @click="editingProject=null" class="px-4 py-2 text-sm">取消</button>
-<button @click="saveProjectEdit" class="px-4 py-2 text-sm rounded-lg text-white" style="background:var(--primary)">保存</button>
-</div>
-</div>
-</div>
-</div>
-
-<!-- 新建待办 -->
+<!-- ============ 新建待办 ============ -->
 <div v-if="showAddTodo" v-cloak class="modal-mask" @click.self="showAddTodo=false">
-<div class="card p-6 w-full max-w-md">
-<h3 class="font-bold text-lg mb-4">新建待办</h3>
-<div class="space-y-3">
-<input v-model="newTodo.task" placeholder="待办内容" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<select v-model="newTodo.projectId" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<option value="">选择项目</option>
-<option v-for="p in projects" :key="p.id" :value="p.id">{{ p.name }}</option>
-</select>
-<select v-model="newTodo.owner" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<option value="">选择负责人</option>
-<option v-for="m in members" :key="m" :value="m">{{ m }}</option>
-</select>
-<select v-model="newTodo.type" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<option value="design">设计/会议/指标（红点）</option>
-<option value="process">工艺跟进（蓝点）</option>
-<option value="contract">合同跟进（黄点）</option>
-</select>
-<button @click="addTodo" class="w-full py-2 rounded-lg text-sm text-white" style="background:var(--primary)">保存</button>
-</div>
-</div>
+  <div class="modal-card">
+    <h3 class="modal-title">新建待办</h3>
+    <div class="space-y-3">
+      <input v-model="newTodo.task" placeholder="待办内容" class="form-input">
+      <select v-model="newTodo.projectId" class="form-input">
+        <option value="">选择项目</option>
+        <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.name }}</option>
+      </select>
+      <select v-model="newTodo.owner" class="form-input">
+        <option value="">选择负责人</option>
+        <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
+      </select>
+      <select v-model="newTodo.type" class="form-input">
+        <option value="design">设计/会议/指标（红点）</option>
+        <option value="process">工艺跟进（蓝点）</option>
+        <option value="contract">合同跟进（黄点）</option>
+      </select>
+    </div>
+    <div class="flex justify-end gap-2 mt-6">
+      <button @click="showAddTodo=false" class="btn-secondary">取消</button>
+      <button @click="addTodo" class="btn-primary">保存</button>
+    </div>
+  </div>
 </div>
 
-<!-- 新建项目 -->
+<!-- ============ 新建项目 ============ -->
 <div v-if="showAddProject" v-cloak class="modal-mask" @click.self="showAddProject=false">
-<div class="card p-6 w-full max-w-md">
-<h3 class="font-bold text-lg mb-4">新建项目</h3>
-<div class="space-y-3">
-<input v-model="newProject.name" placeholder="项目名称" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<select v-model="newProject.stage" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<option v-for="s in stages" :key="s" :value="s">{{ s }}</option>
-</select>
-<select v-model="newProject.owner" class="w-full border rounded-lg p-2 text-sm border-[var(--border)]" style="background:transparent;color:var(--text)">
-<option value="">选择负责人</option>
-<option v-for="m in members" :key="m" :value="m">{{ m }}</option>
-</select>
-<button @click="addProject" class="w-full py-2 rounded-lg text-sm bg-gray-700 text-white">保存</button>
+  <div class="modal-card">
+    <h3 class="modal-title">新建项目</h3>
+    <div class="space-y-3">
+      <input v-model="newProject.name" placeholder="项目名称" class="form-input">
+      <select v-model="newProject.stage" class="form-input">
+        <option v-for="s in stages" :key="s" :value="s">{{ s }}</option>
+      </select>
+      <select v-model="newProject.owner" class="form-input">
+        <option value="">选择负责人</option>
+        <option v-for="m in members" :key="m" :value="m">{{ m }}</option>
+      </select>
+    </div>
+    <div class="flex justify-end gap-2 mt-6">
+      <button @click="showAddProject=false" class="btn-secondary">取消</button>
+      <button @click="addProject" class="btn-primary">保存</button>
+    </div>
+  </div>
 </div>
-</div>
-</div>
+
 </div>
 
 <script>
-const {createApp,ref,computed,onMounted}=Vue;
+const {createApp,ref,computed,onMounted,onUnmounted,watch,nextTick}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
 const ADMIN_PASSWORD='litian2024';
@@ -650,6 +870,15 @@ const HOLIDAYS_2026 = {
   '2026-10-01': {type:'holiday', name:'国庆'},'2026-10-02': {type:'holiday', name:'国庆'},'2026-10-03': {type:'holiday', name:'国庆'},'2026-10-04': {type:'holiday', name:'国庆'},'2026-10-05': {type:'holiday', name:'国庆'},'2026-10-06': {type:'holiday', name:'国庆'},'2026-10-07': {type:'holiday', name:'国庆'},
   '2026-10-10': {type:'workday', name:'调休'}
 };
+
+const navItems=[
+  {key:'home', label:'主页'},
+  {key:'todos', label:'最近待办'},
+  {key:'projects', label:'项目总览'},
+  {key:'memo', label:'备忘录'},
+  {key:'archive', label:'已归档'},
+  {key:'settings', label:'设置'}
+];
 
 const projCategory={'sl4':'shenling','slzb':'shenling','sl5':'shenling','slgz':'shenling','prsp':'industrial','yj':'industrial','fp':'industrial','rk':'industrial','whg':'renovation','stc':'renovation','spmy':'renovation','skwj':'small','sq':'other'};
 const categoryBgColor={'shenling':'rgba(143,163,200,0.12)','industrial':'rgba(163,184,163,0.12)','renovation':'rgba(184,174,200,0.12)','small':'rgba(212,200,168,0.15)','other':'rgba(212,184,184,0.12)'};
@@ -739,13 +968,43 @@ setup(){
   const showLogin=ref(false);
   const loginPwd=ref('');
   const isAdmin=ref(false);
-  const searchKeyword=ref('');
-  const searchResults=ref([]);
   const editingTodo=ref(null);
   const editingSubTask=ref(null);
   const editingProject=ref(null);
   const linkDialogTarget=ref(null);
   const linkDialogValue=ref('');
+
+  // 搜索
+  const showSearch=ref(false);
+  const searchQuery=ref('');
+  const searchActiveIndex=ref(0);
+  const searchInput=ref(null);
+
+  // 侧栏高亮块
+  const navRef=ref(null);
+  const navRefs=ref({});
+  const highlightStyle=ref({});
+  const highlightReady=ref(false);
+
+  const setNavRef=(el, key)=>{ if(el) navRefs.value[key]=el; };
+
+  const updateHighlight=()=>{
+    const el=navRefs.value[currentView.value];
+    if(!el || !el.parentElement) return;
+    const aRect=el.getBoundingClientRect();
+    const parentRect=el.parentElement.getBoundingClientRect();
+    const span=el.querySelector('span');
+    const spanWidth=span ? span.getBoundingClientRect().width : aRect.width - 28;
+    highlightStyle.value={
+      top:(aRect.top - parentRect.top + 4)+'px',
+      left:(aRect.left - parentRect.left + 10)+'px',
+      width:(spanWidth + 26)+'px',
+      height:(aRect.height - 8)+'px'
+    };
+    highlightReady.value=true;
+  };
+
+  watch(currentView, ()=>nextTick(updateHighlight));
 
   const fontSize=ref(localStorage.getItem('studio_fontsize_v2')||'medium');
   const setFontSize=(s)=>{fontSize.value=s;localStorage.setItem('studio_fontsize_v2',s);document.documentElement.setAttribute('data-fontsize',s)};
@@ -758,20 +1017,15 @@ setup(){
   const newProject=ref({name:'',stage:stages[0],owner:''});
   const switchView=(v)=>{currentView.value=v;sidebarOpen.value=false};
 
-  // ============ 项目 & 待办 云同步 ============
+  // ============ 云同步 ============
   const saveProjectsToCloud=async()=>{
-    try{
-      await fetch('/api/sync?type=projects&project=global',{
-        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(projects.value)
-      });
-    }catch(e){console.warn('项目保存失败',e)}
+    try{await fetch('/api/sync?type=projects&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(projects.value)});}catch(e){console.warn(e)}
   };
   const saveTodosToCloud=async()=>{
-    try{
-      await fetch('/api/sync?type=todos&project=global',{
-        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(todos.value)
-      });
-    }catch(e){console.warn('待办保存失败',e)}
+    try{await fetch('/api/sync?type=todos&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(todos.value)});}catch(e){console.warn(e)}
+  };
+  const saveEventsToCloud=async()=>{
+    try{await fetch('/api/sync?type=events&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(events.value)});}catch(e){console.warn(e)}
   };
 
   const loadProjectsAndTodosFromCloud=async()=>{
@@ -781,24 +1035,19 @@ setup(){
       if(Array.isArray(d1)&&d1.length){
         projects.value=migrateProjects(d1);
         localStorage.setItem('studio_projects',JSON.stringify(projects.value));
-      }else{
-        await saveProjectsToCloud();
-      }
-    }catch(e){console.warn('项目云同步失败，使用本地数据',e)}
-
+      }else{await saveProjectsToCloud();}
+    }catch(e){console.warn('项目云同步失败',e)}
     try{
       const r2=await fetch('/api/sync?type=todos&project=global');
       const d2=await r2.json();
       if(Array.isArray(d2)){
         todos.value=migrateTodos(d2);
         localStorage.setItem('studio_todos',JSON.stringify(todos.value));
-      }else{
-        await saveTodosToCloud();
-      }
-    }catch(e){console.warn('待办云同步失败，使用本地数据',e)}
+      }else{await saveTodosToCloud();}
+    }catch(e){console.warn('待办云同步失败',e)}
   };
 
-  // ============ 会议/出差安排 ============
+  // ============ 会议/出差 ============
   const events=ref([]);
   const showEventModal=ref(false);
   const editingEventId=ref(null);
@@ -808,85 +1057,40 @@ setup(){
     try{
       const res=await fetch('/api/sync?type=events&project=global');
       const data=await res.json();
-      if(Array.isArray(data)&&data.length){
-        events.value=migrateEvents(data);
-      }else{
-        events.value=migrateEvents(defaultEvents);
-        saveEvents();
-      }
-    }catch(e){
-      console.warn('会议/出差读取失败，使用默认数据',e);
-      events.value=migrateEvents(defaultEvents);
-    }
-  };
-  const saveEvents=async()=>{
-    try{
-      await fetch('/api/sync?type=events&project=global',{
-        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(events.value)
-      });
-    }catch(e){console.warn('会议/出差保存失败',e)}
+      if(Array.isArray(data)&&data.length){events.value=migrateEvents(data);}
+      else{events.value=migrateEvents(defaultEvents);saveEventsToCloud();}
+    }catch(e){events.value=migrateEvents(defaultEvents);}
   };
 
-  const activeEvents=computed(()=>{
-    return events.value.filter(e=>!e.done).sort((a,b)=>{
-      const dc=(a.date||'').localeCompare(b.date||'');
-      if(dc!==0) return dc;
-      return (a.timeStart||'').localeCompare(b.timeStart||'');
-    });
-  });
+  const activeEvents=computed(()=>events.value.filter(e=>!e.done).sort((a,b)=>{
+    const dc=(a.date||'').localeCompare(b.date||'');
+    if(dc!==0) return dc;
+    return (a.timeStart||'').localeCompare(b.timeStart||'');
+  }));
   const doneEvents=computed(()=>events.value.filter(e=>e.done));
 
   const formatEventTimeShort=(ev)=>{
     if(!ev.date) return '未填写时间';
     const parts=ev.date.split('-');
-    let s='';
-    if(parts.length===3){
-      s=`${parseInt(parts[0])}年${parseInt(parts[1])}月${parseInt(parts[2])}日`;
-    }else{
-      s=ev.date;
-    }
-    if(ev.timeStart){
-      s+=' '+ev.timeStart;
-      if(ev.timeEnd) s+='-'+ev.timeEnd;
-    }
+    let s = parts.length===3 ? `${parseInt(parts[0])}年${parseInt(parts[1])}月${parseInt(parts[2])}日` : ev.date;
+    if(ev.timeStart){ s+=' '+ev.timeStart; if(ev.timeEnd) s+='-'+ev.timeEnd; }
     return s;
   };
 
-  const openAddEvent=()=>{
-    draftEvent.value={title:'',location:'',date:'',timeStart:'',timeEnd:''};
-    editingEventId.value=null;
-    showEventModal.value=true;
-  };
-  const editEvent=(ev)=>{
-    draftEvent.value={title:ev.title,location:ev.location,date:ev.date,timeStart:ev.timeStart,timeEnd:ev.timeEnd};
-    editingEventId.value=ev.id;
-    showEventModal.value=true;
-  };
-  const closeEventModal=()=>{
-    showEventModal.value=false;
-    editingEventId.value=null;
-  };
+  const openAddEvent=()=>{draftEvent.value={title:'',location:'',date:'',timeStart:'',timeEnd:''};editingEventId.value=null;showEventModal.value=true;};
+  const editEvent=(ev)=>{draftEvent.value={title:ev.title,location:ev.location,date:ev.date,timeStart:ev.timeStart,timeEnd:ev.timeEnd};editingEventId.value=ev.id;showEventModal.value=true;};
+  const closeEventModal=()=>{showEventModal.value=false;editingEventId.value=null;};
   const saveEvent=()=>{
-    if(!draftEvent.value.title.trim()){alert('请填写主题');return}
-    if(!draftEvent.value.date){alert('请填写日期');return}
+    if(!draftEvent.value.title.trim())return alert('请填写主题');
+    if(!draftEvent.value.date)return alert('请填写日期');
     if(editingEventId.value){
       const idx=events.value.findIndex(e=>e.id===editingEventId.value);
       if(idx>=0)events.value[idx]={...events.value[idx],...draftEvent.value};
-    }else{
-      events.value.push({id:'ev-'+Date.now(),...draftEvent.value,done:false});
-    }
-    saveEvents();
-    closeEventModal();
+    }else{events.value.push({id:'ev-'+Date.now(),...draftEvent.value,done:false});}
+    saveEventsToCloud();closeEventModal();
   };
-  const toggleEvent=(ev)=>{
-    ev.done=!ev.done;
-    saveEvents();
-  };
-  const deleteEvent=(ev)=>{
-    if(!confirm(`确定删除「${ev.title}」？`))return;
-    events.value=events.value.filter(e=>e.id!==ev.id);
-    saveEvents();
-  };
+  const toggleEvent=(ev)=>{ev.done=!ev.done;saveEventsToCloud();};
+  const deleteEvent=(ev)=>{if(!confirm(`确定删除「${ev.title}」？`))return;events.value=events.value.filter(e=>e.id!==ev.id);saveEventsToCloud();};
 
   // ============ 精神零食 ============
   const heroes=ref([]);
@@ -896,30 +1100,20 @@ setup(){
   const parseListTxt=(text)=>{
     const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
     return lines.map(line=>{
-      const m=line.match(/^(\d+)\.(.+)$/);
-      if(!m) return null;
-      const id=parseInt(m[1]);
-      const content=m[2];
-      const parts=content.split('|').map(s=>s.trim());
-      const title=parts[0]||'';
-      const englishTitle=parts[1]||'';
-      const year=parts[2]||'';
-      const author=parts[3]||'';
-      return {id, title, englishTitle, year, author, url:`./heroes/${id}.jpg`};
+      const m=line.match(/^(\d+)\.(.+)$/); if(!m) return null;
+      const id=parseInt(m[1]); const parts=m[2].split('|').map(s=>s.trim());
+      return {id, title:parts[0]||'', englishTitle:parts[1]||'', year:parts[2]||'', author:parts[3]||'', url:`./heroes/${id}.jpg`};
     }).filter(Boolean);
   };
 
   const loadHeroes=async()=>{
     try{
       const res=await fetch('./heroes/list.txt');
-      if(!res.ok) throw new Error('list.txt 未找到');
+      if(!res.ok) throw new Error('not found');
       const text=await res.text();
       heroes.value=parseListTxt(text);
       pickTodayHero();
-    }catch(e){
-      console.warn('heroes/list.txt 读取失败', e);
-      heroes.value=[];
-    }
+    }catch(e){heroes.value=[];}
   };
 
   const pickTodayHero=()=>{
@@ -927,13 +1121,10 @@ setup(){
     const today=new Date().toISOString().slice(0,10);
     const saved=JSON.parse(localStorage.getItem('hero_rotation')||'{}');
     if(saved.date===today && saved.currentIndex!=null && saved.currentIndex<heroes.value.length){
-      heroIndex.value=saved.currentIndex;
-      currentHero.value=heroes.value[heroIndex.value];
-      return;
+      heroIndex.value=saved.currentIndex;currentHero.value=heroes.value[heroIndex.value];return;
     }
     let newIdx=(saved.currentIndex!=null? saved.currentIndex+1 : 0) % heroes.value.length;
-    heroIndex.value=newIdx;
-    currentHero.value=heroes.value[newIdx];
+    heroIndex.value=newIdx; currentHero.value=heroes.value[newIdx];
     localStorage.setItem('hero_rotation',JSON.stringify({date:today,currentIndex:newIdx}));
   };
 
@@ -957,8 +1148,7 @@ setup(){
       const lunar=solar.getLunar();
       const day=lunar.getDayInChinese();
       if(day==='初一') return lunar.getMonthInChinese()+'月';
-      const jq=lunar.getJieQi();
-      if(jq) return jq;
+      const jq=lunar.getJieQi(); if(jq) return jq;
       return day;
     }catch(e){return '';}
   };
@@ -984,31 +1174,75 @@ setup(){
       const isWorkday=h&&h.type==='workday';
       const isWeekend=(dow===0||dow===6)&&!isWorkday;
       let label='';
-      if(isHoliday) label=h.name;
-      else if(isWorkday) label=h.name||'班';
-      else label=getLunarLabel(y,m+1,d);
+      if(isHoliday) label=h.name; else if(isWorkday) label=h.name||'班'; else label=getLunarLabel(y,m+1,d);
       days.push({date:d,isCurrent:true,isToday:isCurrentMonth&&d===todayD,isWeekend:isWeekend&&!isHoliday,isHoliday,isWorkday,label});
     }
     calendarDays.value=days;
   };
 
-  const prevMonth=()=>{
-    const d=new Date(calendarViewDate.value);
-    d.setDate(1);
-    d.setMonth(d.getMonth()-1);
-    calendarViewDate.value=d;
-    generateCalendar();
+  const prevMonth=()=>{const d=new Date(calendarViewDate.value);d.setDate(1);d.setMonth(d.getMonth()-1);calendarViewDate.value=d;generateCalendar();};
+  const nextMonth=()=>{const d=new Date(calendarViewDate.value);d.setDate(1);d.setMonth(d.getMonth()+1);calendarViewDate.value=d;generateCalendar();};
+  const resetMonth=()=>{calendarViewDate.value=new Date();generateCalendar();};
+
+  // ============ 搜索 ============
+  const searchAllResults=computed(()=>{
+    const kw=searchQuery.value.trim().toLowerCase();
+    const results=[];
+    // 菜单
+    navItems.forEach(item=>{
+      if(!kw || item.label.toLowerCase().includes(kw)){
+        results.push({type:'menu', typeLabel:'页面', title:item.label, desc:'', action:()=>{switchView(item.key);closeSearch();}});
+      }
+    });
+    // 空时显示最近项目
+    if(!kw){
+      projects.value.slice(0,6).forEach(p=>{
+        results.push({type:'project', typeLabel:'项目', title:p.name, desc:p.stage.join('、'), action:()=>goToProject(p.id)});
+      });
+      return results.slice(0,10);
+    }
+    // 项目
+    projects.value.forEach(p=>{
+      if(p.name.toLowerCase().includes(kw) || (p.owner||'').toLowerCase().includes(kw)){
+        results.push({type:'project', typeLabel:'项目', title:p.name, desc:p.stage.join('、'), action:()=>goToProject(p.id)});
+      }
+    });
+    // 待办
+    todos.value.forEach(t=>{
+      if(t.task.toLowerCase().includes(kw) || t.projectName.toLowerCase().includes(kw)){
+        results.push({type:'todo', typeLabel:'待办', title:t.task, desc:t.projectName, action:()=>{switchView('todos');closeSearch();}});
+      }
+    });
+    // 会议
+    events.value.forEach(e=>{
+      if(e.title.toLowerCase().includes(kw) || (e.location||'').toLowerCase().includes(kw)){
+        results.push({type:'event', typeLabel:'会议', title:e.title, desc:e.location||'', action:()=>{switchView('home');closeSearch();}});
+      }
+    });
+    return results.slice(0,20);
+  });
+
+  const searchResults=searchAllResults;
+  const onSearchInput=()=>{ searchActiveIndex.value = 0; };
+  const searchNext=()=>{ if(searchResults.value.length===0) return; searchActiveIndex.value = (searchActiveIndex.value+1) % searchResults.value.length; };
+  const searchPrev=()=>{ if(searchResults.value.length===0) return; searchActiveIndex.value = (searchActiveIndex.value-1+searchResults.value.length) % searchResults.value.length; };
+  const searchConfirm=()=>{ const r=searchResults.value[searchActiveIndex.value]; if(r) r.action(); };
+  const selectResult=(r)=>{ r.action(); };
+  const closeSearch=()=>{ showSearch.value=false; searchQuery.value=''; searchActiveIndex.value=0; };
+  const openSearch=()=>{ showSearch.value=true; nextTick(()=>{ searchInput.value && searchInput.value.focus(); }); };
+
+  const highlightMatch=(text, kw)=>{
+    if(!kw) return text;
+    const esc = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    try{ return text.replace(new RegExp(esc,'gi'), m=>`<mark>${m}</mark>`); }catch(e){ return text; }
   };
-  const nextMonth=()=>{
-    const d=new Date(calendarViewDate.value);
-    d.setDate(1);
-    d.setMonth(d.getMonth()+1);
-    calendarViewDate.value=d;
-    generateCalendar();
-  };
-  const resetMonth=()=>{
-    calendarViewDate.value=new Date();
-    generateCalendar();
+
+  // 全局快捷键 ⌘K / Ctrl+K
+  const handleKeydown=(e)=>{
+    if((e.metaKey||e.ctrlKey) && e.key==='k'){
+      e.preventDefault();
+      if(showSearch.value) closeSearch(); else openSearch();
+    }
   };
 
   onMounted(()=>{
@@ -1018,34 +1252,27 @@ setup(){
     loadHeroes();
     loadEvents();
     loadProjectsAndTodosFromCloud();
+    nextTick(()=>updateHighlight());
+    window.addEventListener('resize', updateHighlight);
+    window.addEventListener('keydown', handleKeydown);
   });
 
-  const doSearch=()=>{
-    const kw=searchKeyword.value.trim().toLowerCase();
-    if(!kw){searchResults.value=[];return}
-    const results=[];
-    projects.value.forEach(p=>{if(p.name.toLowerCase().includes(kw))results.push({type:'项目',title:p.name,projectId:p.id})});
-    todos.value.forEach(t=>{if(t.task.toLowerCase().includes(kw)||t.projectName.toLowerCase().includes(kw))results.push({type:'待办',title:t.task,projectId:t.projectId})});
-    searchResults.value=results.slice(0,20);
-  };
-  const goToResult=(r)=>{searchKeyword.value='';searchResults.value=[];goToProject(r.projectId)};
+  onUnmounted(()=>{
+    window.removeEventListener('resize', updateHighlight);
+    window.removeEventListener('keydown', handleKeydown);
+  });
 
+  // ============ 待办 ============
   const pendingTodos=computed(()=>todos.value.filter(t=>!t.done));
   const doneTodos=computed(()=>todos.value.filter(t=>t.done));
   const groupedTodos=computed(()=>{
     const g={};
-    pendingTodos.value.forEach(t=>{
-      if(!g[t.projectName])g[t.projectName]=[];
-      g[t.projectName].push(t);
-    });
+    pendingTodos.value.forEach(t=>{ if(!g[t.projectName])g[t.projectName]=[]; g[t.projectName].push(t); });
     return g;
   });
   const groupedDoneTodos=computed(()=>{
     const g={};
-    doneTodos.value.forEach(t=>{
-      if(!g[t.projectName])g[t.projectName]=[];
-      g[t.projectName].push(t);
-    });
+    doneTodos.value.forEach(t=>{ if(!g[t.projectName])g[t.projectName]=[]; g[t.projectName].push(t); });
     return g;
   });
 
@@ -1053,13 +1280,12 @@ setup(){
   const getProjectStyle=(proj)=>{const c=projCategory[proj.id]||'other';return {background:categoryBgColor[c],borderLeft:'4px solid '+categoryBorderColor[c]}};
   const getStageColor=(stage)=>stageColor[stage]||'bg-gray-100 text-gray-500';
   const getProjStages=(proj)=>Array.isArray(proj.stage)?proj.stage:[proj.stage];
-  const getRingGray=(p)=>{if(p<25)return '#c8c8c8';if(p<50)return '#a0a0a0';if(p<75)return '#6b6b6b';return '#2a2a2a'};
+  const getRingGray=(p)=>{if(p<25)return 'var(--muted, #c8c8c8)';if(p<50)return '#a0a0a0';if(p<75)return '#6b6b6b';return '#2a2a2a'};
 
   const saveData=()=>{
     localStorage.setItem('studio_projects',JSON.stringify(projects.value));
     localStorage.setItem('studio_todos',JSON.stringify(todos.value));
-    saveProjectsToCloud();
-    saveTodosToCloud();
+    saveProjectsToCloud(); saveTodosToCloud();
   };
   const doLogin=()=>{if(loginPwd.value===ADMIN_PASSWORD){isAdmin.value=true;showLogin.value=false;loginPwd.value=''}else alert('密码错误')};
 
@@ -1068,17 +1294,15 @@ setup(){
     const proj=projects.value.find(p=>p.id===newTodo.value.projectId);
     todos.value.unshift({id:Date.now(),task:newTodo.value.task,projectId:newTodo.value.projectId,projectName:proj?proj.name:'未关联项目',type:newTodo.value.type,subTasks:[],done:false,owner:newTodo.value.owner,completedBy:'',link:''});
     newTodo.value={task:'',projectId:'',owner:'',type:'design'};
-    showAddTodo.value=false;
-    saveData();
+    showAddTodo.value=false; saveData();
   };
 
   const toggleTodo=(todo)=>{
     if(todo.done){
       if(!confirm('恢复为未完成？')) return;
-      todo.done=false;todo.completedBy='';
+      todo.done=false; todo.completedBy='';
     }else{
-      todo.done=true;
-      todo.completedBy=prompt('请输入完成人姓名')||'未知';
+      todo.done=true; todo.completedBy=prompt('请输入完成人姓名')||'未知';
     }
     saveData();
   };
@@ -1087,14 +1311,7 @@ setup(){
   const editTodo=(todo)=>{editingTodo.value=JSON.parse(JSON.stringify(todo))};
   const saveTodoEdit=()=>{const idx=todos.value.findIndex(t=>t.id===editingTodo.value.id);if(idx>=0)todos.value[idx]={...editingTodo.value};saveData();editingTodo.value=null};
 
-  const editSubTask=(todo, idx)=>{
-    editingSubTask.value={
-      todoId: todo.id,
-      idx: idx,
-      text: todo.subTasks[idx].text,
-      link: todo.subTasks[idx].link||''
-    };
-  };
+  const editSubTask=(todo, idx)=>{editingSubTask.value={todoId:todo.id,idx,text:todo.subTasks[idx].text,link:todo.subTasks[idx].link||''}};
   const saveSubTask=()=>{
     const t=todos.value.find(x=>x.id===editingSubTask.value.todoId);
     if(t && t.subTasks[editingSubTask.value.idx]){
@@ -1113,22 +1330,19 @@ setup(){
     if(!newProject.value.name.trim())return alert('请填写项目名称');
     projects.value.push({id:'proj-'+Date.now(),name:newProject.value.name,stage:[newProject.value.stage],subStatus:'',owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7)});
     newProject.value={name:'',stage:stages[0],owner:''};
-    showAddProject.value=false;
-    saveData();
+    showAddProject.value=false; saveData();
   };
 
   const editProject=(proj)=>{editingProject.value=JSON.parse(JSON.stringify(proj))};
   const saveProjectEdit=()=>{
     const idx=projects.value.findIndex(p=>p.id===editingProject.value.id);
     if(idx>=0)projects.value[idx]={...editingProject.value};
-    saveData();
-    editingProject.value=null;
+    saveData(); editingProject.value=null;
   };
   const deleteProjectConfirm=()=>{
     if(!confirm(`确定删除项目「${editingProject.value.name}」？`))return;
     projects.value=projects.value.filter(p=>p.id!==editingProject.value.id);
-    saveData();
-    editingProject.value=null;
+    saveData(); editingProject.value=null;
   };
 
   const toggleFiled=(proj)=>{proj.filed=!proj.filed;saveData()};
@@ -1136,12 +1350,33 @@ setup(){
 
   const goToProject=(projectId)=>{window.location.href=`./checklist.html?project=${projectId}`};
 
-  return{currentView,sidebarOpen,showAddTodo,showAddProject,showLogin,loginPwd,isAdmin,searchKeyword,searchResults,doSearch,goToResult,editingTodo,editingSubTask,editingProject,linkDialogTarget,linkDialogValue,projects,pendingTodos,doneTodos,groupedTodos,groupedDoneTodos,newTodo,newProject,heroes,currentHero,currentMonthName,todayDate,calendarDays,members,stages,fontSize,theme,
-    events,activeEvents,doneEvents,showEventModal,editingEventId,draftEvent,
-    openAddEvent,editEvent,closeEventModal,saveEvent,toggleEvent,deleteEvent,formatEventTimeShort,
-    getDotColor,getProjectStyle,getStageColor,getProjStages,getRingGray,doLogin,addTodo,toggleTodo,deleteTodo,editTodo,saveTodoEdit,editSubTask,saveSubTask,openLinkDialog,saveLink,deleteLink,addProject,editProject,saveProjectEdit,deleteProjectConfirm,toggleFiled,toggleContracted,goToProject,switchView,setFontSize,setTheme,nextHero,prevMonth,nextMonth,resetMonth};
+  return{
+    navItems, currentView, sidebarOpen,
+    showAddTodo, showAddProject, showLogin, loginPwd, isAdmin,
+    editingTodo, editingSubTask, editingProject, linkDialogTarget, linkDialogValue,
+    navRef, setNavRef, highlightStyle, highlightReady,
+    projects, pendingTodos, doneTodos, groupedTodos, groupedDoneTodos,
+    newTodo, newProject, heroes, currentHero,
+    currentMonthName, todayDate, calendarDays,
+    members, stages, fontSize, theme,
+    events, activeEvents, doneEvents, showEventModal, editingEventId, draftEvent,
+    openAddEvent, editEvent, closeEventModal, saveEvent, toggleEvent, deleteEvent, formatEventTimeShort,
+    // 搜索
+    showSearch, searchQuery, searchActiveIndex, searchInput, searchResults,
+    openSearch, closeSearch, onSearchInput, searchNext, searchPrev, searchConfirm, selectResult, highlightMatch,
+    getDotColor, getProjectStyle, getStageColor, getProjStages, getRingGray,
+    doLogin, addTodo, toggleTodo, deleteTodo, editTodo, saveTodoEdit, editSubTask, saveSubTask,
+    openLinkDialog, saveLink, deleteLink, addProject, editProject, saveProjectEdit, deleteProjectConfirm,
+    toggleFiled, toggleContracted, goToProject, switchView, setFontSize, setTheme, nextHero,
+    prevMonth, nextMonth, resetMonth
+  };
 }
 }).mount('#app');
 </script>
+
+<style>
+.fade-enter-active,.fade-leave-active{transition:opacity .18s ease}
+.fade-enter-from,.fade-leave-to{opacity:0}
+</style>
 </body>
 </html>
