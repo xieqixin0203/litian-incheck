@@ -241,21 +241,27 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 .meeting-proj-icon{width:2.5rem;height:2.5rem;border-radius:.625rem;background:var(--tag-bg);color:var(--tag-text);display:flex;align-items:center;justify-content:center;font-size:1.125rem;flex-shrink:0;font-weight:700}
 
 /* 项目长条列表 */
-.project-row{display:flex;align-items:center;gap:.75rem;padding:.4rem .875rem;background:var(--card);border:1px solid var(--border);border-radius:.625rem;cursor:pointer;transition:.15s;margin-bottom:.375rem}
+.project-item{margin-bottom:.375rem}
+.project-row{display:flex;align-items:center;gap:.75rem;padding:.4rem .875rem;background:var(--card);border:1px solid var(--border);border-radius:.625rem;cursor:pointer;transition:.15s}
 .project-row:hover{border-color:var(--primary)}
 .project-order-btns{display:flex;flex-direction:column;gap:1px;flex-shrink:0}
 .project-order-btns button{background:transparent;border:1px solid var(--border);color:var(--text-tertiary);width:1.25rem;height:1rem;font-size:.5rem;line-height:1;padding:0;cursor:pointer;border-radius:.1875rem}
 .project-order-btns button:hover{background:var(--bg);color:var(--text)}
 .project-row-name{font-weight:700;font-size:.9375rem;flex:0 0 13.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .project-row-progress{display:flex;align-items:center;gap:.5rem;flex:1;min-width:0}
-.project-progress-bar{flex:1;height:.5rem;background:var(--bg);border-radius:9999px;overflow:hidden;position:relative;min-width:4rem}
+.project-progress-bar{flex:1;height:.5rem;background:var(--bg);border-radius:9999px;overflow:hidden;position:relative}
 .project-progress-fill{height:100%;background:var(--primary);border-radius:9999px;transition:width .4s cubic-bezier(.4,0,.2,1)}
-.project-progress-text{font-size:.6875rem;font-weight:700;color:var(--primary);flex-shrink:0;min-width:2.5rem;text-align:right;font-variant-numeric:tabular-nums}
-.project-progress-stage{font-size:.6875rem;opacity:.55;flex-shrink:0;max-width:8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.project-row-members{font-size:.75rem;opacity:.7;flex:0 0 auto;max-width:11.25rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.project-progress-text{font-size:.6875rem;font-weight:700;color:var(--primary);flex-shrink:0;min-width:2.25rem;text-align:right;font-variant-numeric:tabular-nums}
+.project-row-members{font-size:.75rem;opacity:.7;flex:0 0 16rem;max-width:16rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .project-row-status{display:flex;gap:.375rem;flex-shrink:0}
 .project-row .proj-edit-btn{position:static;opacity:.5}
 .project-row:hover .proj-edit-btn{opacity:1}
+
+/* 完工按钮行 */
+.project-actions{display:flex;justify-content:center;padding:0 0 .125rem 0}
+.project-complete-btn{font-size:.6875rem;padding:.25rem 1rem;border-radius:9999px;border:1px solid var(--border);background:var(--card);color:var(--text-secondary);cursor:pointer;font-weight:500;transition:.15s;font-family:inherit}
+.project-complete-btn:hover{border-color:#4caf50;color:#4caf50;background:rgba(76,175,80,.08)}
+.project-complete-btn:active{transform:scale(.98)}
 
 /* 指派检查项选择器 */
 .checklist-picker{border:1px solid var(--border);border-radius:.5rem;max-height:22rem;overflow-y:auto;background:var(--bg)}
@@ -280,6 +286,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   .col-my-todo,.col-all-todo,.col-hero{width:100%}
   .project-row{flex-wrap:wrap}
   .project-row-name{flex-basis:auto;width:100%}
+  .project-row-members{flex-basis:auto;max-width:none}
 }
 @media(max-width:480px){
   .topbar{gap:.5rem}
@@ -458,7 +465,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 
     <!-- ============ 特权视图 ============ -->
     <template v-else>
-      <!-- 列1：我的待办 -->
       <div class="order-1 col-my-todo flex flex-col lg:min-h-0">
         <div class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
           <div class="flex justify-between items-center mb-3 flex-shrink-0">
@@ -495,7 +501,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
         </div>
       </div>
 
-      <!-- 列2：工作室待办（admin）/ 项目进度（manager） -->
       <div class="order-2 col-all-todo flex flex-col lg:min-h-0">
         <div v-if="isRealAdmin" class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
           <div class="flex justify-between items-center mb-3 flex-shrink-0">
@@ -559,7 +564,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
           <h3 class="font-bold text-sm mb-3 flex-shrink-0">项目进度</h3>
           <div class="scroll-area flex-1 min-h-0">
             <div class="grid grid-cols-1 gap-3">
-              <div v-for="proj in sortedProjects" :key="proj.id" class="card p-3 cursor-pointer transition flex items-center gap-3 relative" @click="goToProject(proj.id)">
+              <div v-for="proj in activeProjects" :key="proj.id" class="card p-3 cursor-pointer transition flex items-center gap-3 relative" @click="goToProject(proj.id)">
                 <div class="flex-1 min-w-0">
                   <div class="font-bold text-sm truncate">{{ proj.name }}</div>
                   <div class="project-row-progress mt-1">
@@ -575,7 +580,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
         </div>
       </div>
 
-      <!-- 列3：精神零食 + 会议/出差 -->
       <div class="order-3 col-hero flex flex-col gap-4 lg:min-h-0">
         <div class="card p-4">
           <div class="hero-title">精神零食</div>
@@ -709,6 +713,25 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   <div v-if="currentView==='archive'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">📦 已归档</h1>
 
+    <!-- 已完成项目 -->
+    <div class="card p-5 mb-4">
+      <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">🏁 已完成项目 ({{ completedProjects.length }})</h3>
+      <div v-if="completedProjects.length === 0" class="text-xs opacity-50 text-center py-5">暂无已完成的项目</div>
+      <div v-else>
+        <div v-for="proj in completedProjects" :key="proj.id" class="arch-row">
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-bold truncate">{{ proj.name }}</div>
+            <div class="text-[.6875rem] opacity-55 mt-0.5">
+              <span v-if="(proj.members||[]).length">👥 {{ (proj.members||[]).join('、') }} · </span>
+              <span>完工日期：{{ proj.completedDate || '—' }}</span>
+            </div>
+          </div>
+          <button @click="reopenProject(proj)" class="btn-ghost" style="color:var(--primary)">↩ 恢复</button>
+          <button @click="deleteCompletedProject(proj)" class="btn-ghost" style="color:var(--error)">✕</button>
+        </div>
+      </div>
+    </div>
+
     <div v-if="isPrivilegedView" class="card p-5 mb-4">
       <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">会议/出差安排 · 已完成 ({{ doneEvents.length }})</h3>
       <div v-if="doneEvents.length === 0" class="text-xs opacity-50 text-center py-5">暂无已完成</div>
@@ -753,36 +776,44 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
       <button @click="showAddProject=true" class="btn-primary">+ 新建项目</button>
     </div>
     <div>
-      <div v-for="proj in sortedProjects" :key="proj.id" class="project-row" @click="goToProject(proj.id)">
-        <div v-if="canReorder" class="project-order-btns" @click.stop>
-          <button @click="moveProject(proj,-1)" title="上移">▲</button>
-          <button @click="moveProject(proj,1)" title="下移">▼</button>
-        </div>
-        <div class="project-row-name">{{ proj.name }}</div>
-        <div class="project-row-progress">
-          <div class="project-progress-bar">
-            <div class="project-progress-fill" :style="{width: getStageProgress(proj) + '%'}"></div>
+      <div v-for="proj in activeProjects" :key="proj.id" class="project-item">
+        <div class="project-row" @click="goToProject(proj.id)">
+          <div v-if="canReorder" class="project-order-btns" @click.stop>
+            <button @click="moveProject(proj,-1)" title="上移">▲</button>
+            <button @click="moveProject(proj,1)" title="下移">▼</button>
           </div>
-          <span class="project-progress-text">{{ getStageProgress(proj) }}%</span>
-          <span class="project-progress-stage">{{ getLatestStage(proj) }}</span>
+          <div class="project-row-name">{{ proj.name }}</div>
+          <div class="project-row-progress">
+            <div class="project-progress-bar">
+              <div class="project-progress-fill" :style="{width: getStageProgress(proj) + '%'}"></div>
+            </div>
+            <span class="project-progress-text">{{ getStageProgress(proj) }}%</span>
+          </div>
+          <div class="project-row-members">
+            <span v-if="(proj.members||[]).length">👥 {{ (proj.members||[]).join('、') }}</span>
+            <span v-else class="opacity-40">👥 —</span>
+          </div>
+          <div class="project-row-status">
+            <span class="px-2 py-0.5 rounded-md font-medium status-toggle clickable text-xs"
+                  :class="proj.filed?'bg-green-100 text-green-700':'bg-gray-100 text-gray-500'"
+                  @click.stop="toggleFiled(proj)">
+              备案: {{ proj.filed?'已':'未' }}
+            </span>
+            <span class="px-2 py-0.5 rounded-md font-medium status-toggle clickable text-xs"
+                  :class="proj.contracted?'bg-green-100 text-green-700':'bg-gray-100 text-gray-500'"
+                  @click.stop="toggleContracted(proj)">
+              合同: {{ proj.contracted?'已':'未' }}
+            </span>
+          </div>
+          <button class="proj-edit-btn" @click.stop="editProject(proj)">✎</button>
         </div>
-        <div class="project-row-members">
-          <span v-if="(proj.members||[]).length">👥 {{ (proj.members||[]).join('、') }}</span>
-          <span v-else class="opacity-40">👥 —</span>
+        <div v-if="isPrivilegedView" class="project-actions" @click.stop>
+          <button class="project-complete-btn" @click="completeProject(proj)">🏁 项目完工</button>
         </div>
-        <div class="project-row-status">
-          <span class="px-2 py-0.5 rounded-md font-medium status-toggle clickable text-xs"
-                :class="proj.filed?'bg-green-100 text-green-700':'bg-gray-100 text-gray-500'"
-                @click.stop="toggleFiled(proj)">
-            备案: {{ proj.filed?'已':'未' }}
-          </span>
-          <span class="px-2 py-0.5 rounded-md font-medium status-toggle clickable text-xs"
-                :class="proj.contracted?'bg-green-100 text-green-700':'bg-gray-100 text-gray-500'"
-                @click.stop="toggleContracted(proj)">
-            合同: {{ proj.contracted?'已':'未' }}
-          </span>
-        </div>
-        <button class="proj-edit-btn" @click.stop="editProject(proj)">✎</button>
+      </div>
+      <div v-if="activeProjects.length === 0" class="empty-hint">
+        <div class="icon">📁</div>
+        <div class="text-sm">暂无进行中的项目</div>
       </div>
     </div>
   </div>
@@ -945,7 +976,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
         <label class="form-label">项目</label>
         <select v-model="(editingTodo||newTodo).projectId" class="form-input">
           <option value="">选择项目</option>
-          <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.name }}</option>
+          <option v-for="p in activeProjects" :key="p.id" :value="p.id">{{ p.name }}</option>
         </select>
       </div>
       <div>
@@ -976,7 +1007,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
         <label class="form-label">项目 *</label>
         <select v-model="draftAssign.projectId" class="form-input" @change="onAssignProjectChange">
           <option value="">选择项目</option>
-          <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.name }}</option>
+          <option v-for="p in activeProjects" :key="p.id" :value="p.id">{{ p.name }}</option>
         </select>
       </div>
       <div>
@@ -1100,7 +1131,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 const {createApp,ref,computed,onMounted,onUnmounted,watch,nextTick}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
-const DATA_VERSION='2026-10-11-v21';
+const DATA_VERSION='2026-10-13-v23';
 
 const defaultUsers=[
   {name:'刘文辉', pinyin:'liuwenhui', password:'litian2026', role:'admin'},
@@ -1140,8 +1171,6 @@ const memberNavItems=[
   {key:'archive', label:'已归档'},
   {key:'settings', label:'设置'}
 ];
-
-const stageColor={'一、前期强排':'bg-gray-200 text-gray-600','二、方案设计':'bg-blue-100 text-blue-700','三、方案深化':'bg-blue-200 text-blue-800','四、报建图':'bg-blue-400 text-white','五、施工图（含幕墙深化）':'bg-indigo-500 text-white','六、室内设计':'bg-orange-300 text-orange-900','七、室内设计施工图':'bg-orange-500 text-white','八、施工中':'bg-gray-700 text-white'};
 
 const stageOrder=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
 const CHECKLIST_SEED=[
@@ -1303,19 +1332,19 @@ const CHECKLIST_SEED=[
 ];
 
 const defaultProjects=[
-{id:'sl4',name:'申菱四基地',stage:['三、方案深化'],subStatus:'方案重做深化',owner:'刘文辉',note:'',filed:false,contracted:true,progress:40,startDate:'2026-03',members:['谢启欣']},
-{id:'slzb',name:'申菱总部改造',stage:['八、施工中'],subStatus:'施工收尾',owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08',members:['梁婷玉','谢启欣']},
-{id:'sl5',name:'申菱五基地',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:10,startDate:'2026-08',members:['谢启欣']},
-{id:'slgz',name:'申菱高州二期',stage:['八、施工中'],subStatus:'施工中',owner:'黄建敏',note:'',filed:true,contracted:true,progress:70,startDate:'2025-11',members:['黄建敏']},
-{id:'prsp',name:'屏荣食品顺德新厂',stage:['五、施工图（含幕墙深化）'],subStatus:'规划变更+施工图审图，准备室内深化',owner:'梁婷玉',note:'',filed:true,contracted:true,progress:60,startDate:'2025-06',members:['谢启欣','梁婷玉','欧阳琳']},
-{id:'yj',name:'远江幕墙南海新厂',stage:['八、施工中'],subStatus:'施工中',owner:'谢启欣',note:'',filed:true,contracted:true,progress:75,startDate:'2025-04',members:['谢启欣']},
-{id:'whg',name:'顺德文化馆修缮活化',stage:['四、报建图'],subStatus:'合同签订中',owner:'欧阳琳',note:'',filed:false,contracted:false,progress:20,startDate:'2026-05',members:['欧阳琳']},
-{id:'stc',name:'顺德糖厂',stage:['四、报建图'],subStatus:'合同签订中',owner:'欧阳琳',note:'',filed:false,contracted:false,progress:15,startDate:'2026-06',members:['欧阳琳']},
-{id:'skwj',name:'顺控危旧房',stage:['五、施工图（含幕墙深化）'],subStatus:'图纸绘制',owner:'梁富成',note:'',filed:true,contracted:true,progress:55,startDate:'2026-02',members:['梁富成']},
-{id:'spmy',name:'升平名扬里历史街区一期',stage:['八、施工中'],subStatus:'施工中',owner:'刘文辉',note:'',filed:true,contracted:true,progress:80,startDate:'2025-09',members:[]},
-{id:'fp',name:'方普',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:5,startDate:'2026-09',members:[]},
-{id:'rk',name:'容控小地块厂房加商业',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:15,startDate:'2026-09',members:['梁婷玉','欧阳琳']},
-{id:'sq',name:'社-顺德本土文化策展',stage:['三、方案深化'],subStatus:'建模阶段',owner:'梁婷玉',note:'',filed:false,contracted:false,progress:30,startDate:'2026-07',members:['梁婷玉']}
+{id:'sl4',name:'申菱四基地',stage:['三、方案深化'],subStatus:'方案重做深化',owner:'刘文辉',note:'',filed:false,contracted:true,progress:40,startDate:'2026-03',members:['谢启欣'],completed:false,completedDate:''},
+{id:'slzb',name:'申菱总部改造',stage:['八、施工中'],subStatus:'施工收尾',owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08',members:['梁婷玉','谢启欣'],completed:false,completedDate:''},
+{id:'sl5',name:'申菱五基地',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:10,startDate:'2026-08',members:['谢启欣'],completed:false,completedDate:''},
+{id:'slgz',name:'申菱高州二期',stage:['八、施工中'],subStatus:'施工中',owner:'黄建敏',note:'',filed:true,contracted:true,progress:70,startDate:'2025-11',members:['黄建敏'],completed:false,completedDate:''},
+{id:'prsp',name:'屏荣食品顺德新厂',stage:['五、施工图（含幕墙深化）'],subStatus:'规划变更+施工图审图，准备室内深化',owner:'梁婷玉',note:'',filed:true,contracted:true,progress:60,startDate:'2025-06',members:['谢启欣','梁婷玉','欧阳琳'],completed:false,completedDate:''},
+{id:'yj',name:'远江幕墙南海新厂',stage:['八、施工中'],subStatus:'施工中',owner:'谢启欣',note:'',filed:true,contracted:true,progress:75,startDate:'2025-04',members:['谢启欣'],completed:false,completedDate:''},
+{id:'whg',name:'顺德文化馆修缮活化',stage:['四、报建图'],subStatus:'合同签订中',owner:'欧阳琳',note:'',filed:false,contracted:false,progress:20,startDate:'2026-05',members:['欧阳琳'],completed:false,completedDate:''},
+{id:'stc',name:'顺德糖厂',stage:['四、报建图'],subStatus:'合同签订中',owner:'欧阳琳',note:'',filed:false,contracted:false,progress:15,startDate:'2026-06',members:['欧阳琳'],completed:false,completedDate:''},
+{id:'skwj',name:'顺控危旧房',stage:['五、施工图（含幕墙深化）'],subStatus:'图纸绘制',owner:'梁富成',note:'',filed:true,contracted:true,progress:55,startDate:'2026-02',members:['梁富成'],completed:false,completedDate:''},
+{id:'spmy',name:'升平名扬里历史街区一期',stage:['八、施工中'],subStatus:'施工中',owner:'刘文辉',note:'',filed:true,contracted:true,progress:80,startDate:'2025-09',members:[],completed:false,completedDate:''},
+{id:'fp',name:'方普',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:5,startDate:'2026-09',members:[],completed:false,completedDate:''},
+{id:'rk',name:'容控小地块厂房加商业',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:15,startDate:'2026-09',members:['梁婷玉','欧阳琳'],completed:false,completedDate:''},
+{id:'sq',name:'社-顺德本土文化策展',stage:['三、方案深化'],subStatus:'建模阶段',owner:'梁婷玉',note:'',filed:false,contracted:false,progress:30,startDate:'2026-07',members:['梁婷玉'],completed:false,completedDate:''}
 ];
 
 const defaultTodos=[
@@ -1356,7 +1385,14 @@ const migrateTodos=(arr)=>{
 };
 const migrateProjects=(arr)=>{
   if(!Array.isArray(arr)) return arr;
-  return arr.map(p=>({...p,stage:Array.isArray(p.stage)?p.stage:[p.stage],subStatus:p.subStatus||'',members:Array.isArray(p.members)?p.members:[]}));
+  return arr.map(p=>({
+    ...p,
+    stage:Array.isArray(p.stage)?p.stage:[p.stage],
+    subStatus:p.subStatus||'',
+    members:Array.isArray(p.members)?p.members:[],
+    completed:!!p.completed,
+    completedDate:p.completedDate||''
+  }));
 };
 const migrateEvents=(arr)=>{
   if(!Array.isArray(arr)) return [];
@@ -1560,9 +1596,8 @@ setup(){
     }catch(e){events.value=migrateEvents(defaultEvents);}
   };
 
-  // 一次性数据迁移：申菱总部改造 → 八、施工中
   const runSlzbMigration=()=>{
-    const MIGRATION_KEY='studio_migrate_slzb_v21';
+    const MIGRATION_KEY='studio_migrate_slzb_v23';
     if(localStorage.getItem(MIGRATION_KEY)==='done') return;
     const slzb=projects.value.find(p=>p.id==='slzb');
     const target=['八、施工中'];
@@ -1573,6 +1608,7 @@ setup(){
     localStorage.setItem(MIGRATION_KEY,'done');
   };
 
+  // 全部项目按用户自定义顺序排列
   const sortedProjects=computed(()=>{
     const order=projectOrder.value;
     return [...projects.value].sort((a,b)=>{
@@ -1585,25 +1621,38 @@ setup(){
     });
   });
 
+  // 进行中的项目（未完工）
+  const activeProjects=computed(()=>sortedProjects.value.filter(p=>!p.completed));
+
+  // 已完成的项目（按完工日期倒序）
+  const completedProjects=computed(()=>{
+    return projects.value
+      .filter(p=>p.completed)
+      .sort((a,b)=>(b.completedDate||'').localeCompare(a.completedDate||''));
+  });
+
   const moveProject=(proj,dir)=>{
     if(!canReorder.value) return;
-    const ids=sortedProjects.value.map(p=>p.id);
+    // 只在未完工项目间调序
+    const ids=activeProjects.value.map(p=>p.id);
     const idx=ids.indexOf(proj.id);
     const newIdx=idx+dir;
     if(newIdx<0 || newIdx>=ids.length) return;
     [ids[idx],ids[newIdx]]=[ids[newIdx],ids[idx]];
-    projectOrder.value=ids;
-    localStorage.setItem('studio_project_order',JSON.stringify(ids));
+    // 与已完工项目合并（保持已完工不动）
+    const completedIds=projects.value.filter(p=>p.completed).map(p=>p.id);
+    const merged=[...ids, ...completedIds.filter(id=>!ids.includes(id))];
+    projectOrder.value=merged;
+    localStorage.setItem('studio_project_order',JSON.stringify(merged));
     saveProjectOrderToCloud();
   };
 
-  // 阶段进度：8阶段平分100%，当前阶段索引+1 决定进度
   const getStageProgress=(proj)=>{
     const arr=Array.isArray(proj.stage)?proj.stage:[proj.stage];
     const indices=arr.map(s=>stageOrder.indexOf(s)).filter(i=>i>=0);
     if(indices.length===0) return 0;
     const maxIdx=Math.max(...indices);
-    return Math.round((maxIdx+1)/stageOrder.length*100);
+    return (maxIdx+1)*10;
   };
 
   const getLatestStage=(proj)=>{
@@ -1660,8 +1709,8 @@ setup(){
   const myMeetingProjects=computed(()=>{
     if(!effectiveUser.value) return [];
     const me = effectiveUser.value.name;
-    if(isPrivilegedView.value) return projects.value;
-    return projects.value.filter(p => Array.isArray(p.members) && p.members.includes(me));
+    if(isPrivilegedView.value) return activeProjects.value;
+    return activeProjects.value.filter(p => Array.isArray(p.members) && p.members.includes(me));
   });
 
   const activeEvents=computed(()=>events.value.filter(e=>!e.done).sort((a,b)=>{
@@ -1677,6 +1726,40 @@ setup(){
     let s=parts.length===3?`${parseInt(parts[0])}年${parseInt(parts[1])}月${parseInt(parts[2])}日`:ev.date;
     if(ev.timeStart){ s+=' '+ev.timeStart; if(ev.timeEnd) s+='-'+ev.timeEnd; }
     return s;
+  };
+
+  // ============ 项目完工 ============
+  const completeProject=(proj)=>{
+    if(!isPrivilegedView.value) return;
+    const arr=Array.isArray(proj.stage)?proj.stage:[proj.stage];
+    const atLastStage=arr.includes('八、施工中');
+    let msg=`确认将「${proj.name}」标记为项目完工？\n完工后将从项目总览移到"已归档 → 已完成项目"。`;
+    if(!atLastStage){
+      msg=`⚠️「${proj.name}」当前阶段还没到"八、施工中"，确定要提前完工吗？\n\n完工后将从项目总览移到"已归档 → 已完成项目"。`;
+    }
+    if(!confirm(msg)) return;
+    const today=new Date().toISOString().slice(0,10);
+    proj.completed=true;
+    proj.completedDate=today;
+    saveData();
+    alert(`✅「${proj.name}」已完工，可在"已归档"里查看。`);
+  };
+
+  const reopenProject=(proj)=>{
+    if(!isPrivilegedView.value) return;
+    if(!confirm(`恢复「${proj.name}」到项目总览？`)) return;
+    proj.completed=false;
+    proj.completedDate='';
+    saveData();
+  };
+
+  const deleteCompletedProject=(proj)=>{
+    if(!isPrivilegedView.value) return;
+    if(!confirm(`确定永久删除项目「${proj.name}」？此操作不可恢复。`)) return;
+    projects.value=projects.value.filter(p=>p.id!==proj.id);
+    projectOrder.value=projectOrder.value.filter(id=>id!==proj.id);
+    saveProjectOrderToCloud();
+    saveData();
   };
 
   const getCircleClass=(todo)=>{
@@ -1837,7 +1920,7 @@ setup(){
     });
     if(!kw){
       if(isPrivilegedView.value){
-        projects.value.slice(0,6).forEach(p=>{
+        activeProjects.value.slice(0,6).forEach(p=>{
           results.push({type:'project',typeLabel:'项目',title:p.name,desc:(p.stage||[]).join('、'),action:()=>goToProject(p.id)});
         });
       }else{
@@ -2087,7 +2170,7 @@ setup(){
   const addProject=()=>{
     if(!newProject.value.name.trim())return alert('请填写项目名称');
     const newId='proj-'+Date.now();
-    projects.value.push({id:newId,name:newProject.value.name,stage:[newProject.value.stage],subStatus:'',owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7),members:[]});
+    projects.value.push({id:newId,name:newProject.value.name,stage:[newProject.value.stage],subStatus:'',owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7),members:[],completed:false,completedDate:''});
     projectOrder.value=[...projectOrder.value,newId];
     saveProjectOrderToCloud();
     newProject.value={name:'',stage:stages[0],owner:''};
@@ -2138,7 +2221,6 @@ setup(){
     saveProjectsToCloud(); saveTodosToCloud();
   };
 
-  const getStageColor=(stage)=>stageColor[stage]||'bg-gray-100 text-gray-500';
   const getProjStages=(proj)=>Array.isArray(proj.stage)?proj.stage:[proj.stage];
 
   const goToProject=(projectId)=>{
@@ -2180,8 +2262,9 @@ setup(){
     currentView, sidebarOpen, visibleNavItems, switchView,
     setNavRef, highlightStyle, highlightReady,
     projects, todos, events, members, stages, newTodo, newProject,
-    sortedProjects, projectOrder, moveProject,
+    sortedProjects, activeProjects, completedProjects, projectOrder, moveProject,
     getStageProgress, getLatestStage,
+    completeProject, reopenProject, deleteCompletedProject,
     pendingTodos, doneTodos, groupedTodos, groupedDoneTodos,
     myTodos, groupedMyTodos, allPendingTodos, groupedAllTodos,
     myMeetingProjects, expandedTodos, toggleChecklistExpand,
@@ -2201,7 +2284,7 @@ setup(){
     currentMonthName, todayDate, calendarDays, prevMonth, nextMonth, resetMonth,
     fontSize, setFontSize, theme, setTheme,
     pwdOld, pwdNew, pwdNew2, pwdMsg, pwdMsgOk, changePassword,
-    parseOwner, getStageColor, getProjStages,
+    parseOwner, getProjStages,
     getCircleClass, onCircleClick, revertTodo,
     goToProject, goToMeeting,
     showAssignModal, editingAssignTodoId, draftAssign, expandedStages, itemsByStage,
