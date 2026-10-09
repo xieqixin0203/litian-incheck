@@ -241,13 +241,17 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 .meeting-proj-icon{width:2.5rem;height:2.5rem;border-radius:.625rem;background:var(--tag-bg);color:var(--tag-text);display:flex;align-items:center;justify-content:center;font-size:1.125rem;flex-shrink:0;font-weight:700}
 
 /* 项目长条列表 */
-.project-row{display:flex;align-items:center;gap:.75rem;padding:.625rem .875rem;background:var(--card);border:1px solid var(--border);border-radius:.625rem;cursor:pointer;transition:.15s;margin-bottom:.5rem}
+.project-row{display:flex;align-items:center;gap:.75rem;padding:.4rem .875rem;background:var(--card);border:1px solid var(--border);border-radius:.625rem;cursor:pointer;transition:.15s;margin-bottom:.375rem}
 .project-row:hover{border-color:var(--primary)}
 .project-order-btns{display:flex;flex-direction:column;gap:1px;flex-shrink:0}
 .project-order-btns button{background:transparent;border:1px solid var(--border);color:var(--text-tertiary);width:1.25rem;height:1rem;font-size:.5rem;line-height:1;padding:0;cursor:pointer;border-radius:.1875rem}
 .project-order-btns button:hover{background:var(--bg);color:var(--text)}
 .project-row-name{font-weight:700;font-size:.9375rem;flex:0 0 13.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.project-row-stages{display:flex;gap:.25rem;flex-wrap:wrap;flex:1;min-width:0}
+.project-row-progress{display:flex;align-items:center;gap:.5rem;flex:1;min-width:0}
+.project-progress-bar{flex:1;height:.5rem;background:var(--bg);border-radius:9999px;overflow:hidden;position:relative;min-width:4rem}
+.project-progress-fill{height:100%;background:var(--primary);border-radius:9999px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.project-progress-text{font-size:.6875rem;font-weight:700;color:var(--primary);flex-shrink:0;min-width:2.5rem;text-align:right;font-variant-numeric:tabular-nums}
+.project-progress-stage{font-size:.6875rem;opacity:.55;flex-shrink:0;max-width:8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .project-row-members{font-size:.75rem;opacity:.7;flex:0 0 auto;max-width:11.25rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .project-row-status{display:flex;gap:.375rem;flex-shrink:0}
 .project-row .proj-edit-btn{position:static;opacity:.5}
@@ -403,7 +407,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
             <div v-for="(group,projName) in groupedTodos" :key="projName" class="todo-project-group">
               <div class="todo-project-title">{{ projName }}</div>
               <template v-for="todo in group" :key="todo.id">
-                <!-- 检查项指派型 -->
                 <template v-if="todo.isChecklist">
                   <div class="todo-row">
                     <span class="todo-circle" :class="getCircleClass(todo)" @click.stop="onCircleClick(todo)"></span>
@@ -418,7 +421,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
                     </div>
                   </div>
                 </template>
-                <!-- 普通型 -->
                 <template v-else>
                   <div class="todo-row">
                     <span class="todo-circle" :class="getCircleClass(todo)" @click.stop="onCircleClick(todo)"></span>
@@ -454,7 +456,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
       </div>
     </template>
 
-    <!-- ============ 特权视图（admin 三列 / manager 两列+项目进度） ============ -->
+    <!-- ============ 特权视图 ============ -->
     <template v-else>
       <!-- 列1：我的待办 -->
       <div class="order-1 col-my-todo flex flex-col lg:min-h-0">
@@ -495,7 +497,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 
       <!-- 列2：工作室待办（admin）/ 项目进度（manager） -->
       <div class="order-2 col-all-todo flex flex-col lg:min-h-0">
-        <!-- admin：工作室待办 -->
         <div v-if="isRealAdmin" class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
           <div class="flex justify-between items-center mb-3 flex-shrink-0">
             <h3 class="font-bold text-sm">工作室待办</h3>
@@ -554,16 +555,18 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
           </div>
         </div>
 
-        <!-- manager：项目进度 -->
         <div v-else class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
           <h3 class="font-bold text-sm mb-3 flex-shrink-0">项目进度</h3>
           <div class="scroll-area flex-1 min-h-0">
             <div class="grid grid-cols-1 gap-3">
-              <div v-for="proj in sortedProjects" :key="proj.id" class="card p-3 cursor-pointer transition flex items-center gap-3 relative" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
+              <div v-for="proj in sortedProjects" :key="proj.id" class="card p-3 cursor-pointer transition flex items-center gap-3 relative" @click="goToProject(proj.id)">
                 <div class="flex-1 min-w-0">
                   <div class="font-bold text-sm truncate">{{ proj.name }}</div>
-                  <div class="flex gap-1 flex-wrap mt-1">
-                    <span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
+                  <div class="project-row-progress mt-1">
+                    <div class="project-progress-bar">
+                      <div class="project-progress-fill" :style="{width: getStageProgress(proj) + '%'}"></div>
+                    </div>
+                    <span class="project-progress-text">{{ getStageProgress(proj) }}%</span>
                   </div>
                 </div>
               </div>
@@ -743,7 +746,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
     </div>
   </div>
 
-  <!-- ========== 项目总览（admin + manager） ========== -->
+  <!-- ========== 项目总览 ========== -->
   <div v-if="currentView==='projects'" class="flex-1 min-h-0 overflow-y-auto">
     <div class="flex justify-between items-center mb-5">
       <h1 class="text-2xl font-bold" style="letter-spacing:-.5px">项目总览</h1>
@@ -755,9 +758,13 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
           <button @click="moveProject(proj,-1)" title="上移">▲</button>
           <button @click="moveProject(proj,1)" title="下移">▼</button>
         </div>
-        <div class="project-row-name" :style="getProjectStyle(proj)">{{ proj.name }}</div>
-        <div class="project-row-stages">
-          <span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
+        <div class="project-row-name">{{ proj.name }}</div>
+        <div class="project-row-progress">
+          <div class="project-progress-bar">
+            <div class="project-progress-fill" :style="{width: getStageProgress(proj) + '%'}"></div>
+          </div>
+          <span class="project-progress-text">{{ getStageProgress(proj) }}%</span>
+          <span class="project-progress-stage">{{ getLatestStage(proj) }}</span>
         </div>
         <div class="project-row-members">
           <span v-if="(proj.members||[]).length">👥 {{ (proj.members||[]).join('、') }}</span>
@@ -1093,7 +1100,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 const {createApp,ref,computed,onMounted,onUnmounted,watch,nextTick}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
-const DATA_VERSION='2026-10-10-v20';
+const DATA_VERSION='2026-10-11-v21';
 
 const defaultUsers=[
   {name:'刘文辉', pinyin:'liuwenhui', password:'litian2026', role:'admin'},
@@ -1134,12 +1141,8 @@ const memberNavItems=[
   {key:'settings', label:'设置'}
 ];
 
-const projCategory={'sl4':'shenling','slzb':'shenling','sl5':'shenling','slgz':'shenling','prsp':'industrial','yj':'industrial','fp':'industrial','rk':'industrial','whg':'renovation','stc':'renovation','spmy':'renovation','skwj':'small','sq':'other'};
-const categoryBgColor={'shenling':'rgba(143,163,200,0.12)','industrial':'rgba(163,184,163,0.12)','renovation':'rgba(184,174,200,0.12)','small':'rgba(212,200,168,0.15)','other':'rgba(212,184,184,0.12)'};
-const categoryBorderColor={'shenling':'#8fa3c8','industrial':'#a3b8a3','renovation':'#b8aec8','small':'#d4c8a8','other':'#d4b8b8'};
 const stageColor={'一、前期强排':'bg-gray-200 text-gray-600','二、方案设计':'bg-blue-100 text-blue-700','三、方案深化':'bg-blue-200 text-blue-800','四、报建图':'bg-blue-400 text-white','五、施工图（含幕墙深化）':'bg-indigo-500 text-white','六、室内设计':'bg-orange-300 text-orange-900','七、室内设计施工图':'bg-orange-500 text-white','八、施工中':'bg-gray-700 text-white'};
 
-// 检查项种子（与 checklist.html 保持一致；用于主任/副主任指派）
 const stageOrder=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
 const CHECKLIST_SEED=[
 {id:'CHK-01-001',stage:'一、前期强排',item:'机动车出入口设置要求',standard:'结合规划条件，核实与路口距离'},
@@ -1301,7 +1304,7 @@ const CHECKLIST_SEED=[
 
 const defaultProjects=[
 {id:'sl4',name:'申菱四基地',stage:['三、方案深化'],subStatus:'方案重做深化',owner:'刘文辉',note:'',filed:false,contracted:true,progress:40,startDate:'2026-03',members:['谢启欣']},
-{id:'slzb',name:'申菱总部改造',stage:['六、室内设计','七、室内设计施工图','八、施工中'],subStatus:'施工收尾，室内深化中',owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08',members:['梁婷玉','谢启欣']},
+{id:'slzb',name:'申菱总部改造',stage:['八、施工中'],subStatus:'施工收尾',owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08',members:['梁婷玉','谢启欣']},
 {id:'sl5',name:'申菱五基地',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:10,startDate:'2026-08',members:['谢启欣']},
 {id:'slgz',name:'申菱高州二期',stage:['八、施工中'],subStatus:'施工中',owner:'黄建敏',note:'',filed:true,contracted:true,progress:70,startDate:'2025-11',members:['黄建敏']},
 {id:'prsp',name:'屏荣食品顺德新厂',stage:['五、施工图（含幕墙深化）'],subStatus:'规划变更+施工图审图，准备室内深化',owner:'梁婷玉',note:'',filed:true,contracted:true,progress:60,startDate:'2025-06',members:['谢启欣','梁婷玉','欧阳琳']},
@@ -1340,13 +1343,12 @@ const defaultEvents=[
 const migrateTodos=(arr)=>{
   if(!Array.isArray(arr)) return arr;
   return arr.map(t=>{
-    const isChecklist=!!t.isChecklist;
     return {
       ...t,
       link:t.link||'',
       important:t.important!==undefined?t.important:(t.type==='design'||t.type==='meeting'),
       employeeDone:t.employeeDone||false,
-      isChecklist:isChecklist,
+      isChecklist:!!t.isChecklist,
       items:Array.isArray(t.items)?t.items:[],
       subTasks:(t.subTasks||[]).map(s=>typeof s==='string'?{text:s,link:''}:{text:s.text||'',link:s.link||''})
     };
@@ -1558,6 +1560,19 @@ setup(){
     }catch(e){events.value=migrateEvents(defaultEvents);}
   };
 
+  // 一次性数据迁移：申菱总部改造 → 八、施工中
+  const runSlzbMigration=()=>{
+    const MIGRATION_KEY='studio_migrate_slzb_v21';
+    if(localStorage.getItem(MIGRATION_KEY)==='done') return;
+    const slzb=projects.value.find(p=>p.id==='slzb');
+    const target=['八、施工中'];
+    if(slzb && JSON.stringify(slzb.stage||[])!==JSON.stringify(target)){
+      slzb.stage=target;
+      saveData();
+    }
+    localStorage.setItem(MIGRATION_KEY,'done');
+  };
+
   const sortedProjects=computed(()=>{
     const order=projectOrder.value;
     return [...projects.value].sort((a,b)=>{
@@ -1580,6 +1595,23 @@ setup(){
     projectOrder.value=ids;
     localStorage.setItem('studio_project_order',JSON.stringify(ids));
     saveProjectOrderToCloud();
+  };
+
+  // 阶段进度：8阶段平分100%，当前阶段索引+1 决定进度
+  const getStageProgress=(proj)=>{
+    const arr=Array.isArray(proj.stage)?proj.stage:[proj.stage];
+    const indices=arr.map(s=>stageOrder.indexOf(s)).filter(i=>i>=0);
+    if(indices.length===0) return 0;
+    const maxIdx=Math.max(...indices);
+    return Math.round((maxIdx+1)/stageOrder.length*100);
+  };
+
+  const getLatestStage=(proj)=>{
+    const arr=Array.isArray(proj.stage)?proj.stage:[proj.stage];
+    const indices=arr.map(s=>stageOrder.indexOf(s)).filter(i=>i>=0);
+    if(indices.length===0) return '—';
+    const maxIdx=Math.max(...indices);
+    return stageOrder[maxIdx];
   };
 
   const parseOwner=(str)=>{
@@ -1647,7 +1679,6 @@ setup(){
     return s;
   };
 
-  // ============ 待办三态圆圈 ============
   const getCircleClass=(todo)=>{
     if(todo.employeeDone) return 'green';
     return todo.important ? 'red' : 'yellow';
@@ -1655,7 +1686,6 @@ setup(){
 
   const onCircleClick=(todo)=>{
     if(isPrivilegedView.value){
-      // 特权用户：绿圈 → 归档；未完成 → 标记为已完成（绿）
       if(todo.employeeDone){
         if(confirm('确认归档此待办？（归档后可在已归档中查看）')){
           todo.done=true;
@@ -1669,7 +1699,6 @@ setup(){
         }
       }
     }else{
-      // 员工：只能操作自己名下的
       const me=effectiveUser.value ? effectiveUser.value.name : '';
       if(!parseOwner(todo.owner).includes(me)) return;
       if(todo.employeeDone){
@@ -1809,7 +1838,7 @@ setup(){
     if(!kw){
       if(isPrivilegedView.value){
         projects.value.slice(0,6).forEach(p=>{
-          results.push({type:'project',typeLabel:'项目',title:p.name,desc:p.stage.join('、'),action:()=>goToProject(p.id)});
+          results.push({type:'project',typeLabel:'项目',title:p.name,desc:(p.stage||[]).join('、'),action:()=>goToProject(p.id)});
         });
       }else{
         filterByEffectiveUser(todos.value).slice(0,6).forEach(t=>{
@@ -1821,7 +1850,7 @@ setup(){
     if(isPrivilegedView.value){
       projects.value.forEach(p=>{
         if(p.name.toLowerCase().includes(kw) || (p.owner||'').toLowerCase().includes(kw)){
-          results.push({type:'project',typeLabel:'项目',title:p.name,desc:p.stage.join('、'),action:()=>goToProject(p.id)});
+          results.push({type:'project',typeLabel:'项目',title:p.name,desc:(p.stage||[]).join('、'),action:()=>goToProject(p.id)});
         }
       });
     }
@@ -1914,13 +1943,11 @@ setup(){
   const openNewTodo=()=>{ newTodo.value={task:'',projectId:'',owner:'',important:false}; showAddTodo.value=true; };
 
   const toggleTodo=(todo)=>{
-    // 归档恢复
     if(todo.done){
       if(!confirm('恢复为未完成？')) return;
       todo.done=false; todo.employeeDone=false; todo.completedBy='';
       saveData();
     }else{
-      // 直接归档（仅特权用户）
       if(!isPrivilegedView.value) return;
       if(!confirm('确认归档此待办？')) return;
       todo.done=true; todo.employeeDone=true;
@@ -1950,7 +1977,6 @@ setup(){
   const saveLink=()=>{linkDialogTarget.value.link=linkDialogValue.value.trim();saveData();linkDialogTarget.value=null};
   const deleteLink=()=>{if(!confirm('删除此链接？'))return;linkDialogTarget.value.link='';saveData();linkDialogTarget.value=null};
 
-  // ============ 指派检查项 ============
   const showAssignModal=ref(false);
   const editingAssignTodoId=ref(null);
   const draftAssign=ref({projectId:'',owner:'',important:false,selectedIds:[]});
@@ -1976,7 +2002,6 @@ setup(){
       editingAssignTodoId.value=null;
       draftAssign.value={projectId:'',owner:'',important:false,selectedIds:[]};
     }
-    // 默认展开第一个阶段
     const first=stageOrder[0];
     expandedStages.value={};
     expandedStages.value[first]=true;
@@ -2113,7 +2138,6 @@ setup(){
     saveProjectsToCloud(); saveTodosToCloud();
   };
 
-  const getProjectStyle=(proj)=>{const c=projCategory[proj.id]||'other';return {background:categoryBgColor[c],borderLeft:'4px solid '+categoryBorderColor[c]}};
   const getStageColor=(stage)=>stageColor[stage]||'bg-gray-100 text-gray-500';
   const getProjStages=(proj)=>Array.isArray(proj.stage)?proj.stage:[proj.stage];
 
@@ -2137,7 +2161,8 @@ setup(){
     restoreLogin();
     loadHeroes();
     loadEvents();
-    loadProjectsAndTodosFromCloud();
+    await loadProjectsAndTodosFromCloud();
+    runSlzbMigration();
     nextTick(()=>updateHighlight());
     window.addEventListener('resize', updateHighlight);
     window.addEventListener('keydown', handleKeydown);
@@ -2156,6 +2181,7 @@ setup(){
     setNavRef, highlightStyle, highlightReady,
     projects, todos, events, members, stages, newTodo, newProject,
     sortedProjects, projectOrder, moveProject,
+    getStageProgress, getLatestStage,
     pendingTodos, doneTodos, groupedTodos, groupedDoneTodos,
     myTodos, groupedMyTodos, allPendingTodos, groupedAllTodos,
     myMeetingProjects, expandedTodos, toggleChecklistExpand,
@@ -2175,10 +2201,9 @@ setup(){
     currentMonthName, todayDate, calendarDays, prevMonth, nextMonth, resetMonth,
     fontSize, setFontSize, theme, setTheme,
     pwdOld, pwdNew, pwdNew2, pwdMsg, pwdMsgOk, changePassword,
-    parseOwner, getProjectStyle, getStageColor, getProjStages,
+    parseOwner, getStageColor, getProjStages,
     getCircleClass, onCircleClick, revertTodo,
     goToProject, goToMeeting,
-    // 指派
     showAssignModal, editingAssignTodoId, draftAssign, expandedStages, itemsByStage,
     stageOrder, openAssignModal, editAssign, closeAssignModal,
     toggleStageExpand, isStageFullySelected, isStagePartialSelected, toggleStage,
