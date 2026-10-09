@@ -23,9 +23,9 @@
 <style>
 [v-cloak]{display:none !important}
 html{font-size:16px}
-html[data-fontsize="small"]{font-size:16px}
-html[data-fontsize="medium"]{font-size:20px}
-html[data-fontsize="large"]{font-size:24px}
+html[data-fontsize="small"]{font-size:19.2px}
+html[data-fontsize="medium"]{font-size:24px}
+html[data-fontsize="large"]{font-size:32px}
 
 :root,[data-theme="light"]{
   --bg:#f6f5f4; --text:#1a1a1a; --text-secondary:#5d5b54; --text-tertiary:#787671;
@@ -75,184 +75,212 @@ html[data-fontsize="large"]{font-size:24px}
 *{box-sizing:border-box}
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased;font-feature-settings:"cv11","ss01"}
 
-.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
-.login-card{width:100%;max-width:380px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:36px 32px;box-shadow:rgba(15,15,15,.08) 0 12px 32px -4px}
-.login-logo{text-align:center;margin-bottom:26px}
-.login-logo h1{font-size:22px;font-weight:700;letter-spacing:-0.4px;margin:0}
-.login-logo .en{font-size:10.5px;opacity:.5;letter-spacing:2.5px;margin-top:4px;font-weight:500}
-.login-logo h2{font-size:13px;opacity:.65;margin:12px 0 0;font-weight:500}
-.login-field{margin-bottom:16px}
-.login-label{font-size:12px;font-weight:600;opacity:.7;margin-bottom:6px;display:block}
-.login-input{width:100%;border:1px solid var(--border-strong);border-radius:8px;padding:11px 14px;font-size:14px;background:var(--card);color:var(--text);font-family:inherit;outline:none;transition:.15s}
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.25rem;background:var(--bg)}
+.login-card{width:100%;max-width:23.75rem;background:var(--card);border:1px solid var(--border);border-radius:.875rem;padding:2.25rem 2rem;box-shadow:rgba(15,15,15,.08) 0 .75rem 2rem -.25rem}
+.login-logo{text-align:center;margin-bottom:1.625rem}
+.login-logo h1{font-size:1.375rem;font-weight:700;letter-spacing:-.4px;margin:0}
+.login-logo .en{font-size:.65625rem;opacity:.5;letter-spacing:2.5px;margin-top:.25rem;font-weight:500}
+.login-logo h2{font-size:.8125rem;opacity:.65;margin:.75rem 0 0;font-weight:500}
+.login-field{margin-bottom:1rem}
+.login-label{font-size:.75rem;font-weight:600;opacity:.7;margin-bottom:.375rem;display:block}
+.login-input{width:100%;border:1px solid var(--border-strong);border-radius:.5rem;padding:.6875rem .875rem;font-size:.875rem;background:var(--card);color:var(--text);font-family:inherit;outline:none;transition:.15s}
 .login-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent)}
-.login-btn{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:8px}
+.login-btn{width:100%;padding:.75rem;background:var(--primary);color:#fff;border:none;border-radius:.5rem;font-size:.875rem;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;margin-top:.5rem}
 .login-btn:hover{background:var(--primary-pressed)}
 .login-btn:active{transform:scale(.99)}
-.login-error{color:var(--error);font-size:12.5px;margin-top:10px;text-align:center;font-weight:500;min-height:18px}
-.login-hint{font-size:11.5px;opacity:.5;text-align:center;margin-top:16px;line-height:1.6}
-.login-hint code{background:var(--bg);padding:2px 6px;border-radius:4px;font-size:11px}
+.login-error{color:var(--error);font-size:.78125rem;margin-top:.625rem;text-align:center;font-weight:500;min-height:1.125rem}
+.login-hint{font-size:.71875rem;opacity:.5;text-align:center;margin-top:1rem;line-height:1.6}
+.login-hint code{background:var(--bg);padding:2px 6px;border-radius:.25rem;font-size:.6875rem}
 
-.sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:248px;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;transition:.3s}
-.sidebar-brand{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
-.sidebar-brand h1{font-size:18px;font-weight:700;letter-spacing:-0.3px;line-height:1.2;margin:0}
-.sidebar-brand .en{font-size:10.5px;opacity:.55;letter-spacing:2.5px;margin-top:3px;font-weight:500}
-.sidebar-brand h2{font-size:13px;opacity:.7;margin:10px 0 0;font-weight:500}
-.sidebar-nav{position:relative;padding:8px 10px;flex:1}
-.sidebar-nav a{display:flex;align-items:center;padding:11px 14px;color:var(--sidebar-text);opacity:.7;font-size:14.5px;font-weight:500;text-decoration:none;cursor:pointer;position:relative;z-index:1;transition:opacity .25s,color .25s;border-radius:8px;-webkit-tap-highlight-color:transparent}
+.sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:15.5rem;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;transition:.3s}
+.sidebar-brand{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-brand h1{font-size:1.125rem;font-weight:700;letter-spacing:-.3px;line-height:1.2;margin:0}
+.sidebar-brand .en{font-size:.65625rem;opacity:.55;letter-spacing:2.5px;margin-top:.1875rem;font-weight:500}
+.sidebar-brand h2{font-size:.8125rem;opacity:.7;margin:.625rem 0 0;font-weight:500}
+.sidebar-nav{position:relative;padding:.5rem .625rem;flex:1}
+.sidebar-nav a{display:flex;align-items:center;padding:.6875rem .875rem;color:var(--sidebar-text);opacity:.7;font-size:.90625rem;font-weight:500;text-decoration:none;cursor:pointer;position:relative;z-index:1;transition:opacity .25s,color .25s;border-radius:.5rem;-webkit-tap-highlight-color:transparent}
 .sidebar-nav a span{position:relative;z-index:1;transition:transform .3s cubic-bezier(0.34, 1.56, 0.64, 1)}
 .sidebar-nav a:hover{opacity:1}
 .sidebar-nav a.active{opacity:1;font-weight:600;color:#fff}
 .sidebar-nav a.active span{transform:translateX(2px)}
-.nav-highlight{position:absolute;z-index:0;background:color-mix(in srgb, var(--highlight-bg) 55%, transparent);border-radius:8px;box-shadow:0 4px 14px -4px var(--highlight-bg);transition:top .42s cubic-bezier(0.34, 1.56, 0.64, 1),left .42s cubic-bezier(0.34, 1.56, 0.64, 1),width .42s cubic-bezier(0.34, 1.56, 0.64, 1),height .42s cubic-bezier(0.34, 1.56, 0.64, 1);pointer-events:none}
-.sidebar-bottom{padding:0 10px 12px}
-.setting-row{display:flex;align-items:center;padding:5px 4px;gap:4px;flex-wrap:wrap}
-.setting-label{font-size:10.5px;opacity:.5;margin-right:4px;color:var(--sidebar-text);font-weight:500}
-.setting-row button{font-size:11px;padding:4px 9px;border-radius:6px;border:1px solid rgba(255,255,255,.12);background:transparent;color:var(--sidebar-text);cursor:pointer;font-weight:500;transition:.15s}
+.nav-highlight{position:absolute;z-index:0;background:color-mix(in srgb, var(--highlight-bg) 55%, transparent);border-radius:.5rem;transition:top .42s cubic-bezier(0.34, 1.56, 0.64, 1),left .42s cubic-bezier(0.34, 1.56, 0.64, 1),width .42s cubic-bezier(0.34, 1.56, 0.64, 1),height .42s cubic-bezier(0.34, 1.56, 0.64, 1);pointer-events:none}
+.sidebar-bottom{padding:0 .625rem .75rem}
+.setting-row{display:flex;align-items:center;padding:.3125rem .25rem;gap:.25rem;flex-wrap:wrap}
+.setting-label{font-size:.65625rem;opacity:.5;margin-right:.25rem;color:var(--sidebar-text);font-weight:500}
+.setting-row button{font-size:.6875rem;padding:.25rem .5625rem;border-radius:.375rem;border:1px solid rgba(255,255,255,.12);background:transparent;color:var(--sidebar-text);cursor:pointer;font-weight:500;transition:.15s}
 .setting-row button:hover{background:rgba(255,255,255,.06)}
 .setting-row button.active{background:var(--sidebar-active);border-color:var(--sidebar-active);font-weight:600}
-.calendar-mini{background:rgba(0,0,0,.18);border-radius:10px;padding:10px;margin-top:8px}
+.calendar-mini{background:rgba(0,0,0,.18);border-radius:.625rem;padding:.625rem;margin-top:.5rem}
 .calendar-mini .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
-.calendar-mini .cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 0;border-radius:5px;color:var(--sidebar-text);min-height:34px;transition:.15s}
-.calendar-mini .cell .dnum{font-size:11.5px;line-height:1.1;font-weight:500}
-.calendar-mini .cell .lunar{font-size:8.5px;line-height:1.1;opacity:.7;margin-top:1px}
+.calendar-mini .cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.1875rem 0;border-radius:.3125rem;color:var(--sidebar-text);min-height:2.125rem;transition:.15s}
+.calendar-mini .cell .dnum{font-size:.71875rem;line-height:1.1;font-weight:500}
+.calendar-mini .cell .lunar{font-size:.53125rem;line-height:1.1;opacity:.7;margin-top:1px}
 .calendar-mini .cell.empty{opacity:.15}
 .calendar-mini .cell.weekend{background:rgba(143,163,200,.15)}
 .calendar-mini .cell.holiday{background:rgba(229,62,62,.32);color:#fff}
 .calendar-mini .cell.workday{background:rgba(160,160,160,.25)}
 .calendar-mini .cell.today{outline:1.5px solid var(--sidebar-text);font-weight:600}
 .calendar-mini .cell .lunar.holiday-name{color:#ffd9d9;font-weight:600}
-.cal-nav{background:transparent;border:none;color:var(--sidebar-text);opacity:.5;cursor:pointer;font-size:14px;line-height:1;padding:0 4px;font-weight:700;transition:.15s}
+.cal-nav{background:transparent;border:none;color:var(--sidebar-text);opacity:.5;cursor:pointer;font-size:.875rem;line-height:1;padding:0 .25rem;font-weight:700;transition:.15s}
 .cal-nav:hover{opacity:1}
 
-.main-content{flex:1;padding:20px 24px;overflow:hidden;height:100vh;display:flex;flex-direction:column;gap:14px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;transition:.2s}
+.main-content{flex:1;padding:1.25rem 1.5rem;overflow:hidden;height:100vh;display:flex;flex-direction:column;gap:.875rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:.75rem;transition:.2s}
 
-.topbar{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.search-btn{flex:1;display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text-tertiary);font-size:14px;transition:.15s;text-align:left}
+.topbar{display:flex;align-items:center;gap:.625rem;flex-shrink:0}
+.search-btn{flex:1;display:flex;align-items:center;gap:.625rem;padding:.5625rem .875rem;background:var(--card);border:1px solid var(--border);border-radius:.5rem;cursor:pointer;color:var(--text-tertiary);font-size:.875rem;transition:.15s;text-align:left}
 .search-btn:hover{border-color:var(--border-strong)}
-.search-btn .kbd{margin-left:auto;font-size:11px;opacity:.5;border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-weight:500}
-.hamburger{font-size:22px;line-height:1;padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text)}
-.user-chip{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:13px;white-space:nowrap}
-.user-chip .avatar{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.search-btn .kbd{margin-left:auto;font-size:.6875rem;opacity:.5;border:1px solid var(--border);padding:1px 6px;border-radius:.25rem;font-weight:500}
+.hamburger{font-size:1.375rem;line-height:1;padding:.375rem .625rem;background:var(--card);border:1px solid var(--border);border-radius:.5rem;cursor:pointer;color:var(--text)}
+.user-chip{display:flex;align-items:center;gap:.5rem;padding:.4375rem .75rem;background:var(--card);border:1px solid var(--border);border-radius:.5rem;font-size:.8125rem;white-space:nowrap}
+.user-chip .avatar{width:1.5rem;height:1.5rem;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.6875rem;font-weight:700;flex-shrink:0}
 .user-chip .name{font-weight:600;color:var(--text)}
-.user-chip .logout{color:var(--text-tertiary);cursor:pointer;padding:2px 4px;font-size:14px;border-radius:4px;transition:.15s;background:none;border:none;font-family:inherit}
+.user-chip .logout{color:var(--text-tertiary);cursor:pointer;padding:2px 4px;font-size:.875rem;border-radius:.25rem;transition:.15s;background:none;border:none;font-family:inherit}
 .user-chip .logout:hover{color:var(--error);background:var(--bg)}
-.view-as-select{padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:12.5px;color:var(--text);cursor:pointer;font-family:inherit;outline:none}
+.view-as-select{padding:.5rem .75rem;background:var(--card);border:1px solid var(--border);border-radius:.5rem;font-size:.78125rem;color:var(--text);cursor:pointer;font-family:inherit;outline:none}
 
-.dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
-.dot-red{background:var(--dot-red)}.dot-blue{background:var(--dot-blue)}.dot-yellow{background:var(--dot-yellow)}
-.stage-tag{font-size:10.5px;padding:2.5px 9px;border-radius:9999px;font-weight:500;display:inline-block;letter-spacing:0}
-.sub-status-box{display:inline-block;margin-top:5px;padding:3px 10px;border-radius:6px;background:var(--tag-bg);color:var(--tag-text);font-size:11px;font-weight:500}
+.todo-circle{width:.875rem;height:.875rem;border-radius:50%;display:inline-block;flex-shrink:0;cursor:pointer;transition:.15s;border:none;padding:0}
+.todo-circle:hover{transform:scale(1.2)}
+.todo-circle.red{background:#e05a5a;box-shadow:0 0 0 1px #c94a4a inset}
+.todo-circle.yellow{background:#e0b84a;box-shadow:0 0 0 1px #c9a13a inset}
+.todo-circle.green{background:#4caf50;box-shadow:0 0 0 1px #3d8f40 inset}
 
-.hero-title{font-size:14px;font-weight:600;margin-bottom:10px;letter-spacing:-0.2px}
-.hero-img-wrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#ddd;cursor:pointer}
+.stage-tag{font-size:.65625rem;padding:.15625rem .5625rem;border-radius:9999px;font-weight:500;display:inline-block;letter-spacing:0}
+
+.hero-title{font-size:.875rem;font-weight:600;margin-bottom:.625rem;letter-spacing:-.2px}
+.hero-img-wrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:.625rem;overflow:hidden;background:#ddd;cursor:pointer}
 .hero-img{width:100%;height:100%;object-fit:cover;transition:transform .4s;display:block}
 .hero-img-wrap:hover .hero-img{transform:scale(1.03)}
-.hero-meta{font-size:13px;line-height:1.7;margin-top:10px}
+.hero-meta{font-size:.8125rem;line-height:1.7;margin-top:.625rem}
 .hero-meta .author{opacity:.65}
 
-.todo-project-group{margin-bottom:12px}
-.todo-project-title{font-size:13.5px;font-weight:700;margin:8px 0 6px;padding-left:2px;color:var(--primary);letter-spacing:-0.2px}
-.todo-row{font-size:12.5px;padding-left:14px;position:relative;display:flex;align-items:center;gap:7px;padding-top:4px;padding-bottom:4px;border-bottom:1px dashed var(--border);transition:.15s}
+.todo-project-group{margin-bottom:.75rem}
+.todo-project-title{font-size:.84375rem;font-weight:700;margin:.5rem 0 .375rem;padding-left:2px;color:var(--primary);letter-spacing:-.2px}
+.todo-row{font-size:.78125rem;padding-left:.875rem;position:relative;display:flex;align-items:center;gap:.4375rem;padding-top:.25rem;padding-bottom:.25rem;border-bottom:1px dashed var(--border);transition:.15s}
 .todo-row:last-child{border-bottom:none}
 .todo-row::before{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:var(--border-strong)}
 .todo-row:hover .edit-btn{opacity:1}
-.edit-btn{opacity:0;transition:.2s;color:var(--text-tertiary);background:none;border:none;cursor:pointer;padding:2px 4px;font-size:12px}
-.sub-task{font-size:12px;padding-left:26px;display:flex;align-items:center;gap:6px;padding-top:3px;padding-bottom:3px;border-bottom:1px dashed var(--border)}
+.edit-btn{opacity:0;transition:.2s;color:var(--text-tertiary);background:none;border:none;cursor:pointer;padding:2px 4px;font-size:.75rem}
+.sub-task{font-size:.75rem;padding-left:1.625rem;display:flex;align-items:center;gap:.375rem;padding-top:.1875rem;padding-bottom:.1875rem;border-bottom:1px dashed var(--border)}
 .sub-task:last-child{border-bottom:none}
-.owner-chips{display:inline-flex;gap:4px;margin-left:6px;flex-wrap:wrap}
-.owner-chip{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--tag-bg);color:var(--tag-text);font-weight:600;white-space:nowrap}
+.owner-chips{display:inline-flex;gap:.25rem;margin-left:.375rem;flex-wrap:wrap}
+.owner-chip{font-size:.625rem;padding:1px 6px;border-radius:.25rem;background:var(--tag-bg);color:var(--tag-text);font-weight:600;white-space:nowrap}
 
-.event-row{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px dashed var(--border);transition:.15s}
+.checklist-expand{background:var(--bg);border-radius:.5rem;margin:.25rem 0 .375rem 1.125rem;padding:.5rem .75rem;font-size:.75rem}
+.checklist-expand .item-line{display:flex;gap:.5rem;padding:.1875rem 0;border-bottom:1px dashed var(--border);align-items:baseline}
+.checklist-expand .item-line:last-child{border-bottom:none}
+
+.event-row{display:flex;align-items:flex-start;gap:.5rem;padding:.4375rem 0;border-bottom:1px dashed var(--border);transition:.15s}
 .event-row:last-child{border-bottom:none}
 .event-row:hover .edit-btn{opacity:1}
 
-.arch-row{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px dashed var(--border);font-size:13px}
+.arch-row{display:flex;align-items:center;gap:.625rem;padding:.5rem .25rem;border-bottom:1px dashed var(--border);font-size:.8125rem}
 .arch-row:last-child{border-bottom:none}
 
-.scroll-area{overflow-y:auto;padding-right:4px}
+.scroll-area{overflow-y:auto;padding-right:.25rem}
 .scroll-area::-webkit-scrollbar{width:6px}
 .scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 .scroll-area::-webkit-scrollbar-thumb:hover{background:var(--border-strong)}
 
-.modal-mask{background:rgba(15,15,15,.55);backdrop-filter:blur(8px);position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:60;padding:16px;animation:fadeIn .2s ease}
+.modal-mask{background:rgba(15,15,15,.55);backdrop-filter:blur(8px);position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:60;padding:1rem;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:rgba(15,15,15,.2) 0 24px 48px -8px;animation:popIn .22s cubic-bezier(0.34,1.4,0.64,1)}
+.modal-card{background:var(--card);border:1px solid var(--border);border-radius:.75rem;padding:1.5rem;width:100%;max-width:28.75rem;max-height:90vh;overflow-y:auto;box-shadow:rgba(15,15,15,.2) 0 1.5rem 3rem -.5rem;animation:popIn .22s cubic-bezier(0.34,1.4,0.64,1)}
 @keyframes popIn{from{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.modal-title{font-size:17px;font-weight:600;margin:0 0 18px;letter-spacing:-0.3px}
-.form-label{font-size:12px;font-weight:600;opacity:.7;margin-bottom:5px;display:block;letter-spacing:0}
-.form-input{width:100%;border:1px solid var(--border-strong);border-radius:8px;padding:9px 12px;font-size:14px;background:var(--card);color:var(--text);transition:.15s;font-family:inherit;outline:none}
+.modal-title{font-size:1.0625rem;font-weight:600;margin:0 0 1.125rem;letter-spacing:-.3px}
+.form-label{font-size:.75rem;font-weight:600;opacity:.7;margin-bottom:.3125rem;display:block;letter-spacing:0}
+.form-input{width:100%;border:1px solid var(--border-strong);border-radius:.5rem;padding:.5625rem .75rem;font-size:.875rem;background:var(--card);color:var(--text);transition:.15s;font-family:inherit;outline:none}
 .form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent)}
 .form-input::placeholder{color:var(--text-tertiary)}
-.assignee-picker{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.assignee-pick{padding:5px 11px;border-radius:9999px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);font-size:12px;font-weight:500;cursor:pointer;transition:.15s;font-family:inherit}
+.assignee-picker{display:flex;flex-wrap:wrap;gap:.375rem;margin-top:.25rem}
+.assignee-pick{padding:.3125rem .6875rem;border-radius:9999px;border:1px solid var(--border);background:transparent;color:var(--text-secondary);font-size:.75rem;font-weight:500;cursor:pointer;transition:.15s;font-family:inherit}
 .assignee-pick:hover{background:var(--bg)}
 .assignee-pick.on{background:var(--primary);color:#fff;border-color:var(--primary);font-weight:600}
 
-.btn-primary{font-size:13.5px;padding:9px 18px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-weight:500;transition:.15s;font-family:inherit}
+.btn-primary{font-size:.84375rem;padding:.5625rem 1.125rem;border-radius:.5rem;background:var(--primary);color:#fff;border:none;cursor:pointer;font-weight:500;transition:.15s;font-family:inherit}
 .btn-primary:hover{background:var(--primary-pressed)}
 .btn-primary:active{transform:scale(.98)}
-.btn-secondary{font-size:13.5px;padding:9px 18px;border-radius:8px;background:transparent;color:var(--text);border:1px solid var(--border-strong);cursor:pointer;font-weight:500;transition:.15s;font-family:inherit}
+.btn-secondary{font-size:.84375rem;padding:.5625rem 1.125rem;border-radius:.5rem;background:transparent;color:var(--text);border:1px solid var(--border-strong);cursor:pointer;font-weight:500;transition:.15s;font-family:inherit}
 .btn-secondary:hover{background:var(--bg)}
-.btn-ghost{font-size:12px;padding:5px 10px;border-radius:6px;background:transparent;color:var(--text-secondary);border:1px solid var(--border);cursor:pointer;font-weight:500;transition:.15s;font-family:inherit}
+.btn-ghost{font-size:.75rem;padding:.3125rem .625rem;border-radius:.375rem;background:transparent;color:var(--text-secondary);border:1px solid var(--border);cursor:pointer;font-weight:500;transition:.15s;font-family:inherit}
 .btn-ghost:hover{background:var(--bg);color:var(--text)}
 
 .search-overlay{position:fixed;inset:0;z-index:80;background:rgba(15,15,15,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:flex-start;justify-content:center;padding-top:12vh;animation:fadeIn .15s ease}
-.search-panel{width:100%;max-width:600px;margin:0 16px;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:rgba(15,15,15,.3) 0 24px 48px -8px;animation:popIn .2s cubic-bezier(0.34,1.4,0.64,1);max-height:70vh;display:flex;flex-direction:column}
-.search-input-wrap{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.search-panel{width:100%;max-width:37.5rem;margin:0 1rem;background:var(--card);border:1px solid var(--border);border-radius:.875rem;overflow:hidden;box-shadow:rgba(15,15,15,.3) 0 1.5rem 3rem -.5rem;animation:popIn .2s cubic-bezier(0.34,1.4,0.64,1);max-height:70vh;display:flex;flex-direction:column}
+.search-input-wrap{padding:.875rem 1.125rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.625rem}
 .search-input-wrap svg{flex-shrink:0;opacity:.4}
-.search-input{flex:1;border:none;outline:none;background:transparent;color:var(--text);font-size:15px;font-family:inherit;padding:0;font-weight:500}
+.search-input{flex:1;border:none;outline:none;background:transparent;color:var(--text);font-size:.9375rem;font-family:inherit;padding:0;font-weight:500}
 .search-input::placeholder{color:var(--text-tertiary);font-weight:400}
-.search-results{overflow-y:auto;padding:8px;flex:1}
-.search-group-label{font-size:10.5px;font-weight:700;opacity:.45;padding:8px 12px 4px;letter-spacing:1px;text-transform:uppercase}
-.search-result-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;transition:.1s}
+.search-results{overflow-y:auto;padding:.5rem;flex:1}
+.search-group-label{font-size:.65625rem;font-weight:700;opacity:.45;padding:.5rem .75rem .25rem;letter-spacing:1px;text-transform:uppercase}
+.search-result-item{display:flex;align-items:center;gap:.625rem;padding:.5625rem .75rem;border-radius:.5rem;cursor:pointer;transition:.1s}
 .search-result-item.active{background:color-mix(in srgb, var(--primary) 15%, transparent)}
 .search-result-item.active .result-title{color:var(--primary);font-weight:600}
-.result-type{font-size:10.5px;padding:2px 7px;border-radius:5px;font-weight:600;flex-shrink:0;background:var(--tag-bg);color:var(--tag-text)}
-.result-title{font-size:13.5px;font-weight:500;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.result-desc{font-size:11.5px;color:var(--text-tertiary);flex-shrink:0;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.result-title mark, .result-desc mark{background:color-mix(in srgb, var(--primary) 30%, transparent);color:var(--primary-deep);font-weight:700;padding:0 2px;border-radius:3px}
-.search-empty{padding:40px 20px;text-align:center;color:var(--text-tertiary);font-size:13px}
-.search-footer{padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:14px;font-size:11px;color:var(--text-tertiary);opacity:.8}
-.search-footer .k{display:inline-block;padding:1px 5px;border:1px solid var(--border);border-radius:4px;margin-right:3px;font-weight:600;font-size:10px}
+.result-type{font-size:.65625rem;padding:2px 7px;border-radius:.3125rem;font-weight:600;flex-shrink:0;background:var(--tag-bg);color:var(--tag-text)}
+.result-title{font-size:.84375rem;font-weight:500;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.result-desc{font-size:.71875rem;color:var(--text-tertiary);flex-shrink:0;max-width:11.25rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.result-title mark, .result-desc mark{background:color-mix(in srgb, var(--primary) 30%, transparent);color:var(--primary-deep);font-weight:700;padding:0 2px;border-radius:.1875rem}
+.search-empty{padding:2.5rem 1.25rem;text-align:center;color:var(--text-tertiary);font-size:.8125rem}
+.search-footer{padding:.5rem .875rem;border-top:1px solid var(--border);display:flex;gap:.875rem;font-size:.6875rem;color:var(--text-tertiary);opacity:.8}
+.search-footer .k{display:inline-block;padding:1px 5px;border:1px solid var(--border);border-radius:.25rem;margin-right:3px;font-weight:600;font-size:.625rem}
 
-.proj-edit-btn{position:absolute;top:10px;right:10px;opacity:0;cursor:pointer;color:var(--text-tertiary);background:none;border:none;padding:4px;font-size:13px;transition:.2s;border-radius:5px}
+.proj-edit-btn{position:absolute;top:.625rem;right:.625rem;opacity:0;cursor:pointer;color:var(--text-tertiary);background:none;border:none;padding:.25rem;font-size:.8125rem;transition:.2s;border-radius:.3125rem}
 .card:hover .proj-edit-btn{opacity:1}
 .proj-edit-btn:hover{background:var(--bg);color:var(--text)}
-.ring-svg{transform:rotate(-90deg)}
 .status-toggle{transition:.15s}
 .status-toggle.clickable{cursor:pointer}
 .status-toggle.clickable:hover{transform:scale(1.05)}
-.empty-hint{text-align:center;padding:48px 20px;color:var(--text-tertiary)}
-.empty-hint .icon{font-size:40px;opacity:.3;margin-bottom:12px}
+.empty-hint{text-align:center;padding:3rem 1.25rem;color:var(--text-tertiary)}
+.empty-hint .icon{font-size:2.5rem;opacity:.3;margin-bottom:.75rem}
 
-/* 三列布局列的宽度 */
 .col-my-todo{width:22%}
 .col-all-todo{width:46%}
 .col-hero{width:32%}
 
-/* 项目会议纪要卡片 */
-.meeting-proj-card{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;transition:.2s;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.meeting-proj-card{display:flex;align-items:center;gap:.875rem;padding:1rem 1.125rem;cursor:pointer;transition:.2s;background:var(--card);border:1px solid var(--border);border-radius:.75rem}
 .meeting-proj-card:hover{border-color:var(--primary);transform:translateX(2px)}
-.meeting-proj-icon{width:40px;height:40px;border-radius:10px;background:var(--tag-bg);color:var(--tag-text);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;font-weight:700}
+.meeting-proj-icon{width:2.5rem;height:2.5rem;border-radius:.625rem;background:var(--tag-bg);color:var(--tag-text);display:flex;align-items:center;justify-content:center;font-size:1.125rem;flex-shrink:0;font-weight:700}
+
+/* 项目长条列表 */
+.project-row{display:flex;align-items:center;gap:.75rem;padding:.625rem .875rem;background:var(--card);border:1px solid var(--border);border-radius:.625rem;cursor:pointer;transition:.15s;margin-bottom:.5rem}
+.project-row:hover{border-color:var(--primary)}
+.project-order-btns{display:flex;flex-direction:column;gap:1px;flex-shrink:0}
+.project-order-btns button{background:transparent;border:1px solid var(--border);color:var(--text-tertiary);width:1.25rem;height:1rem;font-size:.5rem;line-height:1;padding:0;cursor:pointer;border-radius:.1875rem}
+.project-order-btns button:hover{background:var(--bg);color:var(--text)}
+.project-row-name{font-weight:700;font-size:.9375rem;flex:0 0 13.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.project-row-stages{display:flex;gap:.25rem;flex-wrap:wrap;flex:1;min-width:0}
+.project-row-members{font-size:.75rem;opacity:.7;flex:0 0 auto;max-width:11.25rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.project-row-status{display:flex;gap:.375rem;flex-shrink:0}
+.project-row .proj-edit-btn{position:static;opacity:.5}
+.project-row:hover .proj-edit-btn{opacity:1}
+
+/* 指派检查项选择器 */
+.checklist-picker{border:1px solid var(--border);border-radius:.5rem;max-height:22rem;overflow-y:auto;background:var(--bg)}
+.stage-block{border-bottom:1px solid var(--border)}
+.stage-block:last-child{border-bottom:none}
+.stage-header{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;cursor:pointer;font-size:.8125rem;background:var(--card)}
+.stage-header:hover{background:var(--bg)}
+.stage-items{padding:.25rem .75rem .5rem 2.5rem;background:var(--card)}
+.item-check{display:flex;align-items:flex-start;gap:.375rem;padding:.25rem 0;font-size:.75rem;cursor:pointer;line-height:1.4}
+.item-check input{margin-top:.1875rem;flex-shrink:0}
 
 @media(max-width:1024px){
   body{height:auto;overflow:auto}
-  .main-content{padding:14px;overflow-y:auto;height:auto;min-height:100vh;gap:12px}
-  .sidebar{position:fixed;left:-248px;z-index:50;height:100vh;box-shadow:8px 0 32px rgba(0,0,0,.2)}
+  .main-content{padding:.875rem;overflow-y:auto;height:auto;min-height:100vh;gap:.75rem}
+  .sidebar{position:fixed;left:-15.5rem;z-index:50;height:100vh;box-shadow:.5rem 0 2rem rgba(0,0,0,.2)}
   .sidebar.open{left:0}
   .scroll-area{max-height:none;overflow:visible;flex:none}
   .hero-img-wrap{aspect-ratio:16/10}
   .search-panel{max-height:80vh}
   .search-overlay{padding-top:6vh}
   .result-desc{display:none}
-  /* 手机端三列宽度自动 */
   .col-my-todo,.col-all-todo,.col-hero{width:100%}
+  .project-row{flex-wrap:wrap}
+  .project-row-name{flex-basis:auto;width:100%}
 }
 @media(max-width:480px){
-  .topbar{gap:8px}
+  .topbar{gap:.5rem}
   .search-btn .kbd{display:none}
-  .view-as-select{max-width:110px}
+  .view-as-select{max-width:6.875rem}
 }
 </style>
 </head>
@@ -298,8 +326,8 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
        :class="{'active': currentView===item.key}">
       <span>{{ item.label }}</span>
     </a>
-    <a v-if="isAdminView" href="https://pan.tencent.com" target="_blank"><span>云盘</span></a>
-    <a v-if="isAdminView" href="https://chat.deepseek.com" target="_blank"><span>DeepSeek</span></a>
+    <a v-if="isPrivilegedView" href="https://pan.tencent.com" target="_blank"><span>云盘</span></a>
+    <a v-if="isPrivilegedView" href="https://chat.deepseek.com" target="_blank"><span>DeepSeek</span></a>
   </nav>
   <div class="sidebar-bottom">
     <div class="setting-row">
@@ -325,7 +353,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
         <span class="text-xs opacity-60">{{ todayDate }}</span>
       </div>
       <div class="grid">
-        <div v-for="d in ['日','一','二','三','四','五','六']" :key="d" class="font-bold opacity-50" style="font-size:10px">{{ d }}</div>
+        <div v-for="d in ['日','一','二','三','四','五','六']" :key="d" class="font-bold opacity-50" style="font-size:0.625rem">{{ d }}</div>
         <div v-for="(cell,idx) in calendarDays" :key="idx"
              class="cell"
              :class="{empty:!cell.isCurrent,weekend:cell.isWeekend,holiday:cell.isHoliday,workday:cell.isWorkday,today:cell.isToday}">
@@ -345,7 +373,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
       <span>搜索...</span>
       <span class="kbd">⌘K</span>
     </button>
-    <select v-if="isRealAdmin" v-model="viewAsPinyin" class="view-as-select">
+    <select v-if="isRealAdmin && viewAsCandidates.length" v-model="viewAsPinyin" class="view-as-select">
       <option value="">我</option>
       <option v-for="u in viewAsCandidates" :key="u.pinyin" :value="u.pinyin">{{ u.name }}</option>
     </select>
@@ -360,8 +388,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   <div v-if="currentView==='home'" class="flex flex-col lg:flex-1 lg:min-h-0 lg:flex-row gap-4">
 
     <!-- ============ 员工视图 ============ -->
-    <template v-if="!isAdminView">
-      <!-- 待办（桌面左，3/5宽） -->
+    <template v-if="!isPrivilegedView">
       <div class="order-2 lg:order-1 lg:w-3/5 flex flex-col lg:min-h-0">
         <div class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
           <div class="flex justify-between items-center mb-3 flex-shrink-0">
@@ -369,31 +396,44 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
             <button @click="switchView('todos')" class="text-xs hover:underline font-medium" style="color:var(--primary)">全部 →</button>
           </div>
           <div class="scroll-area lg:flex-1 lg:min-h-0">
-            <div v-if="pendingTodos.length === 0" class="empty-hint" style="padding:24px">
+            <div v-if="pendingTodos.length === 0" class="empty-hint" style="padding:1.5rem">
               <div class="icon">✨</div>
               <div class="text-xs">暂无任务</div>
             </div>
             <div v-for="(group,projName) in groupedTodos" :key="projName" class="todo-project-group">
               <div class="todo-project-title">{{ projName }}</div>
               <template v-for="todo in group" :key="todo.id">
-                <div class="todo-row">
-                  <span class="dot" :class="getDotColor(todo)"></span>
-                  <input type="checkbox" @change="toggleTodo(todo)" class="w-3.5 h-3.5 cursor-pointer flex-shrink-0" style="accent-color:var(--primary)">
-                  <span class="font-medium truncate flex-1">{{ todo.task }}</span>
-                  <span v-if="todo.owner" class="owner-chips">
-                    <span v-for="o in parseOwner(todo.owner)" :key="o" class="owner-chip">{{ o }}</span>
-                  </span>
-                </div>
-                <div v-for="(sub,idx) in todo.subTasks" :key="idx" class="sub-task">
-                  <span class="opacity-45 text-[10px]">{{ String.fromCharCode(97+idx) }}.</span>
-                  <span class="truncate flex-1">{{ sub.text }}</span>
-                </div>
+                <!-- 检查项指派型 -->
+                <template v-if="todo.isChecklist">
+                  <div class="todo-row">
+                    <span class="todo-circle" :class="getCircleClass(todo)" @click.stop="onCircleClick(todo)"></span>
+                    <span class="font-medium truncate flex-1">{{ todo.projectName }} — 待检查项({{ todo.items.length }})</span>
+                    <button @click="toggleChecklistExpand(todo)" class="text-xs px-2 py-0.5 rounded border" style="border-color:var(--border);color:var(--primary)">{{ expandedTodos[todo.id] ? '收起' : '展开' }}</button>
+                  </div>
+                  <div v-if="expandedTodos[todo.id]" class="checklist-expand">
+                    <div v-for="item in todo.items" :key="item.id" class="item-line">
+                      <span class="opacity-50 text-xs" style="flex-shrink:0">{{ item.id }}</span>
+                      <span>{{ item.item }}</span>
+                      <span v-if="item.standard" class="opacity-60 text-xs">— {{ item.standard }}</span>
+                    </div>
+                  </div>
+                </template>
+                <!-- 普通型 -->
+                <template v-else>
+                  <div class="todo-row">
+                    <span class="todo-circle" :class="getCircleClass(todo)" @click.stop="onCircleClick(todo)"></span>
+                    <span class="font-medium truncate flex-1">{{ todo.task }}</span>
+                  </div>
+                  <div v-for="(sub,idx) in todo.subTasks" :key="idx" class="sub-task">
+                    <span class="opacity-45 text-xs">{{ String.fromCharCode(97+idx) }}.</span>
+                    <span class="truncate flex-1">{{ sub.text }}</span>
+                  </div>
+                </template>
               </template>
             </div>
           </div>
         </div>
       </div>
-      <!-- 精神零食（桌面右，2/5宽） -->
       <div class="order-1 lg:order-2 lg:w-2/5 flex flex-col gap-4">
         <div class="card p-4">
           <div class="hero-title">精神零食</div>
@@ -414,7 +454,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
       </div>
     </template>
 
-    <!-- ============ 主任/副主任视图（三列） ============ -->
+    <!-- ============ 特权视图（admin 三列 / manager 两列+项目进度） ============ -->
     <template v-else>
       <!-- 列1：我的待办 -->
       <div class="order-1 col-my-todo flex flex-col lg:min-h-0">
@@ -424,33 +464,45 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
             <span class="text-xs opacity-50">{{ myTodos.length }}</span>
           </div>
           <div class="scroll-area lg:flex-1 lg:min-h-0">
-            <div v-if="myTodos.length === 0" class="empty-hint" style="padding:24px">
+            <div v-if="myTodos.length === 0" class="empty-hint" style="padding:1.5rem">
               <div class="icon">✨</div>
               <div class="text-xs">暂无任务</div>
             </div>
             <div v-for="(group,projName) in groupedMyTodos" :key="projName" class="todo-project-group">
               <div class="todo-project-title">{{ projName }}</div>
               <template v-for="todo in group" :key="todo.id">
-                <div class="todo-row">
-                  <span class="dot" :class="getDotColor(todo)"></span>
-                  <input type="checkbox" @change="toggleTodo(todo)" class="w-3.5 h-3.5 cursor-pointer flex-shrink-0" style="accent-color:var(--primary)">
-                  <span class="font-medium truncate flex-1">{{ todo.task }}</span>
-                  <button @click="editTodo(todo)" class="edit-btn">✎</button>
-                </div>
+                <template v-if="todo.isChecklist">
+                  <div class="todo-row">
+                    <span class="todo-circle" :class="getCircleClass(todo)" @click.stop="onCircleClick(todo)"></span>
+                    <span class="font-medium truncate flex-1">{{ todo.projectName }} — 待检查项({{ todo.items.length }})</span>
+                    <button @click="editAssign(todo)" class="edit-btn">📋</button>
+                    <button @click="editTodo(todo)" class="edit-btn">✎</button>
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="todo-row">
+                    <span class="todo-circle" :class="getCircleClass(todo)" @click.stop="onCircleClick(todo)"></span>
+                    <span class="font-medium truncate flex-1">{{ todo.task }}</span>
+                    <button v-if="todo.employeeDone" @click.stop="revertTodo(todo)" class="edit-btn" title="打回">↺</button>
+                    <button @click="editTodo(todo)" class="edit-btn">✎</button>
+                  </div>
+                </template>
               </template>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 列2：工作室待办（独占整列，撑满高度） -->
+      <!-- 列2：工作室待办（admin）/ 项目进度（manager） -->
       <div class="order-2 col-all-todo flex flex-col lg:min-h-0">
-        <div class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
+        <!-- admin：工作室待办 -->
+        <div v-if="isRealAdmin" class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
           <div class="flex justify-between items-center mb-3 flex-shrink-0">
             <h3 class="font-bold text-sm">工作室待办</h3>
             <div class="flex items-center gap-2">
               <span class="text-xs opacity-50">{{ allPendingTodos.length }}</span>
-              <button @click="openNewTodo" class="btn-ghost" style="font-size:11px;padding:2px 8px">+ 新建</button>
+              <button @click="openAssignModal()" class="btn-ghost" style="font-size:.6875rem;padding:2px .5rem">📋 指派</button>
+              <button @click="openNewTodo" class="btn-ghost" style="font-size:.6875rem;padding:2px .5rem">+ 新建</button>
             </div>
           </div>
           <div class="scroll-area flex-1 min-h-0">
@@ -458,23 +510,63 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
             <div v-for="(group,projName) in groupedAllTodos" :key="projName" class="todo-project-group">
               <div class="todo-project-title">{{ projName }}</div>
               <template v-for="todo in group" :key="todo.id">
-                <div class="todo-row">
-                  <span class="dot" :class="getDotColor(todo)"></span>
-                  <input type="checkbox" @change="toggleTodo(todo)" class="w-3.5 h-3.5 cursor-pointer flex-shrink-0" style="accent-color:var(--primary)">
-                  <span class="font-medium truncate flex-1">{{ todo.task }}</span>
-                  <span v-if="todo.owner" class="owner-chips">
-                    <span v-for="o in parseOwner(todo.owner)" :key="o" class="owner-chip">{{ o }}</span>
-                  </span>
-                  <button @click="openLinkDialog(todo)" class="edit-btn" :style="todo.link ? '' : 'opacity:.2'">📎</button>
-                  <button @click="editTodo(todo)" class="edit-btn">✎</button>
-                </div>
-                <div v-for="(sub,idx) in todo.subTasks" :key="idx" class="sub-task">
-                  <span class="opacity-45 text-[10px]">{{ String.fromCharCode(97+idx) }}.</span>
-                  <span class="truncate flex-1">{{ sub.text }}</span>
-                  <button @click="openLinkDialog(sub)" class="edit-btn" :style="sub.link ? '' : 'opacity:.2'">📎</button>
-                  <button @click="editSubTask(todo, idx)" class="edit-btn">✎</button>
-                </div>
+                <template v-if="todo.isChecklist">
+                  <div class="todo-row">
+                    <span class="todo-circle" :class="getCircleClass(todo)" @click.stop="onCircleClick(todo)"></span>
+                    <span class="font-medium truncate flex-1">{{ todo.projectName }} — 待检查项({{ todo.items.length }})</span>
+                    <span v-if="todo.owner" class="owner-chips">
+                      <span v-for="o in parseOwner(todo.owner)" :key="o" class="owner-chip">{{ o }}</span>
+                    </span>
+                    <button @click="toggleChecklistExpand(todo)" class="edit-btn" :style="expandedTodos[todo.id] ? 'opacity:1' : ''">展开</button>
+                    <button @click="editAssign(todo)" class="edit-btn">📋</button>
+                    <button @click="editTodo(todo)" class="edit-btn">✎</button>
+                    <button @click="deleteTodo(todo)" class="edit-btn" style="color:var(--error)">✕</button>
+                  </div>
+                  <div v-if="expandedTodos[todo.id]" class="checklist-expand">
+                    <div v-for="item in todo.items" :key="item.id" class="item-line">
+                      <span class="opacity-50 text-xs" style="flex-shrink:0">{{ item.id }}</span>
+                      <span>{{ item.item }}</span>
+                      <span v-if="item.standard" class="opacity-60 text-xs">— {{ item.standard }}</span>
+                    </div>
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="todo-row">
+                    <span class="todo-circle" :class="getCircleClass(todo)" @click.stop="onCircleClick(todo)"></span>
+                    <span class="font-medium truncate flex-1">{{ todo.task }}</span>
+                    <span v-if="todo.owner" class="owner-chips">
+                      <span v-for="o in parseOwner(todo.owner)" :key="o" class="owner-chip">{{ o }}</span>
+                    </span>
+                    <button v-if="todo.employeeDone" @click.stop="revertTodo(todo)" class="edit-btn" title="打回">↺</button>
+                    <button @click="openLinkDialog(todo)" class="edit-btn" :style="todo.link ? '' : 'opacity:.2'">📎</button>
+                    <button @click="editTodo(todo)" class="edit-btn">✎</button>
+                    <button @click="deleteTodo(todo)" class="edit-btn" style="color:var(--error)">✕</button>
+                  </div>
+                  <div v-for="(sub,idx) in todo.subTasks" :key="idx" class="sub-task">
+                    <span class="opacity-45 text-xs">{{ String.fromCharCode(97+idx) }}.</span>
+                    <span class="truncate flex-1">{{ sub.text }}</span>
+                    <button @click="openLinkDialog(sub)" class="edit-btn" :style="sub.link ? '' : 'opacity:.2'">📎</button>
+                    <button @click="editSubTask(todo, idx)" class="edit-btn">✎</button>
+                  </div>
+                </template>
               </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- manager：项目进度 -->
+        <div v-else class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
+          <h3 class="font-bold text-sm mb-3 flex-shrink-0">项目进度</h3>
+          <div class="scroll-area flex-1 min-h-0">
+            <div class="grid grid-cols-1 gap-3">
+              <div v-for="proj in sortedProjects" :key="proj.id" class="card p-3 cursor-pointer transition flex items-center gap-3 relative" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
+                <div class="flex-1 min-w-0">
+                  <div class="font-bold text-sm truncate">{{ proj.name }}</div>
+                  <div class="flex gap-1 flex-wrap mt-1">
+                    <span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -482,7 +574,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 
       <!-- 列3：精神零食 + 会议/出差 -->
       <div class="order-3 col-hero flex flex-col gap-4 lg:min-h-0">
-        <!-- 精神零食 -->
         <div class="card p-4">
           <div class="hero-title">精神零食</div>
           <div v-if="currentHero" class="flex flex-col gap-4">
@@ -500,11 +591,10 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
           <div v-else class="text-xs opacity-50 text-center py-6">请在 heroes 文件夹里放入图片和 list.txt</div>
         </div>
 
-        <!-- 会议/出差安排 -->
         <div class="card p-4">
           <div class="flex justify-between items-center mb-3">
             <h3 class="font-bold text-sm">会议/出差安排</h3>
-            <button @click="openAddEvent" class="btn-ghost" style="font-size:15px;padding:2px 9px;line-height:1">+</button>
+            <button @click="openAddEvent" class="btn-ghost" style="font-size:.9375rem;padding:2px .5625rem;line-height:1">+</button>
           </div>
           <div v-if="activeEvents.length === 0" class="text-xs opacity-50 text-center py-3">暂无安排</div>
           <div v-else>
@@ -512,10 +602,10 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
               <input type="checkbox" @change="toggleEvent(ev)" class="mt-0.5 w-4 h-4 cursor-pointer flex-shrink-0" style="accent-color:var(--primary)">
               <div class="flex-1 min-w-0">
                 <div class="flex items-baseline gap-2">
-                  <span class="text-[13px] font-semibold truncate flex-1">{{ ev.title }}</span>
+                  <span class="text-[0.8125rem] font-semibold truncate flex-1">{{ ev.title }}</span>
                 </div>
-                <div class="text-[11px] opacity-55 truncate mt-0.5">📍 {{ ev.location || '未填地点' }}</div>
-                <div class="text-[11px] font-medium mt-0.5" style="color:var(--primary)">{{ formatEventTimeShort(ev) }}</div>
+                <div class="text-[0.6875rem] opacity-55 truncate mt-0.5">📍 {{ ev.location || '未填地点' }}</div>
+                <div class="text-[0.6875rem] font-medium mt-0.5" style="color:var(--primary)">{{ formatEventTimeShort(ev) }}</div>
               </div>
               <button @click="editEvent(ev)" class="edit-btn">✎</button>
               <button @click="deleteEvent(ev)" class="edit-btn" style="color:var(--error)">✕</button>
@@ -529,10 +619,11 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   <!-- ========== 最近待办详情 ========== -->
   <div v-if="currentView==='todos'" class="flex-1 min-h-0 overflow-y-auto">
     <div class="flex justify-between items-center mb-5">
-      <h1 class="text-2xl font-bold" style="letter-spacing:-0.5px">{{ isAdminView ? '最近待办' : '我的待办' }}</h1>
+      <h1 class="text-2xl font-bold" style="letter-spacing:-.5px">{{ isPrivilegedView ? '最近待办' : '我的待办' }}</h1>
       <div class="flex gap-2">
         <button @click="switchView('archive')" class="btn-ghost">📦 已归档 ({{ doneTodos.length }})</button>
-        <button v-if="isAdminView" @click="openNewTodo" class="btn-primary">+ 新建待办</button>
+        <button v-if="isPrivilegedView" @click="openAssignModal()" class="btn-ghost">📋 指派检查项</button>
+        <button v-if="isPrivilegedView" @click="openNewTodo" class="btn-primary">+ 新建待办</button>
       </div>
     </div>
     <div v-if="pendingTodos.length === 0" class="empty-hint">
@@ -541,28 +632,49 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
     </div>
     <div class="space-y-3">
       <div v-for="(group,projName) in groupedTodos" :key="projName" class="card p-5">
-        <div class="todo-project-title" style="font-size:14px;margin-bottom:10px">{{ projName }}</div>
+        <div class="todo-project-title" style="font-size:.875rem;margin-bottom:.625rem">{{ projName }}</div>
         <div>
           <template v-for="todo in group" :key="todo.id">
-            <div class="text-[13.5px] flex items-start gap-2 py-1.5">
-              <span class="dot mt-1.5" :class="getDotColor(todo)"></span>
-              <input type="checkbox" @change="toggleTodo(todo)" class="mt-0.5 w-4 h-4 cursor-pointer flex-shrink-0" style="accent-color:var(--primary)">
-              <div class="flex-1">
-                <span class="font-medium">{{ todo.task }}</span>
+            <template v-if="todo.isChecklist">
+              <div class="text-[.84375rem] flex items-center gap-2 py-1.5">
+                <span class="todo-circle" :class="getCircleClass(todo)" @click.stop="onCircleClick(todo)"></span>
+                <span class="font-medium flex-1">{{ todo.projectName }} — 待检查项({{ todo.items.length }})</span>
                 <span v-if="todo.owner" class="owner-chips">
                   <span v-for="o in parseOwner(todo.owner)" :key="o" class="owner-chip">{{ o }}</span>
                 </span>
+                <button @click="toggleChecklistExpand(todo)" class="btn-ghost">{{ expandedTodos[todo.id] ? '收起' : '展开' }}</button>
+                <button v-if="isPrivilegedView" @click="editAssign(todo)" class="btn-ghost">📋</button>
+                <button v-if="isPrivilegedView" @click="deleteTodo(todo)" class="btn-ghost" style="color:var(--error)">✕</button>
               </div>
-              <button v-if="isAdminView" @click="openLinkDialog(todo)" class="btn-ghost">📎</button>
-              <button v-if="isAdminView" @click="editTodo(todo)" class="btn-ghost">✎</button>
-              <button v-if="isAdminView" @click="deleteTodo(todo)" class="btn-ghost" style="color:var(--error)">✕</button>
-            </div>
-            <div v-for="(sub,idx) in todo.subTasks" :key="idx" class="sub-task">
-              <span class="opacity-45 text-[10px]">{{ String.fromCharCode(97+idx) }}.</span>
-              <span class="flex-1">{{ sub.text }}</span>
-              <button v-if="isAdminView" @click="openLinkDialog(sub)" class="btn-ghost">📎</button>
-              <button v-if="isAdminView" @click="editSubTask(todo, idx)" class="btn-ghost">✎</button>
-            </div>
+              <div v-if="expandedTodos[todo.id]" class="checklist-expand">
+                <div v-for="item in todo.items" :key="item.id" class="item-line">
+                  <span class="opacity-50 text-xs" style="flex-shrink:0">{{ item.id }}</span>
+                  <span>{{ item.item }}</span>
+                  <span v-if="item.standard" class="opacity-60 text-xs">— {{ item.standard }}</span>
+                </div>
+              </div>
+            </template>
+            <template v-else>
+              <div class="text-[.84375rem] flex items-start gap-2 py-1.5">
+                <span class="todo-circle mt-1" :class="getCircleClass(todo)" @click.stop="onCircleClick(todo)"></span>
+                <div class="flex-1">
+                  <span class="font-medium">{{ todo.task }}</span>
+                  <span v-if="todo.owner && isPrivilegedView" class="owner-chips">
+                    <span v-for="o in parseOwner(todo.owner)" :key="o" class="owner-chip">{{ o }}</span>
+                  </span>
+                </div>
+                <button v-if="isPrivilegedView && todo.employeeDone" @click="revertTodo(todo)" class="btn-ghost" title="打回">↺</button>
+                <button v-if="isPrivilegedView" @click="openLinkDialog(todo)" class="btn-ghost">📎</button>
+                <button v-if="isPrivilegedView" @click="editTodo(todo)" class="btn-ghost">✎</button>
+                <button v-if="isPrivilegedView" @click="deleteTodo(todo)" class="btn-ghost" style="color:var(--error)">✕</button>
+              </div>
+              <div v-for="(sub,idx) in todo.subTasks" :key="idx" class="sub-task">
+                <span class="opacity-45 text-xs">{{ String.fromCharCode(97+idx) }}.</span>
+                <span class="flex-1">{{ sub.text }}</span>
+                <button v-if="isPrivilegedView" @click="openLinkDialog(sub)" class="btn-ghost">📎</button>
+                <button v-if="isPrivilegedView" @click="editSubTask(todo, idx)" class="btn-ghost">✎</button>
+              </div>
+            </template>
           </template>
         </div>
       </div>
@@ -571,7 +683,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 
   <!-- ========== 项目会议纪要（员工专用） ========== -->
   <div v-if="currentView==='meetings'" class="flex-1 min-h-0 overflow-y-auto">
-    <h1 class="text-2xl font-bold mb-2" style="letter-spacing:-0.5px">项目会议纪要</h1>
+    <h1 class="text-2xl font-bold mb-2" style="letter-spacing:-.5px">项目会议纪要</h1>
     <p class="text-xs opacity-55 mb-5">你是以下项目的成员，可以查看会议纪要内容。</p>
     <div v-if="myMeetingProjects.length === 0" class="empty-hint">
       <div class="icon">📭</div>
@@ -583,7 +695,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
         <div class="meeting-proj-icon">📋</div>
         <div class="flex-1 min-w-0">
           <div class="font-bold text-sm truncate">{{ proj.name }}</div>
-          <div class="text-[11px] opacity-55 mt-1">阶段：{{ getProjStages(proj).join('、') }}</div>
+          <div class="text-[.6875rem] opacity-55 mt-1">阶段：{{ getProjStages(proj).join('、') }}</div>
         </div>
         <div class="text-xs opacity-40">→</div>
       </div>
@@ -592,9 +704,9 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 
   <!-- ========== 已归档 ========== -->
   <div v-if="currentView==='archive'" class="flex-1 min-h-0 overflow-y-auto">
-    <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-0.5px">📦 已归档</h1>
+    <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">📦 已归档</h1>
 
-    <div v-if="isAdminView" class="card p-5 mb-4">
+    <div v-if="isPrivilegedView" class="card p-5 mb-4">
       <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">会议/出差安排 · 已完成 ({{ doneEvents.length }})</h3>
       <div v-if="doneEvents.length === 0" class="text-xs opacity-50 text-center py-5">暂无已完成</div>
       <div v-else>
@@ -602,9 +714,9 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
           <div class="flex-1 min-w-0">
             <div class="flex items-baseline gap-2">
               <span class="text-sm truncate flex-1 opacity-55 line-through">{{ ev.title }}</span>
-              <span class="text-[11px] opacity-45 flex-shrink-0">{{ formatEventTimeShort(ev) }}</span>
+              <span class="text-[.6875rem] opacity-45 flex-shrink-0">{{ formatEventTimeShort(ev) }}</span>
             </div>
-            <div class="text-[11px] opacity-45 truncate mt-0.5">📍 {{ ev.location || '未填地点' }}</div>
+            <div class="text-[.6875rem] opacity-45 truncate mt-0.5">📍 {{ ev.location || '未填地点' }}</div>
           </div>
           <button @click="toggleEvent(ev)" class="btn-ghost" style="color:var(--primary)">↩ 恢复</button>
           <button @click="deleteEvent(ev)" class="btn-ghost" style="color:var(--error)">✕</button>
@@ -613,65 +725,64 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
     </div>
 
     <div class="card p-5">
-      <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">{{ isAdminView ? '最近待办' : '我的待办' }} · 已完成 ({{ doneTodos.length }})</h3>
+      <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">{{ isPrivilegedView ? '最近待办' : '我的待办' }} · 已完成 ({{ doneTodos.length }})</h3>
       <div v-if="doneTodos.length === 0" class="text-xs opacity-50 text-center py-5">暂无已完成</div>
       <div v-else>
         <div v-for="(group,projName) in groupedDoneTodos" :key="projName" class="mb-4 last:mb-0">
-          <div class="todo-project-title" style="font-size:12.5px;margin-bottom:6px">{{ projName }}</div>
+          <div class="todo-project-title" style="font-size:.78125rem;margin-bottom:.375rem">{{ projName }}</div>
           <div v-for="todo in group" :key="todo.id" class="arch-row">
             <div class="flex-1 min-w-0">
-              <div class="text-sm truncate opacity-55 line-through">{{ todo.task }}</div>
-              <div class="text-[11px] opacity-45">由 {{ todo.completedBy||'未知' }} 完成</div>
+              <div class="text-sm truncate opacity-55 line-through">{{ todo.isChecklist ? (todo.projectName + ' — 待检查项(' + todo.items.length + ')') : todo.task }}</div>
+              <div class="text-[.6875rem] opacity-45">由 {{ todo.completedBy||'未知' }} 确认完成</div>
             </div>
             <button @click="toggleTodo(todo)" class="btn-ghost" style="color:var(--primary)">↩ 恢复</button>
-            <button v-if="isAdminView" @click="deleteTodo(todo)" class="btn-ghost" style="color:var(--error)">✕</button>
+            <button v-if="isPrivilegedView" @click="deleteTodo(todo)" class="btn-ghost" style="color:var(--error)">✕</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ========== 项目总览（仅 admin） ========== -->
+  <!-- ========== 项目总览（admin + manager） ========== -->
   <div v-if="currentView==='projects'" class="flex-1 min-h-0 overflow-y-auto">
     <div class="flex justify-between items-center mb-5">
-      <h1 class="text-2xl font-bold" style="letter-spacing:-0.5px">项目总览</h1>
+      <h1 class="text-2xl font-bold" style="letter-spacing:-.5px">项目总览</h1>
       <button @click="showAddProject=true" class="btn-primary">+ 新建项目</button>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div v-for="proj in projects" :key="proj.id" class="card p-5 cursor-pointer transition relative" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
-        <button @click.stop="editProject(proj)" class="proj-edit-btn">✎</button>
-        <div class="flex justify-between items-start mb-3">
-          <h3 class="font-bold text-base" style="letter-spacing:-0.2px">{{ proj.name }}</h3>
-          <div class="flex gap-1 flex-wrap pr-6 justify-end">
-            <span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
-          </div>
+    <div>
+      <div v-for="proj in sortedProjects" :key="proj.id" class="project-row" @click="goToProject(proj.id)">
+        <div v-if="canReorder" class="project-order-btns" @click.stop>
+          <button @click="moveProject(proj,-1)" title="上移">▲</button>
+          <button @click="moveProject(proj,1)" title="下移">▼</button>
         </div>
-        <p class="text-xs opacity-65 mb-1">负责人：{{ proj.owner }}</p>
-        <p v-if="proj.note" class="text-xs opacity-55 mb-2 truncate">{{ proj.note }}</p>
-        <div v-if="proj.subStatus" class="sub-status-box mb-3">📌 具体状态：{{ proj.subStatus }}</div>
-        <p v-else class="text-xs opacity-40 mb-3">（未填写具体状态）</p>
-        <div v-if="(proj.members||[]).length" class="text-xs opacity-55 mb-2 truncate">
-          👥 成员：{{ (proj.members||[]).join('、') }}
+        <div class="project-row-name" :style="getProjectStyle(proj)">{{ proj.name }}</div>
+        <div class="project-row-stages">
+          <span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
         </div>
-        <div class="flex gap-2 text-xs">
-          <span class="px-2.5 py-1 rounded-md font-medium status-toggle clickable"
+        <div class="project-row-members">
+          <span v-if="(proj.members||[]).length">👥 {{ (proj.members||[]).join('、') }}</span>
+          <span v-else class="opacity-40">👥 —</span>
+        </div>
+        <div class="project-row-status">
+          <span class="px-2 py-0.5 rounded-md font-medium status-toggle clickable text-xs"
                 :class="proj.filed?'bg-green-100 text-green-700':'bg-gray-100 text-gray-500'"
                 @click.stop="toggleFiled(proj)">
             备案: {{ proj.filed?'已':'未' }}
           </span>
-          <span class="px-2.5 py-1 rounded-md font-medium status-toggle clickable"
+          <span class="px-2 py-0.5 rounded-md font-medium status-toggle clickable text-xs"
                 :class="proj.contracted?'bg-green-100 text-green-700':'bg-gray-100 text-gray-500'"
                 @click.stop="toggleContracted(proj)">
             合同: {{ proj.contracted?'已':'未' }}
           </span>
         </div>
+        <button class="proj-edit-btn" @click.stop="editProject(proj)">✎</button>
       </div>
     </div>
   </div>
 
   <!-- ========== 备忘录 ========== -->
   <div v-if="currentView==='memo'" class="flex-1 min-h-0 overflow-y-auto">
-    <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-0.5px">工作室备忘录</h1>
+    <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">工作室备忘录</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <a href="./materials.html" class="card p-6 hover:shadow-lg transition block">
         <h3 class="font-bold text-sm mb-1">📊 材料造价库</h3>
@@ -686,7 +797,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 
   <!-- ========== 设置 ========== -->
   <div v-if="currentView==='settings'" class="flex-1 min-h-0 overflow-y-auto">
-    <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-0.5px">设置</h1>
+    <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">设置</h1>
     <div class="card p-6 mb-4">
       <p class="text-sm font-semibold mb-3">字号</p>
       <div class="flex gap-2 mb-6">
@@ -705,7 +816,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 
     <div class="card p-6 mb-4">
       <p class="text-sm font-semibold mb-4">修改密码</p>
-      <div class="space-y-3" style="max-width:360px">
+      <div class="space-y-3" style="max-width:22.5rem">
         <div><label class="form-label">原密码</label><input v-model="pwdOld" type="password" class="form-input" placeholder="当前密码"></div>
         <div><label class="form-label">新密码</label><input v-model="pwdNew" type="password" class="form-input" placeholder="至少6位"></div>
         <div><label class="form-label">确认新密码</label><input v-model="pwdNew2" type="password" class="form-input" placeholder="再输入一次"></div>
@@ -803,7 +914,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   </div>
 </div>
 
-<!-- 编辑/新建待办 -->
+<!-- 编辑/新建待办（普通型） -->
 <div v-if="editingTodo || showAddTodo" v-cloak class="modal-mask" @click.self="closeTodoModal">
   <div class="modal-card">
     <h3 class="modal-title">{{ editingTodo ? '编辑待办' : '新建待办' }}</h3>
@@ -831,12 +942,15 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
         </select>
       </div>
       <div>
-        <label class="form-label">类型</label>
-        <select v-model="(editingTodo||newTodo).type" class="form-input">
-          <option value="design">设计/会议/指标（红点）</option>
-          <option value="process">工艺跟进（蓝点）</option>
-          <option value="contract">合同跟进（黄点）</option>
-        </select>
+        <label class="form-label">重要程度</label>
+        <div class="flex gap-3 mt-1">
+          <label class="flex items-center gap-2 text-sm cursor-pointer">
+            <input type="radio" :value="true" v-model="(editingTodo||newTodo).important" style="accent-color:var(--primary)"> 🔴 重要
+          </label>
+          <label class="flex items-center gap-2 text-sm cursor-pointer">
+            <input type="radio" :value="false" v-model="(editingTodo||newTodo).important" style="accent-color:var(--primary)"> 🟡 普通
+          </label>
+        </div>
       </div>
     </div>
     <div class="flex justify-end gap-2 mt-6">
@@ -846,9 +960,73 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   </div>
 </div>
 
+<!-- 指派检查项模态框 -->
+<div v-if="showAssignModal" v-cloak class="modal-mask" @click.self="closeAssignModal">
+  <div class="modal-card" style="max-width:45rem">
+    <h3 class="modal-title">{{ editingAssignTodoId ? '编辑指派' : '指派检查项' }}</h3>
+    <div class="space-y-3">
+      <div>
+        <label class="form-label">项目 *</label>
+        <select v-model="draftAssign.projectId" class="form-input" @change="onAssignProjectChange">
+          <option value="">选择项目</option>
+          <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.name }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">指派给（单选）</label>
+        <div class="assignee-picker">
+          <button v-for="m in members" :key="m"
+                  @click="draftAssign.owner = draftAssign.owner === m ? '' : m"
+                  :class="['assignee-pick', draftAssign.owner === m ? 'on' : '']">
+            {{ m }}
+          </button>
+        </div>
+      </div>
+      <div>
+        <label class="form-label">重要程度</label>
+        <div class="flex gap-3 mt-1">
+          <label class="flex items-center gap-2 text-sm cursor-pointer">
+            <input type="radio" :value="true" v-model="draftAssign.important" style="accent-color:var(--primary)"> 🔴 重要
+          </label>
+          <label class="flex items-center gap-2 text-sm cursor-pointer">
+            <input type="radio" :value="false" v-model="draftAssign.important" style="accent-color:var(--primary)"> 🟡 普通
+          </label>
+        </div>
+      </div>
+      <div>
+        <label class="form-label">选择检查项（已选 {{ draftAssign.selectedIds.length }} 项）</label>
+        <div class="checklist-picker">
+          <div v-for="stage in stageOrder" :key="stage" class="stage-block">
+            <div class="stage-header" @click="toggleStageExpand(stage)">
+              <input type="checkbox" :checked="isStageFullySelected(stage)" :indeterminate.prop="isStagePartialSelected(stage)" @change.stop="toggleStage(stage)" @click.stop>
+              <span class="font-bold">{{ stage }}</span>
+              <span class="opacity-50 text-xs">({{ itemsByStage[stage].length }}项)</span>
+              <span class="ml-auto opacity-60">{{ expandedStages[stage] ? '▼' : '▶' }}</span>
+            </div>
+            <div v-if="expandedStages[stage]" class="stage-items">
+              <label v-for="item in itemsByStage[stage]" :key="item.id" class="item-check">
+                <input type="checkbox" :value="item.id" v-model="draftAssign.selectedIds">
+                <span class="opacity-50 text-xs">{{ item.id }}</span>
+                <span class="flex-1">{{ item.item }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-between gap-2 mt-6">
+      <button v-if="editingAssignTodoId" @click="deleteAssignTodo" class="btn-ghost" style="color:var(--error)">删除此指派</button>
+      <div class="flex gap-2 ml-auto">
+        <button @click="closeAssignModal" class="btn-secondary">取消</button>
+        <button @click="saveAssign" class="btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- 编辑项目 -->
 <div v-if="editingProject" v-cloak class="modal-mask" @click.self="editingProject=null">
-  <div class="modal-card" style="max-width:520px">
+  <div class="modal-card" style="max-width:32.5rem">
     <h3 class="modal-title">编辑项目</h3>
     <div class="space-y-3">
       <div><label class="form-label">项目名称</label><input v-model="editingProject.name" class="form-input"></div>
@@ -871,7 +1049,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
           </button>
         </div>
       </div>
-      <div><label class="form-label">具体状态</label><input v-model="editingProject.subStatus" placeholder="如：施工收尾，室内深化中" class="form-input"></div>
       <div><label class="form-label">进度百分比</label><input v-model.number="editingProject.progress" type="number" min="0" max="100" class="form-input"></div>
       <div><label class="form-label">备注</label><input v-model="editingProject.note" class="form-input"></div>
       <div class="flex gap-4 pt-1">
@@ -916,12 +1093,12 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 const {createApp,ref,computed,onMounted,onUnmounted,watch,nextTick}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
-const DATA_VERSION='2026-10-09-v19';
+const DATA_VERSION='2026-10-10-v20';
 
 const defaultUsers=[
   {name:'刘文辉', pinyin:'liuwenhui', password:'litian2026', role:'admin'},
   {name:'谢启欣', pinyin:'xieqixin', password:'litian2026', role:'admin'},
-  {name:'欧阳琳', pinyin:'ouyanglin', password:'litian2026', role:'member'},
+  {name:'欧阳琳', pinyin:'ouyanglin', password:'litian2026', role:'manager'},
   {name:'梁婷玉', pinyin:'liangtingyu', password:'litian2026', role:'member'},
   {name:'黄建敏', pinyin:'huangjianmin', password:'litian2026', role:'member'},
   {name:'梁富成', pinyin:'liangfucheng', password:'litian2026', role:'member'}
@@ -962,6 +1139,166 @@ const categoryBgColor={'shenling':'rgba(143,163,200,0.12)','industrial':'rgba(16
 const categoryBorderColor={'shenling':'#8fa3c8','industrial':'#a3b8a3','renovation':'#b8aec8','small':'#d4c8a8','other':'#d4b8b8'};
 const stageColor={'一、前期强排':'bg-gray-200 text-gray-600','二、方案设计':'bg-blue-100 text-blue-700','三、方案深化':'bg-blue-200 text-blue-800','四、报建图':'bg-blue-400 text-white','五、施工图（含幕墙深化）':'bg-indigo-500 text-white','六、室内设计':'bg-orange-300 text-orange-900','七、室内设计施工图':'bg-orange-500 text-white','八、施工中':'bg-gray-700 text-white'};
 
+// 检查项种子（与 checklist.html 保持一致；用于主任/副主任指派）
+const stageOrder=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
+const CHECKLIST_SEED=[
+{id:'CHK-01-001',stage:'一、前期强排',item:'机动车出入口设置要求',standard:'结合规划条件，核实与路口距离'},
+{id:'CHK-01-002',stage:'一、前期强排',item:'室外地坪标高（国家高程）',standard:'结合周边路网与市政标高'},
+{id:'CHK-01-003',stage:'一、前期强排',item:'附属绿地、公园绿地是否可纳入绿化率',standard:'按规划条件核实'},
+{id:'CHK-01-004',stage:'一、前期强排',item:'配电房、开闭所、垃圾收集点、通信基站、物业用房是否有面积规定',standard:'核实规划条件'},
+{id:'CHK-01-005',stage:'一、前期强排',item:'垃圾收集点——咨询甲方是随便找地方放还是单独建筑',standard:'与甲方确认'},
+{id:'CHK-01-006',stage:'一、前期强排',item:'垃圾站——是否后续归市政管理',standard:'与甲方确认'},
+{id:'CHK-01-007',stage:'一、前期强排',item:'通风廊道',standard:'核实是否存在限制'},
+{id:'CHK-01-008',stage:'一、前期强排',item:'海绵城市、绿色建筑星级（仅针对民用建筑）',standard:'核实规划条件要求'},
+{id:'CHK-01-009',stage:'一、前期强排',item:'高架、城市轨道控制线/保护区、地铁控制线',standard:'核实规划限制条件'},
+{id:'CHK-01-010',stage:'一、前期强排',item:'场地周边路网、规划标高图',standard:'业主提供，提前第三方做测绘'},
+{id:'CHK-01-011',stage:'一、前期强排',item:'场地周边现存建筑及已报建建筑图',standard:'核实是否影响退距或日照'},
+{id:'CHK-01-012',stage:'一、前期强排',item:'土地勘察报告及管线接口定位',standard:'业主找第三方，我方可提供服务'},
+{id:'CHK-01-013',stage:'一、前期强排',item:'交评、交评评审',standard:'提前安排'},
+{id:'CHK-01-014',stage:'一、前期强排',item:'与甲方确认幕墙与窗墙范围',standard:'提前沟通设计界面'},
+{id:'CHK-01-015',stage:'一、前期强排',item:'与甲方确认玻璃型号使用',standard:'普通白玻 / low-e / 超白玻'},
+{id:'CHK-01-016',stage:'一、前期强排',item:'与甲方确认市政路灯灯光预留',standard:'确认是否需要预留'},
+{id:'CHK-01-017',stage:'一、前期强排',item:'与甲方确认围墙与门卫室设置',standard:'验收前还是后做；门卫室面积<15㎡'},
+{id:'CHK-02-001',stage:'二、方案设计',item:'民用建筑、民用非居住、非民用建筑三者遮挡/被遮挡关系',standard:'理清日照关系'},
+{id:'CHK-02-002',stage:'二、方案设计',item:'板式低层/多层短边间距',standard:'14m'},
+{id:'CHK-02-003',stage:'二、方案设计',item:'高层建筑消防扑救面宽度',standard:'15.5m / 16m（规范要求15m，预留尺寸方便布置车位）'},
+{id:'CHK-02-004',stage:'二、方案设计',item:'消防扑救面另一侧长边也需设通道',standard:'宽度不小于4m，转弯半径不应小于6m，宜为9m'},
+{id:'CHK-02-005',stage:'二、方案设计',item:'相邻地块建筑退让、民用建筑退让距离、地下室退让',standard:'注意特殊条件'},
+{id:'CHK-02-006',stage:'二、方案设计',item:'工业仓储类建筑退让',standard:'按规范要求'},
+{id:'CHK-02-007',stage:'二、方案设计',item:'四周道路宽度/等级→退让道路红线基本距离',standard:'道路等级+建筑类型+增加退缩'},
+{id:'CHK-02-008',stage:'二、方案设计',item:'日照分析（住宅/宿舍）',standard:'满足当地日照标准'},
+{id:'CHK-02-009',stage:'二、方案设计',item:'建筑高度（规划高度）平屋面计算',standard:'室外地坪至檐口顶；透空率>80%装饰构架不计入'},
+{id:'CHK-02-010',stage:'二、方案设计',item:'建筑高度（规划高度）坡屋面计算',standard:'角度≤45%算至檐口顶；>45%算至坡顶一半'},
+{id:'CHK-02-011',stage:'二、方案设计',item:'室内外高差',standard:'通常150mm，i=12%'},
+{id:'CHK-02-012',stage:'二、方案设计',item:'场地内外高差核实',standard:'明确排水方向'},
+{id:'CHK-03-001',stage:'三、方案深化',item:'与结构/机电/幕墙专业对图',standard:'确认梁柱位置、管井、净高不冲突'},
+{id:'CHK-03-002',stage:'三、方案深化',item:'核心筒/楼梯/电梯/管井位置复核',standard:'与方案阶段一致，尺寸满足规范'},
+{id:'CHK-03-003',stage:'三、方案深化',item:'防火分区与疏散口复核',standard:'方案深化后功能调整需重新核对'},
+{id:'CHK-03-004',stage:'三、方案深化',item:'层高与净高复核',standard:'考虑梁高、风管、喷淋、吊顶后满足要求'},
+{id:'CHK-03-005',stage:'三、方案深化',item:'立面开窗比例、分格与幕墙对图',standard:'与方案意图一致，无冲突'},
+{id:'CHK-03-006',stage:'三、方案深化',item:'SU模型与CAD平面对图',standard:'尺寸、位置、标高一致'},
+{id:'CHK-03-007',stage:'三、方案深化',item:'主要节点大样表达清楚',standard:'女儿墙、檐口、雨棚、幕墙收口'},
+{id:'CHK-03-008',stage:'三、方案深化',item:'材料表与立面图一致',standard:'规格、颜色、位置对应'},
+{id:'CHK-03-009',stage:'三、方案深化',item:'消防楼梯方向问题',standard:''},
+{id:'CHK-03-010',stage:'三、方案深化',item:'消防楼梯开窗面积计算与立面预留',standard:'最高部位：≥1.0 m²；建筑高度＞10m时，每5层内总面积≥2.0 m²，布置间隔≤3层；独立前室、消防电梯前室：≥2.0 m²；共用前室、合用前室：≥3.0 m²'},
+{id:'CHK-03-011',stage:'三、方案深化',item:'停车位布置与车道复核',standard:'满足规范，与方案一致'},
+{id:'CHK-03-012',stage:'三、方案深化',item:'设备平台、空调机位、雨水管位置',standard:'不影响立面，位置合理'},
+{id:'CHK-03-013',stage:'三、方案深化',item:'屋面排水找坡方向',standard:'天沟、雨水口位置与建筑一致'},
+{id:'CHK-03-014',stage:'三、方案深化',item:'人防口部、地下室轮廓复核',standard:'与方案阶段一致，无遗漏'},
+{id:'CHK-03-015',stage:'三、方案深化',item:'园林/景观接口预留',standard:'与建筑、市政对图'},
+{id:'CHK-03-016',stage:'三、方案深化',item:'与甲方确认深化版方案',standard:'留底，避免后期反复'},
+{id:'CHK-04-001',stage:'四、报建图',item:'设计单位与规整单位项目诚信编号',standard:'网上提交申请给甲方'},
+{id:'CHK-04-002',stage:'四、报建图',item:'甲方提供广东省企业投资项目备案证',standard:'核对一致性'},
+{id:'CHK-04-003',stage:'四、报建图',item:'佛山市建设工程规划许可证核发申请表',standard:'甲方填写，三方盖章'},
+{id:'CHK-04-004',stage:'四、报建图',item:'技术辅导服务申请表',standard:'三方盖章'},
+{id:'CHK-04-005',stage:'四、报建图',item:'建（构）筑物设计方案自查表',standard:'我方填写，双方盖章'},
+{id:'CHK-04-006',stage:'四、报建图',item:'营业执照与资质证书',standard:'双方盖章'},
+{id:'CHK-04-007',stage:'四、报建图',item:'总图公示牌',standard:'按规划要求制作'},
+{id:'CHK-04-008',stage:'四、报建图',item:'单体子项命名规范',standard:'以"XX楼XX"命名，需申请公章流程'},
+{id:'CHK-04-009',stage:'四、报建图',item:'CPI电子报建',standard:'提供CPI证书，指标表盖公章，电子报盘版'},
+{id:'CHK-04-010',stage:'四、报建图',item:'海绵城市（2025年要求）',standard:'水电室做，图纸盖章双章'},
+{id:'CHK-04-011',stage:'四、报建图',item:'综合管线',standard:'水电室做，需甲方提供周边管线及接入图'},
+{id:'CHK-04-012',stage:'四、报建图',item:'人防地下室（10层以上或基础埋深3米以上）',standard:'按地面首层建筑面积修建6级以上防空地下室'},
+{id:'CHK-04-013',stage:'四、报建图',item:'人防地下室（10层以下或基础埋深3米以下）',standard:'地面总建筑面积2000㎡以上，按2%~5%修建'},
+{id:'CHK-04-014',stage:'四、报建图',item:'人防蓝图提供',standard:'规划总平、地下室平剖面，需人防局审核'},
+{id:'CHK-04-015',stage:'四、报建图',item:'报建总图标注各场地开口坡度',standard:'步行/非机动车/机动车最大坡度'},
+{id:'CHK-04-016',stage:'四、报建图',item:'机动车车位配比、编号、尺寸标注与数量',standard:'含平行/子母车位；卸货泊位'},
+{id:'CHK-04-017',stage:'四、报建图',item:'各平台/露台/梯间是否上人屋面标高',standard:'出入口标注（仅主出入口及次出入口）'},
+{id:'CHK-04-018',stage:'四、报建图',item:'场地内外绝对标高',standard:'均有规划标高及绝对标高'},
+{id:'CHK-04-019',stage:'四、报建图',item:'图签证书编号为最新，工程号、建设单位一致',standard:'审定/项目负责/审核/校对签名对应'},
+{id:'CHK-04-020',stage:'四、报建图',item:'确认图幅与规划比例一致，索引图、报建图',standard:'按规划要求'},
+{id:'CHK-04-021',stage:'四、报建图',item:'各层平面标注建筑面积与计容面积',standard:'首层应标注基底面积'},
+{id:'CHK-04-022',stage:'四、报建图',item:'标高层/栏杆/女儿墙/构架高度',standard:'平屋面注明可踏面'},
+{id:'CHK-04-023',stage:'四、报建图',item:'绿化覆土厚度',standard:'地下室顶板覆土厚度需注明'},
+{id:'CHK-04-024',stage:'四、报建图',item:'地下车库标注编号',standard:'起算基准点需标注'},
+{id:'CHK-04-025',stage:'四、报建图',item:'车位尺寸标注与数量',standard:'上层投影线均要检查是否标明'},
+{id:'CHK-04-026',stage:'四、报建图',item:'厂房单体命名规范',standard:'以"生产厂房"代替研发车间等字样'},
+{id:'CHK-04-027',stage:'四、报建图',item:'立面/剖面绘制、标号、高度、层数',standard:'规划标高与绝对标高对齐，材质表统一'},
+{id:'CHK-04-028',stage:'四、报建图',item:'建筑高度计算分类',standard:'低层≤10m；多层≤27m；高层>27m'},
+{id:'CHK-04-029',stage:'四、报建图',item:'厂房层数分类',standard:'>32m且任一层>10人应防烟楼梯'},
+{id:'CHK-05-001',stage:'五、施工图（含幕墙深化）',item:'水土保持（甲方任务）',standard:'需甲方提前找第三方，过会后进入审图'},
+{id:'CHK-05-002',stage:'五、施工图（含幕墙深化）',item:'基坑支护（甲方任务）',standard:'放坡或垂直需设计'},
+{id:'CHK-05-003',stage:'五、施工图（含幕墙深化）',item:'强电设计（甲方任务）',standard:'甲方咨询供电部门'},
+{id:'CHK-05-004',stage:'五、施工图（含幕墙深化）',item:'燃气、自来水、外市政、三同时（厂房）',standard:'同时设计、施工、投产使用'},
+{id:'CHK-05-005',stage:'五、施工图（含幕墙深化）',item:'幕墙部分分工',standard:'分清结构由幕墙公司负责'},
+{id:'CHK-05-006',stage:'五、施工图（含幕墙深化）',item:'市政部分分工',standard:'提前确定负责科室'},
+{id:'CHK-05-007',stage:'五、施工图（含幕墙深化）',item:'建筑与结构——围墙大样',standard:'出图确认'},
+{id:'CHK-05-008',stage:'五、施工图（含幕墙深化）',item:'水电——弱电光纤到户、室外照明、给排水',standard:'相关图纸要有'},
+{id:'CHK-05-009',stage:'五、施工图（含幕墙深化）',item:'施工图通过审图中心后报送住建局消防科备案',standard:'甲方提前准备'},
+{id:'CHK-05-010',stage:'五、施工图（含幕墙深化）',item:'建筑专业图纸是否补齐',standard:'核对图纸目录与实际图纸'},
+{id:'CHK-05-011',stage:'五、施工图（含幕墙深化）',item:'结构专业图纸是否补齐',standard:'核对图纸目录与实际图纸'},
+{id:'CHK-05-012',stage:'五、施工图（含幕墙深化）',item:'给排水专业图纸是否补齐',standard:'核对图纸目录与实际图纸'},
+{id:'CHK-05-013',stage:'五、施工图（含幕墙深化）',item:'电气专业图纸是否补齐',standard:'核对图纸目录与实际图纸'},
+{id:'CHK-05-014',stage:'五、施工图（含幕墙深化）',item:'暖通专业图纸是否补齐',standard:'核对图纸目录与实际图纸'},
+{id:'CHK-05-015',stage:'五、施工图（含幕墙深化）',item:'市政专业图纸是否补齐',standard:'核对图纸目录与实际图纸'},
+{id:'CHK-05-016',stage:'五、施工图（含幕墙深化）',item:'施工图审图阶段——线下深度审查',standard:'确认是否已完成线下审查'},
+{id:'CHK-05-017',stage:'五、施工图（含幕墙深化）',item:'施工图审图阶段——审图上系统',standard:'确认是否已上系统'},
+{id:'CHK-05-018',stage:'五、施工图（含幕墙深化）',item:'设计院坏习惯——飘板厚度',standard:'避免过厚影响立面'},
+{id:'CHK-05-019',stage:'五、施工图（含幕墙深化）',item:'设计院坏习惯——栏杆样式',standard:'是否符合我们意图'},
+{id:'CHK-05-020',stage:'五、施工图（含幕墙深化）',item:'设计院坏习惯——开窗大小与比例',standard:'与立面意图一致'},
+{id:'CHK-05-021',stage:'五、施工图（含幕墙深化）',item:'设计院坏习惯——空调机位/百叶/雨水管',standard:'位置合理，不影响立面'},
+{id:'CHK-05-022',stage:'五、施工图（含幕墙深化）',item:'设计院坏习惯——节点大样可施工性',standard:'表达清楚，可施工'},
+{id:'CHK-05-023',stage:'五、施工图（含幕墙深化）',item:'幕墙施工图是否按我们意图画节点',standard:'与SU深化模型对照'},
+{id:'CHK-05-024',stage:'五、施工图（含幕墙深化）',item:'材料尺寸和分缝是否合理',standard:'核对材料表与图纸'},
+{id:'CHK-05-025',stage:'五、施工图（含幕墙深化）',item:'分缝是否对缝',standard:'与建筑立面图核对'},
+{id:'CHK-05-026',stage:'五、施工图（含幕墙深化）',item:'是否漏掉水电、灯位设置',standard:'核对幕墙节点与机电图'},
+{id:'CHK-05-027',stage:'五、施工图（含幕墙深化）',item:'预埋件/后置埋件与结构梁位复核',standard:'避让钢筋'},
+{id:'CHK-05-028',stage:'五、施工图（含幕墙深化）',item:'幕墙与建筑立面图核对',standard:'分格与立面一致'},
+{id:'CHK-05-029',stage:'五、施工图（含幕墙深化）',item:'幕墙节点与SU深化模型对照',standard:'节点符合我们意图'},
+{id:'CHK-06-001',stage:'六、室内设计',item:'阴角或者交接位的设计查缺',standard:'逐项核对'},
+{id:'CHK-06-002',stage:'六、室内设计',item:'室内施工图进度',standard:'核对图纸目录与实际图纸'},
+{id:'CHK-06-003',stage:'六、室内设计',item:'门洞净宽',standard:'扣除门套后≥900mm，小空间≥700mm'},
+{id:'CHK-06-004',stage:'六、室内设计',item:'门类型标注',standard:'单开/双开/自动门/玻璃/金属/木门'},
+{id:'CHK-06-005',stage:'六、室内设计',item:'门高是否到顶',standard:'到顶高度与吊顶标高一致'},
+{id:'CHK-06-006',stage:'六、室内设计',item:'开启方向与平面、立面、消防疏散方向一致',standard:'三方核对'},
+{id:'CHK-06-007',stage:'六、室内设计',item:'阴角位材料交接方式已画大样',standard:'大样图对应'},
+{id:'CHK-06-008',stage:'六、室内设计',item:'天地墙分缝：结构分缝与装饰分缝对齐',standard:'标注板块编号、规格、分格间距'},
+{id:'CHK-06-009',stage:'六、室内设计',item:'不同材质交接处收口方式已标注',standard:'大样索引正确'},
+{id:'CHK-06-010',stage:'六、室内设计',item:'天地墙对缝对齐',standard:'地面、墙面、吊顶缝隙对齐'},
+{id:'CHK-06-011',stage:'六、室内设计',item:'吊顶与空调/暖通进出风口结合方式已画节点',standard:'节点大样'},
+{id:'CHK-06-012',stage:'六、室内设计',item:'进出风口预留宽度与高度满足设备要求',standard:'核对设备参数'},
+{id:'CHK-06-013',stage:'六、室内设计',item:'灯光排布规律性',standard:'间距、对称、与吊顶分缝对齐'},
+{id:'CHK-06-014',stage:'六、室内设计',item:'检修口位置与尺寸已标注',standard:'可开启'},
+{id:'CHK-06-015',stage:'六、室内设计',item:'栏杆类型已确定',standard:'金属/木材/实体'},
+{id:'CHK-06-016',stage:'六、室内设计',item:'栏杆高度满足规范',standard:'一般≥1050mm，中庭≥1200mm'},
+{id:'CHK-06-017',stage:'六、室内设计',item:'金属扶手大小已标注',standard:'按设计要求'},
+{id:'CHK-06-018',stage:'六、室内设计',item:'栏杆与两侧墙体留缝处理已画节点',standard:'节点大样'},
+{id:'CHK-06-019',stage:'六、室内设计',item:'实体栏杆节点大样已出',standard:'节点大样'},
+{id:'CHK-06-020',stage:'六、室内设计',item:'大样图与平面图标号一一对应',standard:'无遗漏无错配'},
+{id:'CHK-06-021',stage:'六、室内设计',item:'立面图所有墙面均画，无遗漏',standard:'核对平面与立面'},
+{id:'CHK-06-022',stage:'六、室内设计',item:'立面图关系表达清楚',standard:'材质、分缝、开洞、标高'},
+{id:'CHK-06-023',stage:'六、室内设计',item:'平面图管线尺寸和标高已表达',standard:'复杂处有剖面图'},
+{id:'CHK-06-024',stage:'六、室内设计',item:'所有留洞有水平和竖向定位',standard:'结构图同步标注'},
+{id:'CHK-07-001',stage:'七、室内设计施工图',item:'开门大小与类型复核',standard:'领导办公室1500mm，普通办公室900mm，小空间≥700mm'},
+{id:'CHK-07-002',stage:'七、室内设计施工图',item:'门开启方向与消防疏散一致',standard:'平面、立面、疏散方向三方核对'},
+{id:'CHK-07-003',stage:'七、室内设计施工图',item:'天地墙结构分缝处理大样是否齐全',standard:'结构与装饰分缝对齐，有对应大样'},
+{id:'CHK-07-004',stage:'七、室内设计施工图',item:'室内间墙与玻璃幕墙交接处理大样',standard:'交接部位收口清晰，防水防火处理到位'},
+{id:'CHK-07-005',stage:'七、室内设计施工图',item:'涉及室内的结构图纸是否补充到位',standard:'结构改动处有补充图纸，与建筑、机电同步'},
+{id:'CHK-07-006',stage:'七、室内设计施工图',item:'结构相关的装饰面立面图及大样是否齐全',standard:'结构外露或包裹部位的立面、大样表达清楚'},
+{id:'CHK-07-007',stage:'七、室内设计施工图',item:'电梯门宽度与高度复核',standard:'满足规范与使用要求，与外立面、轿厢尺寸对应'},
+{id:'CHK-07-008',stage:'七、室内设计施工图',item:'电梯外立面与大样是否有图',standard:'外呼面板、门套、门口收口大样完整'},
+{id:'CHK-07-009',stage:'七、室内设计施工图',item:'电梯轿厢天地墙图纸是否齐全',standard:'天、地、墙、门板、扶手、灯具全套'},
+{id:'CHK-07-010',stage:'七、室内设计施工图',item:'空调出风口与进风口位置对应',standard:'顶面风口与设备位置一致，无冲突'},
+{id:'CHK-07-011',stage:'七、室内设计施工图',item:'暖通风口位置对应',standard:'风口与吊顶造型、灯具、喷淋不打架'},
+{id:'CHK-07-012',stage:'七、室内设计施工图',item:'灯位与消防喷淋口是否成规律排布',standard:'线性、对称或与吊顶分缝对齐'},
+{id:'CHK-07-013',stage:'七、室内设计施工图',item:'室内各空间吊顶高度已标注',standard:'与结构梁、风管、喷淋、桥架综合后满足净高'},
+{id:'CHK-07-014',stage:'七、室内设计施工图',item:'彩色平面表达各空间材料',standard:'不同材质用不同颜色区分，图例齐全'},
+{id:'CHK-07-015',stage:'七、室内设计施工图',item:'材料颜色、厚度、表面做法表达准确',standard:'材料表与图纸一致'},
+{id:'CHK-07-016',stage:'七、室内设计施工图',item:'施工图中的圆角统一标准',standard:'墙体、柱子、吊顶的圆角半径有统一说明'},
+{id:'CHK-07-017',stage:'七、室内设计施工图',item:'门套、门垛、门楣处理大样',standard:'不同墙体材质处收口一致'},
+{id:'CHK-07-018',stage:'七、室内设计施工图',item:'天地墙对缝是否对齐',standard:'地面、墙面、吊顶缝对齐'},
+{id:'CHK-07-019',stage:'七、室内设计施工图',item:'不同材质交接处收口大样是否齐全',standard:'石材/木饰面/金属/玻璃交接处均有大样'},
+{id:'CHK-07-020',stage:'七、室内设计施工图',item:'检修口位置与尺寸已标注',standard:'位置合理，可开启，不影响美观'},
+{id:'CHK-07-021',stage:'七、室内设计施工图',item:'开关、插座、面板点位与墙面分缝对齐',standard:'避免落在缝上或跨缝'},
+{id:'CHK-07-022',stage:'七、室内设计施工图',item:'卫生间隔断、五金、洁具点位图',standard:'尺寸、间距、安装方式齐全'},
+{id:'CHK-07-023',stage:'七、室内设计施工图',item:'无障碍设施位置与尺寸',standard:'满足规范，与建筑、机电对图'},
+{id:'CHK-07-024',stage:'七、室内设计施工图',item:'立面图所有墙面均画全，无遗漏',standard:'核对平面与立面一一对应'},
+{id:'CHK-07-025',stage:'七、室内设计施工图',item:'大样图与平面图、立面图标号对应',standard:'索引清楚，无错配漏配'},
+{id:'CHK-07-026',stage:'七、室内设计施工图',item:'平面图管线尺寸与标高已表达',standard:'复杂部位有剖面或节点'},
+{id:'CHK-07-027',stage:'七、室内设计施工图',item:'所有留洞有水平和竖向定位',standard:'结构图同步标注'},
+{id:'CHK-07-028',stage:'七、室内设计施工图',item:'材料表与图纸对应',standard:'规格、颜色、数量、部位一致'}
+];
+
 const defaultProjects=[
 {id:'sl4',name:'申菱四基地',stage:['三、方案深化'],subStatus:'方案重做深化',owner:'刘文辉',note:'',filed:false,contracted:true,progress:40,startDate:'2026-03',members:['谢启欣']},
 {id:'slzb',name:'申菱总部改造',stage:['六、室内设计','七、室内设计施工图','八、施工中'],subStatus:'施工收尾，室内深化中',owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08',members:['梁婷玉','谢启欣']},
@@ -979,21 +1316,21 @@ const defaultProjects=[
 ];
 
 const defaultTodos=[
-{id:1,projectName:'申菱总部改造',projectId:'slzb',task:'活动中心方案',type:'design',subTasks:[{text:'室内篮球场设计',link:''},{text:'堆货区改羽毛球或匹克球场',link:''},{text:'增加卫生间',link:''},{text:'场地沿路一侧加宽绿化，做人行道，拓宽货车车道，货车闸门拓宽',link:''}],done:false,owner:'刘文辉,梁婷玉',link:''},
-{id:2,projectName:'申菱总部改造',projectId:'slzb',task:'10个办公室门需拓宽到1500mm',type:'design',subTasks:[],done:false,owner:'刘文辉,梁婷玉',link:''},
-{id:3,projectName:'申菱总部改造',projectId:'slzb',task:'陈总、曲部及总监办公室灰色金属门是否拓宽待定',type:'design',subTasks:[],done:false,owner:'刘文辉,梁婷玉',link:''},
-{id:4,projectName:'申菱总部改造',projectId:'slzb',task:'地下室机房',type:'design',subTasks:[{text:'四个玻璃窗换大玻璃',link:''},{text:'机房外两级冲孔板吊顶包管道',link:''},{text:'机房水沟大样',link:''},{text:'地面做地砖，顶面喷深灰色',link:''}],done:false,owner:'刘文辉,梁婷玉',link:''},
-{id:5,projectName:'申菱四基地',projectId:'sl4',task:'中秋节后会议',type:'design',subTasks:[{text:'复核总平面布局，核定间距是否符合规范',link:''},{text:'方案文本整理',link:''},{text:'与工艺敲定开会时间',link:''}],done:false,owner:'谢启欣',link:''},
-{id:6,projectName:'顺德文化馆',projectId:'whg',task:'合同推进',type:'contract',subTasks:[],done:false,owner:'刘文辉,欧阳琳',link:''},
-{id:7,projectName:'顺德糖厂',projectId:'stc',task:'合同推进',type:'contract',subTasks:[],done:false,owner:'刘文辉,欧阳琳',link:''},
-{id:8,projectName:'容控小地块厂房加商业',projectId:'rk',task:'模型合并',type:'design',subTasks:[],done:false,owner:'梁婷玉,梁富成',link:''},
-{id:9,projectName:'容控小地块厂房加商业',projectId:'rk',task:'总平面强排及初步技术指标',type:'design',subTasks:[],done:false,owner:'欧阳琳',link:''},
-{id:10,projectName:'屏荣食品顺德新厂',projectId:'prsp',task:'复查幕墙图纸',type:'design',subTasks:[],done:false,owner:'谢启欣',link:''},
-{id:11,projectName:'屏荣食品顺德新厂',projectId:'prsp',task:'跟进及推进规划变更及施工图审图流程',type:'process',subTasks:[],done:false,owner:'刘文辉,欧阳琳',link:''},
-{id:12,projectName:'屏荣食品顺德新厂',projectId:'prsp',task:'门卫室幕墙发幕墙深化出图',type:'design',subTasks:[],done:false,owner:'谢启欣',link:''},
-{id:13,projectName:'申菱五基地',projectId:'sl5',task:'跟进工艺提资',type:'process',subTasks:[],done:false,owner:'刘文辉',link:''},
-{id:14,projectName:'申菱五基地',projectId:'sl5',task:'方案设计',type:'design',subTasks:[{text:'厂房与办公楼之间解决间距问题+模型推敲形体',link:''},{text:'总平面指标复核',link:''}],done:false,owner:'刘文辉,谢启欣',link:''},
-{id:15,projectName:'方普',projectId:'fp',task:'9月29日带甲方走实地项目',type:'design',subTasks:[],done:false,owner:'刘文辉,谢启欣',link:''}
+{id:1,projectName:'申菱总部改造',projectId:'slzb',task:'活动中心方案',important:true,subTasks:[{text:'室内篮球场设计',link:''},{text:'堆货区改羽毛球或匹克球场',link:''},{text:'增加卫生间',link:''},{text:'场地沿路一侧加宽绿化，做人行道，拓宽货车车道，货车闸门拓宽',link:''}],done:false,employeeDone:false,owner:'刘文辉,梁婷玉',link:''},
+{id:2,projectName:'申菱总部改造',projectId:'slzb',task:'10个办公室门需拓宽到1500mm',important:true,subTasks:[],done:false,employeeDone:false,owner:'刘文辉,梁婷玉',link:''},
+{id:3,projectName:'申菱总部改造',projectId:'slzb',task:'陈总、曲部及总监办公室灰色金属门是否拓宽待定',important:true,subTasks:[],done:false,employeeDone:false,owner:'刘文辉,梁婷玉',link:''},
+{id:4,projectName:'申菱总部改造',projectId:'slzb',task:'地下室机房',important:true,subTasks:[{text:'四个玻璃窗换大玻璃',link:''},{text:'机房外两级冲孔板吊顶包管道',link:''},{text:'机房水沟大样',link:''},{text:'地面做地砖，顶面喷深灰色',link:''}],done:false,employeeDone:false,owner:'刘文辉,梁婷玉',link:''},
+{id:5,projectName:'申菱四基地',projectId:'sl4',task:'中秋节后会议',important:true,subTasks:[{text:'复核总平面布局，核定间距是否符合规范',link:''},{text:'方案文本整理',link:''},{text:'与工艺敲定开会时间',link:''}],done:false,employeeDone:false,owner:'谢启欣',link:''},
+{id:6,projectName:'顺德文化馆',projectId:'whg',task:'合同推进',important:false,subTasks:[],done:false,employeeDone:false,owner:'刘文辉,欧阳琳',link:''},
+{id:7,projectName:'顺德糖厂',projectId:'stc',task:'合同推进',important:false,subTasks:[],done:false,employeeDone:false,owner:'刘文辉,欧阳琳',link:''},
+{id:8,projectName:'容控小地块厂房加商业',projectId:'rk',task:'模型合并',important:true,subTasks:[],done:false,employeeDone:false,owner:'梁婷玉,梁富成',link:''},
+{id:9,projectName:'容控小地块厂房加商业',projectId:'rk',task:'总平面强排及初步技术指标',important:true,subTasks:[],done:false,employeeDone:false,owner:'欧阳琳',link:''},
+{id:10,projectName:'屏荣食品顺德新厂',projectId:'prsp',task:'复查幕墙图纸',important:true,subTasks:[],done:false,employeeDone:false,owner:'谢启欣',link:''},
+{id:11,projectName:'屏荣食品顺德新厂',projectId:'prsp',task:'跟进及推进规划变更及施工图审图流程',important:false,subTasks:[],done:false,employeeDone:false,owner:'刘文辉,欧阳琳',link:''},
+{id:12,projectName:'屏荣食品顺德新厂',projectId:'prsp',task:'门卫室幕墙发幕墙深化出图',important:true,subTasks:[],done:false,employeeDone:false,owner:'谢启欣',link:''},
+{id:13,projectName:'申菱五基地',projectId:'sl5',task:'跟进工艺提资',important:false,subTasks:[],done:false,employeeDone:false,owner:'刘文辉',link:''},
+{id:14,projectName:'申菱五基地',projectId:'sl5',task:'方案设计',important:true,subTasks:[{text:'厂房与办公楼之间解决间距问题+模型推敲形体',link:''},{text:'总平面指标复核',link:''}],done:false,employeeDone:false,owner:'刘文辉,谢启欣',link:''},
+{id:15,projectName:'方普',projectId:'fp',task:'9月29日带甲方走实地项目',important:true,subTasks:[],done:false,employeeDone:false,owner:'刘文辉,谢启欣',link:''}
 ];
 
 const defaultEvents=[
@@ -1002,7 +1339,18 @@ const defaultEvents=[
 
 const migrateTodos=(arr)=>{
   if(!Array.isArray(arr)) return arr;
-  return arr.map(t=>({...t,link:t.link||'',subTasks:(t.subTasks||[]).map(s=>typeof s==='string'?{text:s,link:''}:{text:s.text||'',link:s.link||''})}));
+  return arr.map(t=>{
+    const isChecklist=!!t.isChecklist;
+    return {
+      ...t,
+      link:t.link||'',
+      important:t.important!==undefined?t.important:(t.type==='design'||t.type==='meeting'),
+      employeeDone:t.employeeDone||false,
+      isChecklist:isChecklist,
+      items:Array.isArray(t.items)?t.items:[],
+      subTasks:(t.subTasks||[]).map(s=>typeof s==='string'?{text:s,link:''}:{text:s.text||'',link:s.link||''})
+    };
+  });
 };
 const migrateProjects=(arr)=>{
   if(!Array.isArray(arr)) return arr;
@@ -1028,7 +1376,12 @@ setup(){
     try{
       const res=await fetch('/api/sync?type=users&project=global');
       const data=await res.json();
-      if(Array.isArray(data)&&data.length){users.value=data;}
+      if(Array.isArray(data)&&data.length){
+        users.value=data.map(u=>{
+          if(u.pinyin==='ouyanglin' && u.role!=='manager') return {...u, role:'manager'};
+          return u;
+        });
+      }
       else{users.value=defaultUsers.slice();saveUsersToCloud();}
     }catch(e){users.value=defaultUsers.slice();}
   };
@@ -1087,8 +1440,10 @@ setup(){
     }
     return currentUser.value;
   });
-  const isAdminView=computed(()=>effectiveUser.value && effectiveUser.value.role==='admin');
+  const isPrivilegedView=computed(()=>effectiveUser.value && (effectiveUser.value.role==='admin'||effectiveUser.value.role==='manager'));
   const isRealAdmin=computed(()=>currentUser.value && currentUser.value.role==='admin');
+  const isManager=computed(()=>currentUser.value && currentUser.value.role==='manager');
+  const canReorder=computed(()=>currentUser.value && currentUser.value.pinyin==='xieqixin');
 
   const currentView=ref('home');
   const sidebarOpen=ref(false);
@@ -1099,6 +1454,7 @@ setup(){
   const editingProject=ref(null);
   const linkDialogTarget=ref(null);
   const linkDialogValue=ref('');
+  const expandedTodos=ref({});
 
   const showSearch=ref(false);
   const searchQuery=ref('');
@@ -1132,12 +1488,12 @@ setup(){
   const setTheme=(t)=>{theme.value=t;localStorage.setItem('studio_theme',t);document.documentElement.setAttribute('data-theme',t)};
 
   const switchView=(v)=>{
-    if(!isAdminView.value && v==='projects') return;
+    if(!isPrivilegedView.value && v==='projects') return;
     currentView.value=v;
     sidebarOpen.value=false;
   };
 
-  const visibleNavItems=computed(()=>isAdminView.value ? adminNavItems : memberNavItems);
+  const visibleNavItems=computed(()=>isPrivilegedView.value ? adminNavItems : memberNavItems);
 
   watch(effectiveUser, ()=>{
     if(!visibleNavItems.value.some(i=>i.key===currentView.value)){
@@ -1149,8 +1505,9 @@ setup(){
   const projects=ref(migrateProjects(JSON.parse(localStorage.getItem('studio_projects'))||defaultProjects));
   const todos=ref(migrateTodos(JSON.parse(localStorage.getItem('studio_todos'))||defaultTodos));
   const events=ref([]);
+  const projectOrder=ref(JSON.parse(localStorage.getItem('studio_project_order'))||[]);
   const newProject=ref({name:'',stage:stages[0],owner:''});
-  const newTodo=ref({task:'',projectId:'',owner:'',type:'design'});
+  const newTodo=ref({task:'',projectId:'',owner:'',important:false});
 
   const saveProjectsToCloud=async()=>{
     try{await fetch('/api/sync?type=projects&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(projects.value)});}catch(e){}
@@ -1160,6 +1517,9 @@ setup(){
   };
   const saveEventsToCloud=async()=>{
     try{await fetch('/api/sync?type=events&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(events.value)});}catch(e){}
+  };
+  const saveProjectOrderToCloud=async()=>{
+    try{await fetch('/api/sync?type=projectOrder&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(projectOrder.value)});}catch(e){}
   };
 
   const loadProjectsAndTodosFromCloud=async()=>{
@@ -1179,6 +1539,14 @@ setup(){
         localStorage.setItem('studio_todos',JSON.stringify(todos.value));
       }else{await saveTodosToCloud();}
     }catch(e){}
+    try{
+      const r3=await fetch('/api/sync?type=projectOrder&project=global');
+      const d3=await r3.json();
+      if(Array.isArray(d3)&&d3.length){
+        projectOrder.value=d3;
+        localStorage.setItem('studio_project_order',JSON.stringify(d3));
+      }
+    }catch(e){}
   };
 
   const loadEvents=async()=>{
@@ -1190,19 +1558,42 @@ setup(){
     }catch(e){events.value=migrateEvents(defaultEvents);}
   };
 
+  const sortedProjects=computed(()=>{
+    const order=projectOrder.value;
+    return [...projects.value].sort((a,b)=>{
+      const ia=order.indexOf(a.id);
+      const ib=order.indexOf(b.id);
+      if(ia===-1 && ib===-1) return 0;
+      if(ia===-1) return 1;
+      if(ib===-1) return -1;
+      return ia-ib;
+    });
+  });
+
+  const moveProject=(proj,dir)=>{
+    if(!canReorder.value) return;
+    const ids=sortedProjects.value.map(p=>p.id);
+    const idx=ids.indexOf(proj.id);
+    const newIdx=idx+dir;
+    if(newIdx<0 || newIdx>=ids.length) return;
+    [ids[idx],ids[newIdx]]=[ids[newIdx],ids[idx]];
+    projectOrder.value=ids;
+    localStorage.setItem('studio_project_order',JSON.stringify(ids));
+    saveProjectOrderToCloud();
+  };
+
   const parseOwner=(str)=>{
     if(!str) return [];
     return str.split(/[,，\s]+/).map(s=>s.trim()).filter(Boolean);
   };
 
   const filterByEffectiveUser=(arr)=>{
-    if(isAdminView.value) return arr;
+    if(isPrivilegedView.value) return arr;
     const me=effectiveUser.value ? effectiveUser.value.name : '';
     if(!me) return [];
     return arr.filter(t=>parseOwner(t.owner).includes(me));
   };
 
-  // 员工视角：我的待办
   const pendingTodos=computed(()=>filterByEffectiveUser(todos.value.filter(t=>!t.done)));
   const doneTodos=computed(()=>filterByEffectiveUser(todos.value.filter(t=>t.done)));
   const groupedTodos=computed(()=>{
@@ -1216,7 +1607,6 @@ setup(){
     return g;
   });
 
-  // 主任视角：我的待办 = owner 含 effectiveUser
   const myTodos=computed(()=>{
     if(!effectiveUser.value) return [];
     const me=effectiveUser.value.name;
@@ -1228,7 +1618,6 @@ setup(){
     return g;
   });
 
-  // 主任视角：工作室待办 = 全部未完成
   const allPendingTodos=computed(()=>todos.value.filter(t=>!t.done));
   const groupedAllTodos=computed(()=>{
     const g={};
@@ -1236,11 +1625,10 @@ setup(){
     return g;
   });
 
-  // 我参与会议纪要的项目
   const myMeetingProjects=computed(()=>{
     if(!effectiveUser.value) return [];
     const me = effectiveUser.value.name;
-    if(isAdminView.value) return projects.value;
+    if(isPrivilegedView.value) return projects.value;
     return projects.value.filter(p => Array.isArray(p.members) && p.members.includes(me));
   });
 
@@ -1257,6 +1645,56 @@ setup(){
     let s=parts.length===3?`${parseInt(parts[0])}年${parseInt(parts[1])}月${parseInt(parts[2])}日`:ev.date;
     if(ev.timeStart){ s+=' '+ev.timeStart; if(ev.timeEnd) s+='-'+ev.timeEnd; }
     return s;
+  };
+
+  // ============ 待办三态圆圈 ============
+  const getCircleClass=(todo)=>{
+    if(todo.employeeDone) return 'green';
+    return todo.important ? 'red' : 'yellow';
+  };
+
+  const onCircleClick=(todo)=>{
+    if(isPrivilegedView.value){
+      // 特权用户：绿圈 → 归档；未完成 → 标记为已完成（绿）
+      if(todo.employeeDone){
+        if(confirm('确认归档此待办？（归档后可在已归档中查看）')){
+          todo.done=true;
+          if(!todo.completedBy) todo.completedBy=currentUser.value.name;
+          saveData();
+        }
+      }else{
+        if(confirm('标记为已完成？（圆圈将变绿，等待进一步归档）')){
+          todo.employeeDone=true;
+          saveData();
+        }
+      }
+    }else{
+      // 员工：只能操作自己名下的
+      const me=effectiveUser.value ? effectiveUser.value.name : '';
+      if(!parseOwner(todo.owner).includes(me)) return;
+      if(todo.employeeDone){
+        if(confirm('撤销完成？圆圈将变回红/黄。')){
+          todo.employeeDone=false;
+          saveData();
+        }
+      }else{
+        if(confirm('确认完成此待办？（圆圈将变绿）')){
+          todo.employeeDone=true;
+          saveData();
+        }
+      }
+    }
+  };
+
+  const revertTodo=(todo)=>{
+    if(!isPrivilegedView.value) return;
+    if(!confirm('打回此待办？圆圈将变回红/黄。')) return;
+    todo.employeeDone=false;
+    saveData();
+  };
+
+  const toggleChecklistExpand=(todo)=>{
+    expandedTodos.value[todo.id]=!expandedTodos.value[todo.id];
   };
 
   const showEventModal=ref(false);
@@ -1369,18 +1807,18 @@ setup(){
       }
     });
     if(!kw){
-      if(isAdminView.value){
+      if(isPrivilegedView.value){
         projects.value.slice(0,6).forEach(p=>{
           results.push({type:'project',typeLabel:'项目',title:p.name,desc:p.stage.join('、'),action:()=>goToProject(p.id)});
         });
       }else{
         filterByEffectiveUser(todos.value).slice(0,6).forEach(t=>{
-          results.push({type:'todo',typeLabel:'待办',title:t.task,desc:t.projectName,action:()=>{switchView('todos');closeSearch();}});
+          results.push({type:'todo',typeLabel:'待办',title:t.isChecklist?(t.projectName+' 待检查项'):t.task,desc:t.projectName,action:()=>{switchView('todos');closeSearch();}});
         });
       }
       return results.slice(0,10);
     }
-    if(isAdminView.value){
+    if(isPrivilegedView.value){
       projects.value.forEach(p=>{
         if(p.name.toLowerCase().includes(kw) || (p.owner||'').toLowerCase().includes(kw)){
           results.push({type:'project',typeLabel:'项目',title:p.name,desc:p.stage.join('、'),action:()=>goToProject(p.id)});
@@ -1388,11 +1826,12 @@ setup(){
       });
     }
     filterByEffectiveUser(todos.value).forEach(t=>{
-      if(t.task.toLowerCase().includes(kw) || t.projectName.toLowerCase().includes(kw)){
-        results.push({type:'todo',typeLabel:'待办',title:t.task,desc:t.projectName,action:()=>{switchView('todos');closeSearch();}});
+      const title=t.isChecklist?(t.projectName+' 待检查项'):t.task;
+      if((title||'').toLowerCase().includes(kw) || (t.projectName||'').toLowerCase().includes(kw)){
+        results.push({type:'todo',typeLabel:'待办',title,desc:t.projectName,action:()=>{switchView('todos');closeSearch();}});
       }
     });
-    if(isAdminView.value){
+    if(isPrivilegedView.value){
       events.value.forEach(e=>{
         if(e.title.toLowerCase().includes(kw) || (e.location||'').toLowerCase().includes(kw)){
           results.push({type:'event',typeLabel:'会议',title:e.title,desc:e.location||'',action:()=>{switchView('home');closeSearch();}});
@@ -1456,28 +1895,42 @@ setup(){
       const idx=todos.value.findIndex(x=>x.id===editingTodo.value.id);
       if(idx>=0){
         const proj=projects.value.find(p=>p.id===t.projectId);
-        todos.value[idx]={...t, projectName: proj?proj.name:''};
+        todos.value[idx]={...todos.value[idx], ...t, projectName: proj?proj.name:''};
       }
       saveData(); editingTodo.value=null;
     }else{
       const proj=projects.value.find(p=>p.id===t.projectId);
-      todos.value.unshift({id:Date.now(),task:t.task,projectId:t.projectId,projectName:proj?proj.name:'未关联项目',type:t.type,subTasks:[],done:false,owner:t.owner,completedBy:'',link:''});
+      todos.value.unshift({
+        id:Date.now(), task:t.task, projectId:t.projectId,
+        projectName:proj?proj.name:'未关联项目',
+        important:!!t.important,
+        subTasks:[], done:false, employeeDone:false,
+        owner:t.owner, completedBy:'', link:'',
+        isChecklist:false, items:[]
+      });
       saveData(); showAddTodo.value=false;
     }
   };
-  const openNewTodo=()=>{ newTodo.value={task:'',projectId:'',owner:'',type:'design'}; showAddTodo.value=true; };
+  const openNewTodo=()=>{ newTodo.value={task:'',projectId:'',owner:'',important:false}; showAddTodo.value=true; };
 
   const toggleTodo=(todo)=>{
+    // 归档恢复
     if(todo.done){
       if(!confirm('恢复为未完成？')) return;
-      todo.done=false; todo.completedBy='';
+      todo.done=false; todo.employeeDone=false; todo.completedBy='';
+      saveData();
     }else{
-      todo.done=true; todo.completedBy=prompt('请输入完成人姓名')||'未知';
+      // 直接归档（仅特权用户）
+      if(!isPrivilegedView.value) return;
+      if(!confirm('确认归档此待办？')) return;
+      todo.done=true; todo.employeeDone=true;
+      if(!todo.completedBy) todo.completedBy=currentUser.value.name;
+      saveData();
     }
-    saveData();
   };
+
   const deleteTodo=(todo)=>{
-    if(!isAdminView.value) return;
+    if(!isPrivilegedView.value) return;
     if(!confirm('确定删除？')) return;
     todos.value=todos.value.filter(t=>t.id!==todo.id);
     saveData();
@@ -1497,13 +1950,126 @@ setup(){
   const saveLink=()=>{linkDialogTarget.value.link=linkDialogValue.value.trim();saveData();linkDialogTarget.value=null};
   const deleteLink=()=>{if(!confirm('删除此链接？'))return;linkDialogTarget.value.link='';saveData();linkDialogTarget.value=null};
 
+  // ============ 指派检查项 ============
+  const showAssignModal=ref(false);
+  const editingAssignTodoId=ref(null);
+  const draftAssign=ref({projectId:'',owner:'',important:false,selectedIds:[]});
+  const expandedStages=ref({});
+
+  const itemsByStage=computed(()=>{
+    const g={};
+    stageOrder.forEach(s=>{ g[s]=CHECKLIST_SEED.filter(it=>it.stage===s); });
+    return g;
+  });
+
+  const openAssignModal=(todo)=>{
+    if(!isPrivilegedView.value) return;
+    if(todo && todo.isChecklist){
+      editingAssignTodoId.value=todo.id;
+      draftAssign.value={
+        projectId:todo.projectId||'',
+        owner:todo.owner||'',
+        important:!!todo.important,
+        selectedIds:(todo.items||[]).map(it=>it.id)
+      };
+    }else{
+      editingAssignTodoId.value=null;
+      draftAssign.value={projectId:'',owner:'',important:false,selectedIds:[]};
+    }
+    // 默认展开第一个阶段
+    const first=stageOrder[0];
+    expandedStages.value={};
+    expandedStages.value[first]=true;
+    showAssignModal.value=true;
+  };
+  const editAssign=(todo)=>openAssignModal(todo);
+  const closeAssignModal=()=>{showAssignModal.value=false;editingAssignTodoId.value=null;};
+
+  const toggleStageExpand=(stage)=>{
+    expandedStages.value[stage]=!expandedStages.value[stage];
+  };
+  const isStageFullySelected=(stage)=>{
+    const items=itemsByStage.value[stage]||[];
+    if(items.length===0) return false;
+    return items.every(it=>draftAssign.value.selectedIds.includes(it.id));
+  };
+  const isStagePartialSelected=(stage)=>{
+    const items=itemsByStage.value[stage]||[];
+    const sel=items.filter(it=>draftAssign.value.selectedIds.includes(it.id)).length;
+    return sel>0 && sel<items.length;
+  };
+  const toggleStage=(stage)=>{
+    const items=itemsByStage.value[stage]||[];
+    const fully=isStageFullySelected(stage);
+    const sel=[...draftAssign.value.selectedIds];
+    if(fully){
+      const ids=new Set(items.map(it=>it.id));
+      draftAssign.value.selectedIds=sel.filter(id=>!ids.has(id));
+    }else{
+      const set=new Set(sel);
+      items.forEach(it=>set.add(it.id));
+      draftAssign.value.selectedIds=Array.from(set);
+    }
+  };
+
+  const saveAssign=()=>{
+    if(!draftAssign.value.projectId){ alert('请选择项目'); return; }
+    if(!draftAssign.value.owner){ alert('请选择指派给谁'); return; }
+    if(draftAssign.value.selectedIds.length===0){ alert('请至少选择一个检查项'); return; }
+    const proj=projects.value.find(p=>p.id===draftAssign.value.projectId);
+    if(!proj){ alert('项目不存在'); return; }
+    const items=CHECKLIST_SEED.filter(it=>draftAssign.value.selectedIds.includes(it.id));
+
+    if(editingAssignTodoId.value){
+      const idx=todos.value.findIndex(t=>t.id===editingAssignTodoId.value);
+      if(idx>=0){
+        todos.value[idx]={...todos.value[idx],
+          projectId:draftAssign.value.projectId,
+          projectName:proj.name,
+          owner:draftAssign.value.owner,
+          important:!!draftAssign.value.important,
+          isChecklist:true,
+          items:items
+        };
+      }
+    }else{
+      todos.value.unshift({
+        id:Date.now(),
+        projectId:draftAssign.value.projectId,
+        projectName:proj.name,
+        owner:draftAssign.value.owner,
+        important:!!draftAssign.value.important,
+        isChecklist:true,
+        items:items,
+        task:'',
+        subTasks:[], link:'', done:false, employeeDone:false, completedBy:''
+      });
+    }
+    saveData();
+    closeAssignModal();
+  };
+
+  const deleteAssignTodo=()=>{
+    if(!editingAssignTodoId.value) return;
+    if(!confirm('确定删除此指派？')) return;
+    todos.value=todos.value.filter(t=>t.id!==editingAssignTodoId.value);
+    saveData();
+    closeAssignModal();
+  };
+
+  const onAssignProjectChange=()=>{ /* 预留 */ };
+
   const addProject=()=>{
     if(!newProject.value.name.trim())return alert('请填写项目名称');
-    projects.value.push({id:'proj-'+Date.now(),name:newProject.value.name,stage:[newProject.value.stage],subStatus:'',owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7),members:[]});
+    const newId='proj-'+Date.now();
+    projects.value.push({id:newId,name:newProject.value.name,stage:[newProject.value.stage],subStatus:'',owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7),members:[]});
+    projectOrder.value=[...projectOrder.value,newId];
+    saveProjectOrderToCloud();
     newProject.value={name:'',stage:stages[0],owner:''};
     showAddProject.value=false; saveData();
   };
   const editProject=(proj)=>{
+    if(!isPrivilegedView.value) return;
     const copy=JSON.parse(JSON.stringify(proj));
     if(!Array.isArray(copy.members)) copy.members=[];
     editingProject.value=copy;
@@ -1516,6 +2082,8 @@ setup(){
   const deleteProjectConfirm=()=>{
     if(!confirm(`确定删除项目「${editingProject.value.name}」？`))return;
     projects.value=projects.value.filter(p=>p.id!==editingProject.value.id);
+    projectOrder.value=projectOrder.value.filter(id=>id!==editingProject.value.id);
+    saveProjectOrderToCloud();
     saveData(); editingProject.value=null;
   };
   const toggleFiled=(proj)=>{proj.filed=!proj.filed;saveData()};
@@ -1545,14 +2113,12 @@ setup(){
     saveProjectsToCloud(); saveTodosToCloud();
   };
 
-  const getDotColor=(todo)=>{if(todo.type==='design'||todo.type==='meeting')return 'dot-red';if(todo.type==='process')return 'dot-blue';if(todo.type==='contract')return 'dot-yellow';return 'dot-red'};
   const getProjectStyle=(proj)=>{const c=projCategory[proj.id]||'other';return {background:categoryBgColor[c],borderLeft:'4px solid '+categoryBorderColor[c]}};
   const getStageColor=(stage)=>stageColor[stage]||'bg-gray-100 text-gray-500';
   const getProjStages=(proj)=>Array.isArray(proj.stage)?proj.stage:[proj.stage];
-  const getRingGray=(p)=>{if(p<25)return 'var(--border-strong)';if(p<50)return '#a0a0a0';if(p<75)return '#6b6b6b';return '#2a2a2a'};
 
   const goToProject=(projectId)=>{
-    if(!isRealAdmin.value){
+    if(!isPrivilegedView.value){
       alert('请联系主任查看项目详情');
       return;
     }
@@ -1582,15 +2148,17 @@ setup(){
   });
 
   return{
-    users, currentUser, viewAsPinyin, viewAsCandidates, effectiveUser, isAdminView, isRealAdmin,
+    users, currentUser, viewAsPinyin, viewAsCandidates, effectiveUser,
+    isPrivilegedView, isRealAdmin, isManager, canReorder,
     loginPinyin, loginPassword, loginError,
     doUserLogin, doLogout,
     currentView, sidebarOpen, visibleNavItems, switchView,
     setNavRef, highlightStyle, highlightReady,
     projects, todos, events, members, stages, newTodo, newProject,
+    sortedProjects, projectOrder, moveProject,
     pendingTodos, doneTodos, groupedTodos, groupedDoneTodos,
     myTodos, groupedMyTodos, allPendingTodos, groupedAllTodos,
-    myMeetingProjects,
+    myMeetingProjects, expandedTodos, toggleChecklistExpand,
     activeEvents, doneEvents, formatEventTimeShort,
     showAddTodo, showAddProject, editingTodo, editingSubTask, editingProject,
     linkDialogTarget, linkDialogValue,
@@ -1607,8 +2175,14 @@ setup(){
     currentMonthName, todayDate, calendarDays, prevMonth, nextMonth, resetMonth,
     fontSize, setFontSize, theme, setTheme,
     pwdOld, pwdNew, pwdNew2, pwdMsg, pwdMsgOk, changePassword,
-    parseOwner, getDotColor, getProjectStyle, getStageColor, getProjStages, getRingGray,
-    goToProject, goToMeeting
+    parseOwner, getProjectStyle, getStageColor, getProjStages,
+    getCircleClass, onCircleClick, revertTodo,
+    goToProject, goToMeeting,
+    // 指派
+    showAssignModal, editingAssignTodoId, draftAssign, expandedStages, itemsByStage,
+    stageOrder, openAssignModal, editAssign, closeAssignModal,
+    toggleStageExpand, isStageFullySelected, isStagePartialSelected, toggleStage,
+    saveAssign, deleteAssignTodo, onAssignProjectChange
   };
 }
 }).mount('#app');
