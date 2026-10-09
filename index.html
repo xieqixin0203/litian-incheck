@@ -807,9 +807,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
           </div>
           <button class="proj-edit-btn" @click.stop="editProject(proj)">✎</button>
         </div>
-        <div v-if="isPrivilegedView" class="project-actions" @click.stop>
-          <button class="project-complete-btn" @click="completeProject(proj)">🏁 项目完工</button>
-        </div>
       </div>
       <div v-if="activeProjects.length === 0" class="empty-hint">
         <div class="icon">📁</div>

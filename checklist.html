@@ -19,9 +19,9 @@
 <style>
 [v-cloak]{display:none !important}
 html{font-size:16px}
-html[data-fontsize="small"]{font-size:16px}
-html[data-fontsize="medium"]{font-size:20px}
-html[data-fontsize="large"]{font-size:24px}
+html[data-fontsize="small"]{font-size:19.2px}
+html[data-fontsize="medium"]{font-size:24px}
+html[data-fontsize="large"]{font-size:32px}
 
 :root,[data-theme="light"]{
   --bg:#eef1f6; --text:#2d3748; --card:#fff; --primary:#7b8bb8; --border:#d8dee9;
@@ -53,8 +53,6 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 .dark select,.dark input,.dark textarea{background-color:#252b3d}
 .contract-section{border:2px solid var(--primary);border-radius:16px;overflow:hidden}
-.contract-locked{padding:20px;text-align:center;background:var(--card);cursor:pointer}
-.contract-locked:hover{background:var(--bg)}
 .tab-btn{padding:8px 18px;border-radius:10px 10px 0 0;font-size:14px;font-weight:500;cursor:pointer;border:1px solid transparent;border-bottom:none;background:transparent;color:var(--text);opacity:.6}
 .tab-btn.active{background:var(--card);border-color:var(--border);opacity:1;font-weight:bold;color:var(--primary)}
 .meeting-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px}
@@ -86,6 +84,10 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 .btn-import{background:var(--btn-secondary);color:#fff}
 .btn-home{background:var(--btn-dark);color:#fff}
 .no-perm-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:60px 24px;text-align:center}
+.complete-btn-wrap{display:flex;justify-content:center;margin:16px 0 8px}
+.complete-btn{padding:10px 28px;border-radius:9999px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-size:14px;font-weight:700}
+.complete-btn:hover{opacity:.9}
+.complete-banner{background:rgba(76,175,80,.12);border:1px solid rgba(76,175,80,.4);color:#4caf50;padding:10px 14px;border-radius:12px;text-align:center;font-size:13px;font-weight:600;margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -97,13 +99,13 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
       <h1 class="text-2xl font-bold" style="color:var(--primary)">{{ currentProject }}</h1>
       <p class="text-sm mt-1 opacity-85 font-medium flex items-center gap-2 flex-wrap">
         <span>当前阶段：<span class="font-bold">{{ projectStages.join('、') }}</span></span>
-        <button v-if="isAdmin" @click="openStageModal" class="text-xs px-2 py-0.5 rounded font-medium" style="background:var(--primary);color:#fff">✎ 改阶段</button>
-        <span>· 进度：<span class="font-bold">{{ doneCount }}/{{ totalCount }}</span></span>
+        <button v-if="canEditStage" @click="openStageModal" class="text-xs px-2 py-0.5 rounded font-medium" style="background:var(--primary);color:#fff">✎ 改阶段</button>
+        <span v-if="canSeeChecklistTab">· 进度：<span class="font-bold">{{ doneCount }}/{{ totalCount }}</span></span>
       </p>
     </div>
     <div class="flex gap-2 flex-wrap items-center">
-      <button v-if="isAdmin" @click="exportData" class="btn-export px-3 py-1.5 rounded-lg text-xs">导出</button>
-      <button v-if="isAdmin" @click="importData" class="btn-import px-3 py-1.5 rounded-lg text-xs">导入</button>
+      <button v-if="canEditStage" @click="exportData" class="btn-export px-3 py-1.5 rounded-lg text-xs">导出</button>
+      <button v-if="canEditStage" @click="importData" class="btn-import px-3 py-1.5 rounded-lg text-xs">导入</button>
       <a href="./index.html" class="btn-home px-3 py-1.5 rounded-lg text-xs">返回首页</a>
       <input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport">
     </div>
@@ -122,20 +124,21 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
   <a href="./index.html" class="btn-home inline-block mt-5 px-4 py-2 rounded-lg text-xs" style="text-decoration:none">返回首页</a>
 </div>
 
+<!-- 已完工横幅 -->
+<div v-if="canSeeAny && projectCompleted" class="complete-banner">
+  🏁 本项目已完工（{{ projectCompletedDate }}）
+</div>
+
 <!-- ============ 检查清单 TAB ============ -->
 <div v-if="canSeeAny && activeTab==='checklist' && canSeeChecklistTab">
 
-  <!-- 合同区域：仅主任/副主任 + 欧阳琳 -->
+  <!-- 合同区域：主任/副主任/经理可见，不需要密码 -->
   <div v-if="canSeeContract" class="mb-4 contract-section">
     <div class="px-4 py-3 text-white flex items-center justify-between" style="background:var(--primary)">
       <span class="font-bold text-base">合同文书</span>
-      <span class="text-sm">
-        <span v-if="contractUnlocked">{{ projContracted?'已入合同':'未入合同' }}</span>
-        <span v-else>🔒 已锁</span>
-      </span>
+      <span class="text-sm">{{ projContracted?'已入合同':'未入合同' }}</span>
     </div>
-
-    <div v-if="contractUnlocked" class="p-4" style="background:var(--card)">
+    <div class="p-4" style="background:var(--card)">
       <div class="flex items-center justify-between p-2 rounded-lg mb-2" style="background:var(--bg)">
         <span class="text-sm">设计合同</span>
         <span class="text-xs px-2 py-1 rounded bg-green-100 text-green-700">已有</span>
@@ -144,60 +147,55 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
         <span class="text-sm">分包合同</span>
         <span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-500">待增加</span>
       </div>
-      <button @click="contractUnlocked=false" class="text-xs opacity-60 mt-3">🔒 锁定</button>
-    </div>
-
-    <div v-else class="contract-locked" @click="openContractLogin">
-      <div style="font-size:24px">🔒</div>
-      <div class="text-sm mt-2 opacity-70">点击解锁（需管理员密码）</div>
     </div>
   </div>
 
-  <!-- 检查项：仅主任/副主任 -->
+  <!-- 检查项列表 -->
   <div v-if="canSeeChecks" class="space-y-3">
-    <div v-for="(group, stageName) in groupedChecks" :key="stageName"
-         class="rounded-xl shadow-sm overflow-hidden"
-         style="border:1px solid var(--border)"
-         :class="getStageClass(stageName)">
-      <div class="px-4 py-3 flex items-center justify-between cursor-pointer" @click="toggleGroup(stageName)">
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-base font-bold stage-title">{{ stageName }}</span>
-          <span class="text-xs px-2 py-0.5 rounded-full font-medium stage-count" style="background:rgba(0,0,0,.06)">
-            {{ group.filter(i=>i.status==='合格').length }}/{{ group.length }}
-          </span>
-          <span v-if="isCurrentStage(stageName)" class="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-bold">当前阶段</span>
-          <span v-if="group.length===0" class="text-xs opacity-50">（暂无检查项）</span>
+    <div v-for="(group, stageName) in groupedChecks" :key="stageName">
+      <div class="rounded-xl shadow-sm overflow-hidden"
+           style="border:1px solid var(--border)"
+           :class="getStageClass(stageName)">
+        <div class="px-4 py-3 flex items-center justify-between cursor-pointer" @click="toggleGroup(stageName)">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-base font-bold stage-title">{{ stageName }}</span>
+            <span class="text-xs px-2 py-0.5 rounded-full font-medium stage-count" style="background:rgba(0,0,0,.06)">
+              {{ group.filter(i=>i.status==='合格').length }}/{{ group.length }}
+            </span>
+            <span v-if="isCurrentStage(stageName)" class="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-bold">当前阶段</span>
+            <span v-if="group.length===0" class="text-xs opacity-50">（暂无检查项）</span>
+          </div>
+          <span class="text-sm opacity-60">{{ openGroups[stageName] ? '▼' : '▶' }}</span>
         </div>
-        <span class="text-sm opacity-60">{{ openGroups[stageName] ? '▼' : '▶' }}</span>
-      </div>
 
-      <div v-if="openGroups[stageName] && group.length > 0">
-        <div v-for="item in group" :key="item.id" class="px-4 py-2.5" style="border-top:1px solid var(--border)">
-          <div class="flex items-center gap-3 flex-wrap">
-            <span class="text-xs px-1.5 py-0.5 rounded font-bold flex-shrink-0" :class="item.level==='P0' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'">{{ item.level }}</span>
-            <span class="text-sm font-bold flex-shrink-0">{{ item.item }}</span>
-            <span v-if="item.standard" class="text-xs opacity-70 flex-1 min-w-0">— {{ item.standard }}</span>
-            <button v-if="!item.showNote && !item.note" @click="item.showNote=true" class="text-xs flex-shrink-0" style="color:var(--primary)">+备注</button>
-            <input v-if="item.showNote" v-model="item.note" @change="saveData" @blur="item.showNote=false" placeholder="备注" class="text-xs border rounded px-1.5 py-0.5" style="border-color:var(--border);width:140px">
-            <span v-if="!item.showNote && item.note" class="text-xs text-red-500 cursor-pointer flex-shrink-0" @click="item.showNote=true" title="点击编辑">💬 {{ item.note }}</span>
-            <select v-model="item.status" @change="saveData"
-                    class="text-xs border rounded px-1.5 py-1 flex-shrink-0 font-medium"
-                    style="border-color:var(--border)"
-                    :class="{'text-green-600 font-bold':item.status==='合格','text-red-600 font-bold':item.status==='不合格','text-blue-600':item.status==='进行中','opacity-60':item.status==='待检'}">
-              <option value="待检">待检</option>
-              <option value="进行中">进行中</option>
-              <option value="合格">合格</option>
-              <option value="不合格">不合格</option>
-            </select>
+        <div v-if="openGroups[stageName] && group.length > 0">
+          <div v-for="item in group" :key="item.id" class="px-4 py-2.5" style="border-top:1px solid var(--border)">
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="text-xs px-1.5 py-0.5 rounded font-bold flex-shrink-0" :class="item.level==='P0' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'">{{ item.level }}</span>
+              <span class="text-sm font-bold flex-shrink-0">{{ item.item }}</span>
+              <span v-if="item.standard" class="text-xs opacity-70 flex-1 min-w-0">— {{ item.standard }}</span>
+              <button v-if="!item.showNote && !item.note" @click="item.showNote=true" class="text-xs flex-shrink-0" style="color:var(--primary)">+备注</button>
+              <input v-if="item.showNote" v-model="item.note" @change="saveData" @blur="item.showNote=false" placeholder="备注" class="text-xs border rounded px-1.5 py-0.5" style="border-color:var(--border);width:140px">
+              <span v-if="!item.showNote && item.note" class="text-xs text-red-500 cursor-pointer flex-shrink-0" @click="item.showNote=true" title="点击编辑">💬 {{ item.note }}</span>
+              <select v-model="item.status" @change="saveData"
+                      class="text-xs border rounded px-1.5 py-1 flex-shrink-0 font-medium"
+                      style="border-color:var(--border)"
+                      :class="{'text-green-600 font-bold':item.status==='合格','text-red-600 font-bold':item.status==='不合格','text-blue-600':item.status==='进行中','opacity-60':item.status==='待检'}">
+                <option value="待检">待检</option>
+                <option value="进行中">进行中</option>
+                <option value="合格">合格</option>
+                <option value="不合格">不合格</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- 只看到合同的白名单成员（如欧阳琳）会看到此提示 -->
-  <div v-else class="p-6 text-center opacity-60 rounded-xl" style="background:var(--card);border:1px solid var(--border)">
-    🔒 检查项仅主任/副主任可见
+      <!-- 八、施工中 下面的完工按钮 -->
+      <div v-if="stageName==='八、施工中' && canComplete" class="complete-btn-wrap">
+        <button @click="completeProject" class="complete-btn">🏁 项目完工</button>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -211,14 +209,14 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
       <button @click="showConfirmSummary = !showConfirmSummary" class="btn-sm">
         {{ showConfirmSummary ? '查看历次会议' : '查看确认汇总' }}
       </button>
-      <button v-if="isAdmin" @click="showImportModal = true" class="btn-sm">📥 导入</button>
-      <button v-if="isAdmin" @click="openAddMeeting" class="btn-primary">+ 新增会议纪要</button>
+      <button v-if="isPrivileged" @click="showImportModal = true" class="btn-sm">📥 导入</button>
+      <button @click="openAddMeeting" class="btn-primary">+ 新增会议纪要</button>
     </div>
   </div>
 
   <div v-if="!showConfirmSummary">
     <div v-if="meetings.length === 0" class="p-8 text-center opacity-60 text-sm rounded-xl" style="background:var(--card);border:1px solid var(--border)">
-      暂无会议纪要。
+      暂无会议纪要，点击右上角「+ 新增会议纪要」开始记录。
     </div>
 
     <div v-for="mt in sortedMeetings" :key="mt.id" class="meeting-card">
@@ -229,11 +227,12 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
             <span v-if="mt.title" class="ml-2">{{ mt.title }}</span>
           </div>
           <div class="text-xs opacity-60 mt-1">参与人：{{ formatParticipants(mt) }}</div>
+          <div v-if="mt.recordedBy" class="text-xs opacity-50 mt-0.5">记录人：{{ mt.recordedBy }}</div>
         </div>
         <div class="flex items-center gap-2" @click.stop>
           <button @click="exportMeetingToWord(mt)" class="btn-sm" title="导出Word">📤</button>
-          <button v-if="isAdmin" @click="editMeeting(mt)" class="btn-sm">编辑</button>
-          <button v-if="isAdmin" @click="deleteMeeting(mt)" class="btn-sm text-red-500">删除</button>
+          <button v-if="canManageMeeting(mt)" @click="editMeeting(mt)" class="btn-sm">编辑</button>
+          <button v-if="canManageMeeting(mt)" @click="deleteMeeting(mt)" class="btn-sm text-red-500">删除</button>
           <span class="text-sm opacity-60 cursor-pointer" @click="mt.expanded = !mt.expanded">{{ mt.expanded ? '▼' : '▶' }}</span>
         </div>
       </div>
@@ -373,18 +372,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
   </div>
 </div>
 
-<!-- ============ 合同解锁模态框 ============ -->
-<div v-if="showContractLogin" v-cloak class="modal-mask" @click.self="showContractLogin=false">
-  <div class="modal-box" style="max-width:360px">
-    <h3 class="font-bold text-lg mb-4">合同文书解锁</h3>
-    <input v-model="contractPwd" type="password" placeholder="输入管理员密码" @keyup.enter="doContractUnlock" class="form-input mb-4">
-    <div class="flex justify-end gap-2">
-      <button @click="showContractLogin=false" class="btn-sm">取消</button>
-      <button @click="doContractUnlock" class="btn-primary">解锁</button>
-    </div>
-  </div>
-</div>
-
 <!-- ============ 编辑阶段模态框 ============ -->
 <div v-if="showStageModal" v-cloak class="modal-mask" @click.self="closeStageModal">
   <div class="modal-box" style="max-width:420px">
@@ -413,7 +400,7 @@ const stageOrder=['一、前期强排','二、方案设计','三、方案深化'
 
 const projectStageMap={
   'sl4':['三、方案深化'],
-  'slzb':['六、室内设计','七、室内设计施工图','八、施工中'],
+  'slzb':['八、施工中'],
   'sl5':['一、前期强排'],
   'slgz':['八、施工中'],
   'prsp':['五、施工图（含幕墙深化）'],
@@ -427,19 +414,16 @@ const projectStageMap={
   'sq':['三、方案深化']
 };
 
-const ADMIN_PASSWORD='litian2024';
-
-// 兜底用户表（与 index.html 一致；云端读不到时使用）
+// 云端读不到时用的兜底
 const FALLBACK_USERS=[
   {name:'刘文辉', pinyin:'liuwenhui', role:'admin'},
   {name:'谢启欣', pinyin:'xieqixin', role:'admin'},
-  {name:'欧阳琳', pinyin:'ouyanglin', role:'member'},
+  {name:'欧阳琳', pinyin:'ouyanglin', role:'manager'},
   {name:'梁婷玉', pinyin:'liangtingyu', role:'member'},
   {name:'黄建敏', pinyin:'huangjianmin', role:'member'},
   {name:'梁富成', pinyin:'liangfucheng', role:'member'}
 ];
 
-// 兜底项目成员表（与 index.html 一致；云端读不到时使用）
 const FALLBACK_PROJECT_MEMBERS={
   'sl4':['谢启欣'],
   'slzb':['梁婷玉','谢启欣'],
@@ -456,11 +440,7 @@ const FALLBACK_PROJECT_MEMBERS={
   'sq':['梁婷玉']
 };
 
-// 合同白名单（pinyin）
-const CONTRACT_WHITELIST=['liuwenhui','xieqixin','ouyanglin'];
-
 const seedData=[
-// 一、前期强排 (17条)
 {id:'CHK-01-001',stage:'一、前期强排',item:'机动车出入口设置要求',standard:'结合规划条件，核实与路口距离',level:'P0'},
 {id:'CHK-01-002',stage:'一、前期强排',item:'室外地坪标高（国家高程）',standard:'结合周边路网与市政标高',level:'P0'},
 {id:'CHK-01-003',stage:'一、前期强排',item:'附属绿地、公园绿地是否可纳入绿化率',standard:'按规划条件核实',level:'P1'},
@@ -478,8 +458,6 @@ const seedData=[
 {id:'CHK-01-015',stage:'一、前期强排',item:'与甲方确认玻璃型号使用',standard:'普通白玻 / low-e / 超白玻',level:'P1'},
 {id:'CHK-01-016',stage:'一、前期强排',item:'与甲方确认市政路灯灯光预留',standard:'确认是否需要预留',level:'P1'},
 {id:'CHK-01-017',stage:'一、前期强排',item:'与甲方确认围墙与门卫室设置',standard:'验收前还是后做；门卫室面积<15㎡',level:'P1'},
-
-// 二、方案设计 (12条)
 {id:'CHK-02-001',stage:'二、方案设计',item:'民用建筑、民用非居住、非民用建筑三者遮挡/被遮挡关系',standard:'理清日照关系',level:'P0'},
 {id:'CHK-02-002',stage:'二、方案设计',item:'板式低层/多层短边间距',standard:'14m',level:'P0'},
 {id:'CHK-02-003',stage:'二、方案设计',item:'高层建筑消防扑救面宽度',standard:'15.5m / 16m（规范要求15m，预留尺寸方便布置车位）',level:'P0'},
@@ -492,8 +470,6 @@ const seedData=[
 {id:'CHK-02-010',stage:'二、方案设计',item:'建筑高度（规划高度）坡屋面计算',standard:'角度≤45%算至檐口顶；>45%算至坡顶一半',level:'P0'},
 {id:'CHK-02-011',stage:'二、方案设计',item:'室内外高差',standard:'通常150mm，i=12%',level:'P1'},
 {id:'CHK-02-012',stage:'二、方案设计',item:'场地内外高差核实',standard:'明确排水方向',level:'P0'},
-
-// 三、方案深化 (16条)
 {id:'CHK-03-001',stage:'三、方案深化',item:'与结构/机电/幕墙专业对图',standard:'确认梁柱位置、管井、净高不冲突',level:'P0'},
 {id:'CHK-03-002',stage:'三、方案深化',item:'核心筒/楼梯/电梯/管井位置复核',standard:'与方案阶段一致，尺寸满足规范',level:'P0'},
 {id:'CHK-03-003',stage:'三、方案深化',item:'防火分区与疏散口复核',standard:'方案深化后功能调整需重新核对',level:'P0'},
@@ -510,8 +486,6 @@ const seedData=[
 {id:'CHK-03-014',stage:'三、方案深化',item:'人防口部、地下室轮廓复核',standard:'与方案阶段一致，无遗漏',level:'P1'},
 {id:'CHK-03-015',stage:'三、方案深化',item:'园林/景观接口预留',standard:'与建筑、市政对图',level:'P1'},
 {id:'CHK-03-016',stage:'三、方案深化',item:'与甲方确认深化版方案',standard:'留底，避免后期反复',level:'P1'},
-
-// 四、报建图 (29条)
 {id:'CHK-04-001',stage:'四、报建图',item:'设计单位与规整单位项目诚信编号',standard:'网上提交申请给甲方',level:'P0'},
 {id:'CHK-04-002',stage:'四、报建图',item:'甲方提供广东省企业投资项目备案证',standard:'核对一致性',level:'P0'},
 {id:'CHK-04-003',stage:'四、报建图',item:'佛山市建设工程规划许可证核发申请表',standard:'甲方填写，三方盖章',level:'P0'},
@@ -541,8 +515,6 @@ const seedData=[
 {id:'CHK-04-027',stage:'四、报建图',item:'立面/剖面绘制、标号、高度、层数',standard:'规划标高与绝对标高对齐，材质表统一',level:'P0'},
 {id:'CHK-04-028',stage:'四、报建图',item:'建筑高度计算分类',standard:'低层≤10m；多层≤27m；高层>27m',level:'P0'},
 {id:'CHK-04-029',stage:'四、报建图',item:'厂房层数分类',standard:'>32m且任一层>10人应防烟楼梯',level:'P0'},
-
-// 五、施工图（含幕墙深化）(29条)
 {id:'CHK-05-001',stage:'五、施工图（含幕墙深化）',item:'水土保持（甲方任务）',standard:'需甲方提前找第三方，过会后进入审图',level:'P0'},
 {id:'CHK-05-002',stage:'五、施工图（含幕墙深化）',item:'基坑支护（甲方任务）',standard:'放坡或垂直需设计',level:'P0'},
 {id:'CHK-05-003',stage:'五、施工图（含幕墙深化）',item:'强电设计（甲方任务）',standard:'甲方咨询供电部门',level:'P0'},
@@ -572,8 +544,6 @@ const seedData=[
 {id:'CHK-05-027',stage:'五、施工图（含幕墙深化）',item:'预埋件/后置埋件与结构梁位复核',standard:'避让钢筋',level:'P0'},
 {id:'CHK-05-028',stage:'五、施工图（含幕墙深化）',item:'幕墙与建筑立面图核对',standard:'分格与立面一致',level:'P0'},
 {id:'CHK-05-029',stage:'五、施工图（含幕墙深化）',item:'幕墙节点与SU深化模型对照',standard:'节点符合我们意图',level:'P0'},
-
-// 六、室内设计 (24条)
 {id:'CHK-06-001',stage:'六、室内设计',item:'阴角或者交接位的设计查缺',standard:'逐项核对',level:'P0'},
 {id:'CHK-06-002',stage:'六、室内设计',item:'室内施工图进度',standard:'核对图纸目录与实际图纸',level:'P0'},
 {id:'CHK-06-003',stage:'六、室内设计',item:'门洞净宽',standard:'扣除门套后≥900mm，小空间≥700mm',level:'P0'},
@@ -598,8 +568,6 @@ const seedData=[
 {id:'CHK-06-022',stage:'六、室内设计',item:'立面图关系表达清楚',standard:'材质、分缝、开洞、标高',level:'P1'},
 {id:'CHK-06-023',stage:'六、室内设计',item:'平面图管线尺寸和标高已表达',standard:'复杂处有剖面图',level:'P1'},
 {id:'CHK-06-024',stage:'六、室内设计',item:'所有留洞有水平和竖向定位',standard:'结构图同步标注',level:'P0'},
-
-// 七、室内设计施工图 (28条)
 {id:'CHK-07-001',stage:'七、室内设计施工图',item:'开门大小与类型复核',standard:'领导办公室1500mm，普通办公室900mm，小空间≥700mm，不要开太小',level:'P0'},
 {id:'CHK-07-002',stage:'七、室内设计施工图',item:'门开启方向与消防疏散一致',standard:'平面、立面、疏散方向三方核对',level:'P0'},
 {id:'CHK-07-003',stage:'七、室内设计施工图',item:'天地墙结构分缝处理大样是否齐全',standard:'结构与装饰分缝对齐，有对应大样',level:'P0'},
@@ -656,6 +624,7 @@ const migrateMeetings=(arr)=>{
       ...m,
       memberParticipants:Array.isArray(memberParticipants)?memberParticipants:[],
       otherParticipants:otherParticipants||'',
+      recordedBy:m.recordedBy||'',
       confirmed:(m.confirmed||[]).map(c=>typeof c==='string'?{text:c}:c),
       pending:m.pending||[],
       changes:m.changes||[]
@@ -705,26 +674,21 @@ setup(){
   });
 
   const isAdmin=computed(()=>currentUser.value && currentUser.value.role==='admin');
-  const isOuyanglin=computed(()=>currentUserPinyin.value==='ouyanglin');
+  const isManager=computed(()=>currentUser.value && currentUser.value.role==='manager');
+  const isPrivileged=computed(()=>isAdmin.value||isManager.value);
 
-  // 合同白名单：主任/副主任 + 欧阳琳
-  const canSeeContract=computed(()=>{
-    if(!currentUser.value) return false;
-    return CONTRACT_WHITELIST.includes(currentUserPinyin.value);
-  });
+  // 合同：主任/副主任/欧阳琳（即 isPrivileged）
+  const canSeeContract=computed(()=>isPrivileged.value);
 
-  // 检查清单 tab 可见：admin 或 欧阳琳（因为合同在里面）
-  const canSeeChecklistTab=computed(()=>isAdmin.value || isOuyanglin.value);
+  // 检查清单 tab：仅特权用户（admin + manager）
+  const canSeeChecklistTab=computed(()=>isPrivileged.value);
+  const canSeeChecks=computed(()=>isPrivileged.value);
+  const canEditStage=computed(()=>isPrivileged.value);
 
-  // 检查项本身：仅 admin
-  const canSeeChecks=computed(()=>isAdmin.value);
-
-  // 当前项目的成员名单（用于会议纪要可见性）
+  // 当前项目的成员名单
   const projectMembers=computed(()=>{
-    // 优先从云端 projects 取
     const proj=projects.value.find(p=>p.id===projectKey);
     if(proj && Array.isArray(proj.members)) return proj.members;
-    // 兜底
     return FALLBACK_PROJECT_MEMBERS[projectKey]||[];
   });
 
@@ -733,36 +697,77 @@ setup(){
     return projectMembers.value.includes(currentUser.value.name);
   });
 
-  // 会议纪要 tab 可见：admin 或 项目 members 包含自己
-  const canSeeMeetingTab=computed(()=>isAdmin.value || isProjectMember.value);
+  // 会议纪要 tab：特权用户 或 项目成员
+  const canSeeMeetingTab=computed(()=>isPrivileged.value || isProjectMember.value);
 
   // 是否有任何可访问的 tab
   const canSeeAny=computed(()=>canSeeChecklistTab.value || canSeeMeetingTab.value);
 
+  // 项目完工权限
+  const canComplete=computed(()=>isPrivileged.value);
+
   // ============ 当前 tab ============
-  // 初始值：URL 参数指定优先，否则按角色（admin 默认 checklist，非 admin 默认 meeting）
   let initialTab='checklist';
   if(urlTab==='meeting') initialTab='meeting';
   else if(urlTab==='checklist') initialTab='checklist';
   const activeTab=ref(initialTab);
 
-  // 用户权限变化时，纠正 activeTab 到有权限的 tab
+  // 权限变化时纠正 activeTab
   watch([canSeeChecklistTab, canSeeMeetingTab], ([cl, cm])=>{
     if(activeTab.value==='checklist' && !cl && cm) activeTab.value='meeting';
     else if(activeTab.value==='meeting' && !cm && cl) activeTab.value='checklist';
   }, {immediate:true});
 
+  // ============ 项目完工状态 ============
+  const projectCompleted=ref(false);
+  const projectCompletedDate=ref('');
+
+  const loadProjectCompletion=async()=>{
+    try{
+      const res=await fetch('/api/sync?type=projects&project=global');
+      const data=await res.json();
+      if(Array.isArray(data)){
+        projects.value=data;
+        const proj=data.find(p=>p.id===projectKey);
+        if(proj){
+          projectCompleted.value=!!proj.completed;
+          projectCompletedDate.value=proj.completedDate||'';
+        }
+      }
+    }catch(e){}
+  };
+
+  const completeProject=async()=>{
+    if(!canComplete.value) return;
+    if(!confirm(`确认将「${currentProject.value}」标记为项目完工？\n完工后将从项目总览移到"已归档 → 已完成项目"。`)) return;
+    try{
+      const r=await fetch('/api/sync?type=projects&project=global');
+      const list=await r.json();
+      if(!Array.isArray(list)){ alert('读取项目失败'); return; }
+      const proj=list.find(p=>p.id===projectKey);
+      if(!proj){ alert('项目不存在于总表'); return; }
+      proj.completed=true;
+      proj.completedDate=new Date().toISOString().slice(0,10);
+      const w=await fetch('/api/sync?type=projects&project=global',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(list)
+      });
+      if(!w.ok){ alert('保存失败'); return; }
+      projects.value=list;
+      projectCompleted.value=true;
+      projectCompletedDate.value=proj.completedDate;
+      alert(`✅「${currentProject.value}」已完工，可在主页"已归档"里查看。`);
+    }catch(e){
+      alert('操作失败：'+e.message);
+    }
+  };
+
+  // ============ 检查清单数据 ============
   const openGroups=ref({});
   const fileInput=ref(null);
   const checks=ref(initData());
   const projContracted=ref(false);
-
-  const contractUnlocked=ref(false);
-  const showContractLogin=ref(false);
-  const contractPwd=ref('');
-
-  const fontSize=ref(localStorage.getItem('studio_fontsize_v2')||'medium');
-  const theme=ref(localStorage.getItem('studio_theme')||'dark');
 
   const showStageModal=ref(false);
   const draftStages=ref([]);
@@ -803,6 +808,7 @@ setup(){
     showStageModal.value=false;
   };
 
+  // ============ 会议纪要 ============
   const meetings=ref([]);
   const showMeetingModal=ref(false);
   const editingMeetingId=ref(null);
@@ -899,18 +905,11 @@ setup(){
     return arr.length?arr.join('、'):'未填写';
   };
 
-  const openContractLogin=()=>{
-    contractPwd.value='';
-    showContractLogin.value=true;
-  };
-  const doContractUnlock=()=>{
-    if(contractPwd.value===ADMIN_PASSWORD){
-      contractUnlocked.value=true;
-      showContractLogin.value=false;
-      contractPwd.value='';
-    }else{
-      alert('密码错误');
-    }
+  // 会议纪要编辑/删除权限：特权用户 或 记录人自己
+  const canManageMeeting=(mt)=>{
+    if(isPrivileged.value) return true;
+    if(!currentUser.value) return false;
+    return mt.recordedBy === currentUser.value.name;
   };
 
   const openAddMeeting=()=>{
@@ -919,6 +918,7 @@ setup(){
     showMeetingModal.value=true;
   };
   const editMeeting=(mt)=>{
+    if(!canManageMeeting(mt)){ alert('只能编辑自己记录的会议纪要'); return; }
     const copy=JSON.parse(JSON.stringify(mt));
     delete copy.expanded;
     draftMeeting.value=copy;
@@ -941,14 +941,25 @@ setup(){
     };
     if(editingMeetingId.value){
       const idx=meetings.value.findIndex(m=>m.id===editingMeetingId.value);
-      if(idx>=0)meetings.value[idx]={...meetings.value[idx],...clean};
+      if(idx>=0){
+        // 保留原记录人（如果原记录人不存在才记当前用户）
+        const orig=meetings.value[idx];
+        meetings.value[idx]={...orig, ...clean, recordedBy: orig.recordedBy || (currentUser.value?currentUser.value.name:'')};
+      }
     }else{
-      meetings.value.push({id:'m-'+Date.now(),...clean,expanded:false});
+      // 新增时记录当前用户
+      meetings.value.push({
+        id:'m-'+Date.now(),
+        ...clean,
+        recordedBy: currentUser.value?currentUser.value.name:'',
+        expanded:false
+      });
     }
     saveMeetings();
     closeMeetingModal();
   };
   const deleteMeeting=(mt)=>{
+    if(!canManageMeeting(mt)){ alert('只能删除自己记录的会议纪要'); return; }
     if(!confirm('确定删除此次会议纪要？'))return;
     meetings.value=meetings.value.filter(m=>m.id!==mt.id);
     saveMeetings();
@@ -972,6 +983,7 @@ li{margin-bottom:4px}
 <div class="meta">
 <div><b>会议日期：</b>${esc(mt.date)}</div>
 <div><b>参与人：</b>${esc(participants)}</div>
+${mt.recordedBy?'<div><b>记录人：</b>'+esc(mt.recordedBy)+'</div>':''}
 </div>
 <h2>一、已确认事项</h2>
 ${(mt.confirmed||[]).length?`<ol>${mt.confirmed.map(c=>`<li>${esc(c.text)}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
@@ -1065,6 +1077,7 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
 
   onMounted(async()=>{
     await Promise.all([loadUsers(),loadProjects(),loadFromCloud(),loadMeetings(),loadStages()]);
+    await loadProjectCompletion();
     initOpenGroups();
   });
 
@@ -1078,15 +1091,19 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
     meetings,sortedMeetings,showMeetingModal,editingMeetingId,draftMeeting,
     showConfirmSummary,allConfirmed,
     openAddMeeting,editMeeting,closeMeetingModal,saveMeeting,deleteMeeting,
-    formatParticipants,exportMeetingToWord,
+    formatParticipants,exportMeetingToWord,canManageMeeting,
     showImportModal,importText,doImport,
-    contractUnlocked,showContractLogin,contractPwd,openContractLogin,doContractUnlock,
-    fontSize,theme,
+    projContracted,
     showStageModal,draftStages,stageOrder,
     openStageModal,closeStageModal,toggleDraftStage,confirmStages,
-    // 权限相关
-    isAdmin,canSeeContract,canSeeChecklistTab,canSeeChecks,canSeeMeetingTab,canSeeAny,
-    projectMembers,currentUser
+    // 权限
+    isAdmin,isManager,isPrivileged,
+    canSeeContract,canSeeChecklistTab,canSeeChecks,canEditStage,
+    canSeeMeetingTab,canSeeAny,
+    projectMembers,currentUser,isProjectMember,
+    // 完工
+    canComplete,completeProject,
+    projectCompleted,projectCompletedDate
   };
 }
 }).mount('#app');
