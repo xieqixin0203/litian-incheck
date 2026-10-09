@@ -139,7 +139,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 .user-chip{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:13px;white-space:nowrap}
 .user-chip .avatar{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .user-chip .name{font-weight:600;color:var(--text)}
-.user-chip .role{font-size:10.5px;color:var(--text-tertiary);font-weight:500}
 .user-chip .logout{color:var(--text-tertiary);cursor:pointer;padding:2px 4px;font-size:14px;border-radius:4px;transition:.15s;background:none;border:none;font-family:inherit}
 .user-chip .logout:hover{color:var(--error);background:var(--bg)}
 .view-as-select{padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:12.5px;color:var(--text);cursor:pointer;font-family:inherit;outline:none}
@@ -252,7 +251,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 }
 @media(max-width:480px){
   .topbar{gap:8px}
-  .user-chip .role{display:none}
   .search-btn .kbd{display:none}
   .view-as-select{max-width:110px}
 }
@@ -351,14 +349,13 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
       <span>搜索...</span>
       <span class="kbd">⌘K</span>
     </button>
-    <select v-if="isRealAdmin" v-model="viewAsPinyin" @change="changeViewAs" class="view-as-select">
-      <option value="">👁 全视角（主任）</option>
-      <option v-for="u in users" :key="u.pinyin" :value="u.pinyin">{{ u.name }}</option>
+    <select v-if="isRealAdmin" v-model="viewAsPinyin" class="view-as-select">
+      <option value="">我</option>
+      <option v-for="u in viewAsCandidates" :key="u.pinyin" :value="u.pinyin">{{ u.name }}</option>
     </select>
     <div class="user-chip">
       <div class="avatar">{{ currentUser.name.charAt(0) }}</div>
       <span class="name">{{ currentUser.name }}</span>
-      <span class="role">{{ currentUser.role==='admin'?'主任/副主任':'成员' }}</span>
       <button @click="doLogout" class="logout" title="退出登录">⏻</button>
     </div>
   </div>
@@ -367,7 +364,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   <div v-if="currentView==='home'" class="flex flex-col lg:flex-1 lg:min-h-0 lg:flex-row gap-4">
     <!-- 左栏：admin 2/5，员工全宽 -->
     <div class="flex flex-col gap-4 lg:min-h-0" :class="isAdminView ? 'lg:w-2/5' : 'lg:w-full'">
-      <!-- 精神零食：所有人可见 -->
       <div class="card p-4 lg:flex-shrink-0">
         <div class="hero-title">精神零食</div>
         <div v-if="currentHero" class="flex flex-col lg:flex-row gap-4">
@@ -385,7 +381,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
         <div v-else class="text-xs opacity-50 text-center py-6">请在 heroes 文件夹里放入图片和 list.txt</div>
       </div>
 
-      <!-- 会议/出差：仅 admin -->
       <div v-if="isAdminView" class="card p-4 lg:flex-shrink-0">
         <div class="flex justify-between items-center mb-3">
           <h3 class="font-bold text-sm">会议/出差安排</h3>
@@ -408,7 +403,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
         </div>
       </div>
 
-      <!-- 待办：admin 看全部，员工看自己的 -->
       <div class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
         <div class="flex justify-between items-center mb-3 flex-shrink-0">
           <h3 class="font-bold text-sm">{{ isAdminView ? '最近待办' : '我的待办' }}</h3>
@@ -676,7 +670,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   </div>
 </transition>
 
-<!-- ============ 会议/出差编辑 ============ -->
+<!-- 会议/出差编辑 -->
 <div v-if="showEventModal" v-cloak class="modal-mask" @click.self="closeEventModal">
   <div class="modal-card">
     <h3 class="modal-title">{{ editingEventId ? '编辑会议/出差' : '新增会议/出差' }}</h3>
@@ -696,7 +690,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   </div>
 </div>
 
-<!-- ============ 附图链接 ============ -->
+<!-- 附图链接 -->
 <div v-if="linkDialogTarget" v-cloak class="modal-mask" @click.self="linkDialogTarget=null">
   <div class="modal-card">
     <h3 class="modal-title">附图链接</h3>
@@ -710,7 +704,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   </div>
 </div>
 
-<!-- ============ 编辑子任务 ============ -->
+<!-- 编辑子任务 -->
 <div v-if="editingSubTask" v-cloak class="modal-mask" @click.self="editingSubTask=null">
   <div class="modal-card">
     <h3 class="modal-title">编辑小项</h3>
@@ -725,7 +719,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   </div>
 </div>
 
-<!-- ============ 编辑/新建待办 ============ -->
+<!-- 编辑/新建待办 -->
 <div v-if="editingTodo || showAddTodo" v-cloak class="modal-mask" @click.self="closeTodoModal">
   <div class="modal-card">
     <h3 class="modal-title">{{ editingTodo ? '编辑待办' : '新建待办' }}</h3>
@@ -768,7 +762,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   </div>
 </div>
 
-<!-- ============ 编辑项目 ============ -->
+<!-- 编辑项目 -->
 <div v-if="editingProject" v-cloak class="modal-mask" @click.self="editingProject=null">
   <div class="modal-card" style="max-width:520px">
     <h3 class="modal-title">编辑项目</h3>
@@ -801,7 +795,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   </div>
 </div>
 
-<!-- ============ 新建项目 ============ -->
+<!-- 新建项目 -->
 <div v-if="showAddProject" v-cloak class="modal-mask" @click.self="showAddProject=false">
   <div class="modal-card">
     <h3 class="modal-title">新建项目</h3>
@@ -828,7 +822,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 const {createApp,ref,computed,onMounted,onUnmounted,watch,nextTick}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
-const DATA_VERSION='2026-10-09-v16';
+const DATA_VERSION='2026-10-09-v17';
 
 const defaultUsers=[
   {name:'刘文辉', pinyin:'liuwenhui', password:'litian2026', role:'admin'},
@@ -980,7 +974,18 @@ setup(){
     currentUser.value=null; viewAsPinyin.value='';
     localStorage.removeItem('studio_current_user');
   };
-  const changeViewAs=()=>{};
+
+  // 视角候选：主任可选其他5人；副主任可选除刘文辉外的其他人
+  const viewAsCandidates=computed(()=>{
+    if(!currentUser.value || currentUser.value.role!=='admin') return [];
+    const me=currentUser.value;
+    return users.value.filter(u=>{
+      if(u.pinyin === me.pinyin) return false; // 排除自己
+      // 副主任（谢启欣）不能查看主任（刘文辉）视角
+      if(me.pinyin === 'xieqixin' && u.pinyin === 'liuwenhui') return false;
+      return true;
+    });
+  });
 
   const effectiveUser=computed(()=>{
     if(!currentUser.value) return null;
@@ -1042,7 +1047,6 @@ setup(){
 
   const visibleNavItems=computed(()=>isAdminView.value ? adminNavItems : memberNavItems);
 
-  // 视角切换时，如果当前视图变成不可见，切回主页
   watch(effectiveUser, ()=>{
     if(!visibleNavItems.value.some(i=>i.key===currentView.value)){
       currentView.value='home';
@@ -1235,7 +1239,6 @@ setup(){
   const nextMonth=()=>{const d=new Date(calendarViewDate.value);d.setDate(1);d.setMonth(d.getMonth()+1);calendarViewDate.value=d;generateCalendar();};
   const resetMonth=()=>{calendarViewDate.value=new Date();generateCalendar();};
 
-  // ===== 搜索（员工只搜页面 + 待办） =====
   const searchAllResults=computed(()=>{
     const kw=searchQuery.value.trim().toLowerCase();
     const results=[];
@@ -1256,7 +1259,6 @@ setup(){
       }
       return results.slice(0,10);
     }
-    // 只有 admin 能搜项目
     if(isAdminView.value){
       projects.value.forEach(p=>{
         if(p.name.toLowerCase().includes(kw) || (p.owner||'').toLowerCase().includes(kw)){
@@ -1264,13 +1266,11 @@ setup(){
         }
       });
     }
-    // 待办：所有人（员工只搜自己的）
     filterByEffectiveUser(todos.value).forEach(t=>{
       if(t.task.toLowerCase().includes(kw) || t.projectName.toLowerCase().includes(kw)){
         results.push({type:'todo',typeLabel:'待办',title:t.task,desc:t.projectName,action:()=>{switchView('todos');closeSearch();}});
       }
     });
-    // 会议：只有 admin
     if(isAdminView.value){
       events.value.forEach(e=>{
         if(e.title.toLowerCase().includes(kw) || (e.location||'').toLowerCase().includes(kw)){
@@ -1412,7 +1412,6 @@ setup(){
   const getProjStages=(proj)=>Array.isArray(proj.stage)?proj.stage:[proj.stage];
   const getRingGray=(p)=>{if(p<25)return 'var(--border-strong)';if(p<50)return '#a0a0a0';if(p<75)return '#6b6b6b';return '#2a2a2a'};
 
-  // 只有真实 admin 能跳 checklist
   const goToProject=(projectId)=>{
     if(!isRealAdmin.value){
       alert('请联系主任查看项目详情');
@@ -1440,9 +1439,9 @@ setup(){
   });
 
   return{
-    users, currentUser, viewAsPinyin, effectiveUser, isAdminView, isRealAdmin,
+    users, currentUser, viewAsPinyin, viewAsCandidates, effectiveUser, isAdminView, isRealAdmin,
     loginPinyin, loginPassword, loginError,
-    doUserLogin, doLogout, changeViewAs,
+    doUserLogin, doLogout,
     currentView, sidebarOpen, visibleNavItems, switchView,
     setNavRef, highlightStyle, highlightReady,
     projects, todos, events, members, stages, newTodo, newProject,
