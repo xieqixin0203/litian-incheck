@@ -75,7 +75,6 @@ html[data-fontsize="large"]{font-size:24px}
 *{box-sizing:border-box}
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased;font-feature-settings:"cv11","ss01"}
 
-/* ============ 登录页 ============ */
 .login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
 .login-card{width:100%;max-width:380px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:36px 32px;box-shadow:rgba(15,15,15,.08) 0 12px 32px -4px}
 .login-logo{text-align:center;margin-bottom:26px}
@@ -93,7 +92,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 .login-hint{font-size:11.5px;opacity:.5;text-align:center;margin-top:16px;line-height:1.6}
 .login-hint code{background:var(--bg);padding:2px 6px;border-radius:4px;font-size:11px}
 
-/* ============ 侧栏 ============ */
 .sidebar{background:var(--sidebar-bg);color:var(--sidebar-text);width:248px;display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;transition:.3s}
 .sidebar-brand{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
 .sidebar-brand h1{font-size:18px;font-weight:700;letter-spacing:-0.3px;line-height:1.2;margin:0}
@@ -126,11 +124,9 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 .cal-nav{background:transparent;border:none;color:var(--sidebar-text);opacity:.5;cursor:pointer;font-size:14px;line-height:1;padding:0 4px;font-weight:700;transition:.15s}
 .cal-nav:hover{opacity:1}
 
-/* ============ 主内容区 ============ */
 .main-content{flex:1;padding:20px 24px;overflow:hidden;height:100vh;display:flex;flex-direction:column;gap:14px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;transition:.2s}
 
-/* ============ 顶部栏 ============ */
 .topbar{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .search-btn{flex:1;display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text-tertiary);font-size:14px;transition:.15s;text-align:left}
 .search-btn:hover{border-color:var(--border-strong)}
@@ -143,13 +139,11 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 .user-chip .logout:hover{color:var(--error);background:var(--bg)}
 .view-as-select{padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:12.5px;color:var(--text);cursor:pointer;font-family:inherit;outline:none}
 
-/* ============ 徽标/标签 ============ */
 .dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
 .dot-red{background:var(--dot-red)}.dot-blue{background:var(--dot-blue)}.dot-yellow{background:var(--dot-yellow)}
 .stage-tag{font-size:10.5px;padding:2.5px 9px;border-radius:9999px;font-weight:500;display:inline-block;letter-spacing:0}
 .sub-status-box{display:inline-block;margin-top:5px;padding:3px 10px;border-radius:6px;background:var(--tag-bg);color:var(--tag-text);font-size:11px;font-weight:500}
 
-/* ============ 精神零食 ============ */
 .hero-title{font-size:14px;font-weight:600;margin-bottom:10px;letter-spacing:-0.2px}
 .hero-img-wrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#ddd;cursor:pointer}
 .hero-img{width:100%;height:100%;object-fit:cover;transition:transform .4s;display:block}
@@ -157,7 +151,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 .hero-meta{font-size:13px;line-height:1.7;margin-top:10px}
 .hero-meta .author{opacity:.65}
 
-/* ============ 待办 ============ */
 .todo-project-group{margin-bottom:12px}
 .todo-project-title{font-size:13.5px;font-weight:700;margin:8px 0 6px;padding-left:2px;color:var(--primary);letter-spacing:-0.2px}
 .todo-row{font-size:12.5px;padding-left:14px;position:relative;display:flex;align-items:center;gap:7px;padding-top:4px;padding-bottom:4px;border-bottom:1px dashed var(--border);transition:.15s}
@@ -170,22 +163,18 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 .owner-chips{display:inline-flex;gap:4px;margin-left:6px;flex-wrap:wrap}
 .owner-chip{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--tag-bg);color:var(--tag-text);font-weight:600;white-space:nowrap}
 
-/* ============ 会议/出差 ============ */
 .event-row{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px dashed var(--border);transition:.15s}
 .event-row:last-child{border-bottom:none}
 .event-row:hover .edit-btn{opacity:1}
 
-/* ============ 归档 ============ */
 .arch-row{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px dashed var(--border);font-size:13px}
 .arch-row:last-child{border-bottom:none}
 
-/* ============ 滚动条 ============ */
 .scroll-area{overflow-y:auto;padding-right:4px}
 .scroll-area::-webkit-scrollbar{width:6px}
 .scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 .scroll-area::-webkit-scrollbar-thumb:hover{background:var(--border-strong)}
 
-/* ============ 模态框 ============ */
 .modal-mask{background:rgba(15,15,15,.55);backdrop-filter:blur(8px);position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:60;padding:16px;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:rgba(15,15,15,.2) 0 24px 48px -8px;animation:popIn .22s cubic-bezier(0.34,1.4,0.64,1)}
@@ -208,7 +197,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 .btn-ghost{font-size:12px;padding:5px 10px;border-radius:6px;background:transparent;color:var(--text-secondary);border:1px solid var(--border);cursor:pointer;font-weight:500;transition:.15s;font-family:inherit}
 .btn-ghost:hover{background:var(--bg);color:var(--text)}
 
-/* ============ 搜索 ============ */
 .search-overlay{position:fixed;inset:0;z-index:80;background:rgba(15,15,15,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:flex-start;justify-content:center;padding-top:12vh;animation:fadeIn .15s ease}
 .search-panel{width:100%;max-width:600px;margin:0 16px;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:rgba(15,15,15,.3) 0 24px 48px -8px;animation:popIn .2s cubic-bezier(0.34,1.4,0.64,1);max-height:70vh;display:flex;flex-direction:column}
 .search-input-wrap{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
@@ -238,6 +226,11 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 .empty-hint{text-align:center;padding:48px 20px;color:var(--text-tertiary)}
 .empty-hint .icon{font-size:40px;opacity:.3;margin-bottom:12px}
 
+/* 项目会议纪要卡片 */
+.meeting-proj-card{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;transition:.2s;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.meeting-proj-card:hover{border-color:var(--primary);transform:translateX(2px)}
+.meeting-proj-icon{width:40px;height:40px;border-radius:10px;background:var(--tag-bg);color:var(--tag-text);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;font-weight:700}
+
 @media(max-width:1024px){
   body{height:auto;overflow:auto}
   .main-content{padding:14px;overflow-y:auto;height:auto;min-height:100vh;gap:12px}
@@ -259,7 +252,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 <body>
 <div id="app" v-cloak>
 
-<!-- ============ 登录页 ============ -->
+<!-- 登录页 -->
 <div v-if="!currentUser" class="login-page">
   <div class="login-card">
     <div class="login-logo">
@@ -283,10 +276,9 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   </div>
 </div>
 
-<!-- ============ 主界面 ============ -->
+<!-- 主界面 -->
 <div v-else class="flex h-screen overflow-hidden">
 
-<!-- 侧栏 -->
 <aside class="sidebar" :class="{'open':sidebarOpen}">
   <div class="sidebar-brand">
     <h1>立田工作室</h1>
@@ -340,7 +332,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
   </div>
 </aside>
 
-<!-- 主内容 -->
 <main class="main-content">
   <div class="topbar">
     <button @click="sidebarOpen=!sidebarOpen" class="hamburger lg:hidden">☰</button>
@@ -360,49 +351,10 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
     </div>
   </div>
 
-  <!-- ========== 主页 ========== -->
+  <!-- ========== 主页（新布局：桌面待办在左，精神零食在右；移动端精神零食在上） ========== -->
   <div v-if="currentView==='home'" class="flex flex-col lg:flex-1 lg:min-h-0 lg:flex-row gap-4">
-    <!-- 左栏：admin 2/5，员工全宽 -->
-    <div class="flex flex-col gap-4 lg:min-h-0" :class="isAdminView ? 'lg:w-2/5' : 'lg:w-full'">
-      <div class="card p-4 lg:flex-shrink-0">
-        <div class="hero-title">精神零食</div>
-        <div v-if="currentHero" class="flex flex-col lg:flex-row gap-4">
-          <div class="hero-img-wrap lg:flex-[0_0_58%]" @click="nextHero">
-            <img :src="currentHero.url" alt="" class="hero-img" loading="lazy">
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="hero-meta">
-              <div class="font-bold">{{ currentHero.title }}</div>
-              <div v-if="currentHero.englishTitle" class="author">{{ currentHero.englishTitle }}</div>
-              <div v-if="currentHero.year" class="author">{{ currentHero.year }}<span v-if="currentHero.author">，{{ currentHero.author }}</span></div>
-            </div>
-          </div>
-        </div>
-        <div v-else class="text-xs opacity-50 text-center py-6">请在 heroes 文件夹里放入图片和 list.txt</div>
-      </div>
-
-      <div v-if="isAdminView" class="card p-4 lg:flex-shrink-0">
-        <div class="flex justify-between items-center mb-3">
-          <h3 class="font-bold text-sm">会议/出差安排</h3>
-          <button @click="openAddEvent" class="btn-ghost" style="font-size:15px;padding:2px 9px;line-height:1">+</button>
-        </div>
-        <div v-if="activeEvents.length === 0" class="text-xs opacity-50 text-center py-3">暂无安排</div>
-        <div v-else>
-          <div v-for="ev in activeEvents" :key="ev.id" class="event-row">
-            <input type="checkbox" @change="toggleEvent(ev)" class="mt-0.5 w-4 h-4 cursor-pointer flex-shrink-0" style="accent-color:var(--primary)">
-            <div class="flex-1 min-w-0">
-              <div class="flex items-baseline gap-2">
-                <span class="text-[13px] font-semibold truncate flex-1">{{ ev.title }}</span>
-                <span class="text-[11px] font-medium flex-shrink-0" style="color:var(--primary)">{{ formatEventTimeShort(ev) }}</span>
-              </div>
-              <div class="text-[11px] opacity-55 truncate mt-0.5">📍 {{ ev.location || '未填地点' }}</div>
-            </div>
-            <button @click="editEvent(ev)" class="edit-btn">✎</button>
-            <button @click="deleteEvent(ev)" class="edit-btn" style="color:var(--error)">✕</button>
-          </div>
-        </div>
-      </div>
-
+    <!-- 待办（桌面左，移动下） -->
+    <div class="order-2 lg:order-1 flex flex-col lg:min-h-0" :class="isAdminView ? 'lg:w-2/5' : 'lg:flex-1'">
       <div class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
         <div class="flex justify-between items-center mb-3 flex-shrink-0">
           <h3 class="font-bold text-sm">{{ isAdminView ? '最近待办' : '我的待办' }}</h3>
@@ -438,27 +390,71 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
       </div>
     </div>
 
-    <!-- 右栏：项目进度（仅 admin 可见） -->
-    <div v-if="isAdminView" class="flex flex-col lg:w-3/5 lg:min-h-0">
-      <h3 class="font-bold text-sm mb-3 flex-shrink-0">项目进度</h3>
-      <div class="lg:flex-1 lg:min-h-0 lg:overflow-y-auto pr-1">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div v-for="proj in projects" :key="proj.id" class="card p-4 cursor-pointer transition flex items-center gap-3 relative" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
-            <button @click.stop="editProject(proj)" class="proj-edit-btn">✎</button>
-            <div class="relative w-14 h-14 flex-shrink-0">
-              <svg class="ring-svg w-14 h-14" viewBox="0 0 36 36">
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--border)" stroke-width="3"></circle>
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3" :stroke="getRingGray(proj.progress)" :stroke-dasharray="100" :stroke-dashoffset="100-proj.progress" stroke-linecap="round"></circle>
-              </svg>
-              <div class="absolute inset-0 flex items-center justify-center text-xs font-bold">{{ proj.progress }}%</div>
+    <!-- 右栏：精神零食 + 会议/出差(admin) + 项目进度(admin) -->
+    <div class="order-1 lg:order-2 flex flex-col gap-4 lg:min-h-0" :class="isAdminView ? 'lg:w-3/5' : 'lg:w-80'">
+      <!-- 精神零食 -->
+      <div class="card p-4 lg:flex-shrink-0">
+        <div class="hero-title">精神零食</div>
+        <div v-if="currentHero" class="flex flex-col gap-4">
+          <div class="hero-img-wrap" @click="nextHero">
+            <img :src="currentHero.url" alt="" class="hero-img" loading="lazy">
+          </div>
+          <div>
+            <div class="hero-meta">
+              <div class="font-bold">{{ currentHero.title }}</div>
+              <div v-if="currentHero.englishTitle" class="author">{{ currentHero.englishTitle }}</div>
+              <div v-if="currentHero.year" class="author">{{ currentHero.year }}<span v-if="currentHero.author">，{{ currentHero.author }}</span></div>
             </div>
+          </div>
+        </div>
+        <div v-else class="text-xs opacity-50 text-center py-6">请在 heroes 文件夹里放入图片和 list.txt</div>
+      </div>
+
+      <!-- 会议/出差：仅 admin -->
+      <div v-if="isAdminView" class="card p-4 lg:flex-shrink-0">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-bold text-sm">会议/出差安排</h3>
+          <button @click="openAddEvent" class="btn-ghost" style="font-size:15px;padding:2px 9px;line-height:1">+</button>
+        </div>
+        <div v-if="activeEvents.length === 0" class="text-xs opacity-50 text-center py-3">暂无安排</div>
+        <div v-else>
+          <div v-for="ev in activeEvents" :key="ev.id" class="event-row">
+            <input type="checkbox" @change="toggleEvent(ev)" class="mt-0.5 w-4 h-4 cursor-pointer flex-shrink-0" style="accent-color:var(--primary)">
             <div class="flex-1 min-w-0">
-              <div class="font-bold text-sm truncate">{{ proj.name }}</div>
-              <div class="text-[11px] opacity-55 mt-1">开始：{{ proj.startDate }}</div>
-              <div class="flex gap-1 flex-wrap mt-1.5">
-                <span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
+              <div class="flex items-baseline gap-2">
+                <span class="text-[13px] font-semibold truncate flex-1">{{ ev.title }}</span>
+                <span class="text-[11px] font-medium flex-shrink-0" style="color:var(--primary)">{{ formatEventTimeShort(ev) }}</span>
               </div>
-              <div v-if="proj.subStatus" class="sub-status-box">📌 {{ proj.subStatus }}</div>
+              <div class="text-[11px] opacity-55 truncate mt-0.5">📍 {{ ev.location || '未填地点' }}</div>
+            </div>
+            <button @click="editEvent(ev)" class="edit-btn">✎</button>
+            <button @click="deleteEvent(ev)" class="edit-btn" style="color:var(--error)">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 项目进度：仅 admin -->
+      <div v-if="isAdminView" class="flex flex-col lg:flex-1 lg:min-h-0">
+        <h3 class="font-bold text-sm mb-3 flex-shrink-0">项目进度</h3>
+        <div class="lg:flex-1 lg:min-h-0 lg:overflow-y-auto pr-1">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div v-for="proj in projects" :key="proj.id" class="card p-4 cursor-pointer transition flex items-center gap-3 relative" :style="getProjectStyle(proj)" @click="goToProject(proj.id)">
+              <button @click.stop="editProject(proj)" class="proj-edit-btn">✎</button>
+              <div class="relative w-14 h-14 flex-shrink-0">
+                <svg class="ring-svg w-14 h-14" viewBox="0 0 36 36">
+                  <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--border)" stroke-width="3"></circle>
+                  <circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3" :stroke="getRingGray(proj.progress)" :stroke-dasharray="100" :stroke-dashoffset="100-proj.progress" stroke-linecap="round"></circle>
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center text-xs font-bold">{{ proj.progress }}%</div>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="font-bold text-sm truncate">{{ proj.name }}</div>
+                <div class="text-[11px] opacity-55 mt-1">开始：{{ proj.startDate }}</div>
+                <div class="flex gap-1 flex-wrap mt-1.5">
+                  <span v-for="s in getProjStages(proj)" :key="s" class="stage-tag" :class="getStageColor(s)">{{ s }}</span>
+                </div>
+                <div v-if="proj.subStatus" class="sub-status-box">📌 {{ proj.subStatus }}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -505,6 +501,27 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
             </div>
           </template>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 项目会议纪要（员工专用） ========== -->
+  <div v-if="currentView==='meetings'" class="flex-1 min-h-0 overflow-y-auto">
+    <h1 class="text-2xl font-bold mb-2" style="letter-spacing:-0.5px">项目会议纪要</h1>
+    <p class="text-xs opacity-55 mb-5">你是以下项目的成员，可以查看会议纪要内容。</p>
+    <div v-if="myMeetingProjects.length === 0" class="empty-hint">
+      <div class="icon">📭</div>
+      <div class="text-sm">暂无项目</div>
+      <p class="text-xs mt-2">请联系主任把你加入项目</p>
+    </div>
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div v-for="proj in myMeetingProjects" :key="proj.id" class="meeting-proj-card" @click="goToMeeting(proj.id)">
+        <div class="meeting-proj-icon">📋</div>
+        <div class="flex-1 min-w-0">
+          <div class="font-bold text-sm truncate">{{ proj.name }}</div>
+          <div class="text-[11px] opacity-55 mt-1">阶段：{{ getProjStages(proj).join('、') }}</div>
+        </div>
+        <div class="text-xs opacity-40">→</div>
       </div>
     </div>
   </div>
@@ -569,6 +586,9 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
         <p v-if="proj.note" class="text-xs opacity-55 mb-2 truncate">{{ proj.note }}</p>
         <div v-if="proj.subStatus" class="sub-status-box mb-3">📌 具体状态：{{ proj.subStatus }}</div>
         <p v-else class="text-xs opacity-40 mb-3">（未填写具体状态）</p>
+        <div v-if="(proj.members||[]).length" class="text-xs opacity-55 mb-2 truncate">
+          👥 成员：{{ (proj.members||[]).join('、') }}
+        </div>
         <div class="flex gap-2 text-xs">
           <span class="px-2.5 py-1 rounded-md font-medium status-toggle clickable"
                 :class="proj.filed?'bg-green-100 text-green-700':'bg-gray-100 text-gray-500'"
@@ -585,7 +605,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
     </div>
   </div>
 
-  <!-- ========== 备忘录（所有人可见） ========== -->
+  <!-- ========== 备忘录 ========== -->
   <div v-if="currentView==='memo'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-0.5px">工作室备忘录</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -637,7 +657,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 </main>
 </div>
 
-<!-- ============ 搜索面板 ============ -->
+<!-- 搜索面板 -->
 <transition name="fade">
   <div v-if="showSearch" class="search-overlay" @click.self="closeSearch">
     <div class="search-panel">
@@ -777,6 +797,16 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
           </label>
         </div>
       </div>
+      <div>
+        <label class="form-label">项目成员（勾选后，可看此项目的会议纪要）</label>
+        <div class="assignee-picker">
+          <button v-for="m in members" :key="m"
+                  @click="toggleProjectMember(m)"
+                  :class="['assignee-pick', isProjectMember(m) ? 'on' : '']">
+            {{ m }}
+          </button>
+        </div>
+      </div>
       <div><label class="form-label">具体状态</label><input v-model="editingProject.subStatus" placeholder="如：施工收尾，室内深化中" class="form-input"></div>
       <div><label class="form-label">进度百分比</label><input v-model.number="editingProject.progress" type="number" min="0" max="100" class="form-input"></div>
       <div><label class="form-label">备注</label><input v-model="editingProject.note" class="form-input"></div>
@@ -822,7 +852,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"PingFang SC","Microso
 const {createApp,ref,computed,onMounted,onUnmounted,watch,nextTick}=Vue;
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
-const DATA_VERSION='2026-10-09-v17';
+const DATA_VERSION='2026-10-09-v18';
 
 const defaultUsers=[
   {name:'刘文辉', pinyin:'liuwenhui', password:'litian2026', role:'admin'},
@@ -857,6 +887,7 @@ const adminNavItems=[
 const memberNavItems=[
   {key:'home', label:'主页'},
   {key:'todos', label:'我的待办'},
+  {key:'meetings', label:'项目会议纪要'},
   {key:'memo', label:'备忘录'},
   {key:'archive', label:'已归档'},
   {key:'settings', label:'设置'}
@@ -868,19 +899,19 @@ const categoryBorderColor={'shenling':'#8fa3c8','industrial':'#a3b8a3','renovati
 const stageColor={'一、前期强排':'bg-gray-200 text-gray-600','二、方案设计':'bg-blue-100 text-blue-700','三、方案深化':'bg-blue-200 text-blue-800','四、报建图':'bg-blue-400 text-white','五、施工图（含幕墙深化）':'bg-indigo-500 text-white','六、室内设计':'bg-orange-300 text-orange-900','七、室内设计施工图':'bg-orange-500 text-white','八、施工中':'bg-gray-700 text-white'};
 
 const defaultProjects=[
-{id:'sl4',name:'申菱四基地',stage:['三、方案深化'],subStatus:'方案重做深化',owner:'刘文辉',note:'',filed:false,contracted:true,progress:40,startDate:'2026-03'},
-{id:'slzb',name:'申菱总部改造',stage:['六、室内设计','七、室内设计施工图','八、施工中'],subStatus:'施工收尾，室内深化中',owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08'},
-{id:'sl5',name:'申菱五基地',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:10,startDate:'2026-08'},
-{id:'slgz',name:'申菱高州二期',stage:['八、施工中'],subStatus:'施工中',owner:'黄建敏',note:'',filed:true,contracted:true,progress:70,startDate:'2025-11'},
-{id:'prsp',name:'屏荣食品顺德新厂',stage:['五、施工图（含幕墙深化）'],subStatus:'规划变更+施工图审图，准备室内深化',owner:'梁婷玉',note:'',filed:true,contracted:true,progress:60,startDate:'2025-06'},
-{id:'yj',name:'远江幕墙南海新厂',stage:['八、施工中'],subStatus:'施工中',owner:'谢启欣',note:'',filed:true,contracted:true,progress:75,startDate:'2025-04'},
-{id:'whg',name:'顺德文化馆修缮活化',stage:['四、报建图'],subStatus:'合同签订中',owner:'欧阳琳',note:'',filed:false,contracted:false,progress:20,startDate:'2026-05'},
-{id:'stc',name:'顺德糖厂',stage:['四、报建图'],subStatus:'合同签订中',owner:'欧阳琳',note:'',filed:false,contracted:false,progress:15,startDate:'2026-06'},
-{id:'skwj',name:'顺控危旧房',stage:['五、施工图（含幕墙深化）'],subStatus:'图纸绘制',owner:'梁富成',note:'',filed:true,contracted:true,progress:55,startDate:'2026-02'},
-{id:'spmy',name:'升平名扬里历史街区一期',stage:['八、施工中'],subStatus:'施工中',owner:'刘文辉',note:'',filed:true,contracted:true,progress:80,startDate:'2025-09'},
-{id:'fp',name:'方普',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:5,startDate:'2026-09'},
-{id:'rk',name:'容控小地块厂房加商业',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:15,startDate:'2026-09'},
-{id:'sq',name:'社-顺德本土文化策展',stage:['三、方案深化'],subStatus:'建模阶段',owner:'梁婷玉',note:'',filed:false,contracted:false,progress:30,startDate:'2026-07'}
+{id:'sl4',name:'申菱四基地',stage:['三、方案深化'],subStatus:'方案重做深化',owner:'刘文辉',note:'',filed:false,contracted:true,progress:40,startDate:'2026-03',members:['谢启欣']},
+{id:'slzb',name:'申菱总部改造',stage:['六、室内设计','七、室内设计施工图','八、施工中'],subStatus:'施工收尾，室内深化中',owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08',members:['梁婷玉','谢启欣']},
+{id:'sl5',name:'申菱五基地',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:10,startDate:'2026-08',members:['谢启欣']},
+{id:'slgz',name:'申菱高州二期',stage:['八、施工中'],subStatus:'施工中',owner:'黄建敏',note:'',filed:true,contracted:true,progress:70,startDate:'2025-11',members:['黄建敏']},
+{id:'prsp',name:'屏荣食品顺德新厂',stage:['五、施工图（含幕墙深化）'],subStatus:'规划变更+施工图审图，准备室内深化',owner:'梁婷玉',note:'',filed:true,contracted:true,progress:60,startDate:'2025-06',members:['谢启欣','梁婷玉','欧阳琳']},
+{id:'yj',name:'远江幕墙南海新厂',stage:['八、施工中'],subStatus:'施工中',owner:'谢启欣',note:'',filed:true,contracted:true,progress:75,startDate:'2025-04',members:['谢启欣']},
+{id:'whg',name:'顺德文化馆修缮活化',stage:['四、报建图'],subStatus:'合同签订中',owner:'欧阳琳',note:'',filed:false,contracted:false,progress:20,startDate:'2026-05',members:['欧阳琳']},
+{id:'stc',name:'顺德糖厂',stage:['四、报建图'],subStatus:'合同签订中',owner:'欧阳琳',note:'',filed:false,contracted:false,progress:15,startDate:'2026-06',members:['欧阳琳']},
+{id:'skwj',name:'顺控危旧房',stage:['五、施工图（含幕墙深化）'],subStatus:'图纸绘制',owner:'梁富成',note:'',filed:true,contracted:true,progress:55,startDate:'2026-02',members:['梁富成']},
+{id:'spmy',name:'升平名扬里历史街区一期',stage:['八、施工中'],subStatus:'施工中',owner:'刘文辉',note:'',filed:true,contracted:true,progress:80,startDate:'2025-09',members:[]},
+{id:'fp',name:'方普',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:5,startDate:'2026-09',members:[]},
+{id:'rk',name:'容控小地块厂房加商业',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:15,startDate:'2026-09',members:['梁婷玉','欧阳琳']},
+{id:'sq',name:'社-顺德本土文化策展',stage:['三、方案深化'],subStatus:'建模阶段',owner:'梁婷玉',note:'',filed:false,contracted:false,progress:30,startDate:'2026-07',members:['梁婷玉']}
 ];
 
 const defaultTodos=[
@@ -911,7 +942,7 @@ const migrateTodos=(arr)=>{
 };
 const migrateProjects=(arr)=>{
   if(!Array.isArray(arr)) return arr;
-  return arr.map(p=>({...p,stage:Array.isArray(p.stage)?p.stage:[p.stage],subStatus:p.subStatus||''}));
+  return arr.map(p=>({...p,stage:Array.isArray(p.stage)?p.stage:[p.stage],subStatus:p.subStatus||'',members:Array.isArray(p.members)?p.members:[]}));
 };
 const migrateEvents=(arr)=>{
   if(!Array.isArray(arr)) return [];
@@ -925,7 +956,6 @@ setup(){
     localStorage.setItem('studio_data_version',DATA_VERSION);
   }
 
-  // ===== 用户系统 =====
   const users=ref([]);
   const currentUser=ref(null);
   const viewAsPinyin=ref('');
@@ -975,13 +1005,11 @@ setup(){
     localStorage.removeItem('studio_current_user');
   };
 
-  // 视角候选：主任可选其他5人；副主任可选除刘文辉外的其他人
   const viewAsCandidates=computed(()=>{
     if(!currentUser.value || currentUser.value.role!=='admin') return [];
     const me=currentUser.value;
     return users.value.filter(u=>{
-      if(u.pinyin === me.pinyin) return false; // 排除自己
-      // 副主任（谢启欣）不能查看主任（刘文辉）视角
+      if(u.pinyin === me.pinyin) return false;
       if(me.pinyin === 'xieqixin' && u.pinyin === 'liuwenhui') return false;
       return true;
     });
@@ -1121,6 +1149,15 @@ setup(){
     const g={};
     doneTodos.value.forEach(t=>{ if(!g[t.projectName])g[t.projectName]=[]; g[t.projectName].push(t); });
     return g;
+  });
+
+  // 我参与会议纪要的项目：members 包含我
+  const myMeetingProjects=computed(()=>{
+    if(!effectiveUser.value) return [];
+    const me = effectiveUser.value.name;
+    // admin 看所有
+    if(isAdminView.value) return projects.value;
+    return projects.value.filter(p => Array.isArray(p.members) && p.members.includes(me));
   });
 
   const activeEvents=computed(()=>events.value.filter(e=>!e.done).sort((a,b)=>{
@@ -1313,6 +1350,21 @@ setup(){
     if(i>=0) owners.splice(i,1); else owners.push(name);
     t.owner=owners.join(',');
   };
+
+  // 项目成员勾选
+  const isProjectMember=(name)=>{
+    if(!editingProject.value) return false;
+    if(!Array.isArray(editingProject.value.members)) editingProject.value.members = [];
+    return editingProject.value.members.includes(name);
+  };
+  const toggleProjectMember=(name)=>{
+    if(!editingProject.value) return;
+    if(!Array.isArray(editingProject.value.members)) editingProject.value.members = [];
+    const arr = editingProject.value.members;
+    const i = arr.indexOf(name);
+    if(i>=0) arr.splice(i,1); else arr.push(name);
+  };
+
   const closeTodoModal=()=>{ editingTodo.value=null; showAddTodo.value=false; };
   const saveTodo=()=>{
     const t=editingTodo.value||newTodo.value;
@@ -1364,11 +1416,15 @@ setup(){
 
   const addProject=()=>{
     if(!newProject.value.name.trim())return alert('请填写项目名称');
-    projects.value.push({id:'proj-'+Date.now(),name:newProject.value.name,stage:[newProject.value.stage],subStatus:'',owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7)});
+    projects.value.push({id:'proj-'+Date.now(),name:newProject.value.name,stage:[newProject.value.stage],subStatus:'',owner:newProject.value.owner,note:'',filed:false,contracted:false,progress:0,startDate:new Date().toISOString().slice(0,7),members:[]});
     newProject.value={name:'',stage:stages[0],owner:''};
     showAddProject.value=false; saveData();
   };
-  const editProject=(proj)=>{editingProject.value=JSON.parse(JSON.stringify(proj))};
+  const editProject=(proj)=>{
+    const copy=JSON.parse(JSON.stringify(proj));
+    if(!Array.isArray(copy.members)) copy.members=[];
+    editingProject.value=copy;
+  };
   const saveProjectEdit=()=>{
     const idx=projects.value.findIndex(p=>p.id===editingProject.value.id);
     if(idx>=0)projects.value[idx]={...editingProject.value};
@@ -1420,6 +1476,11 @@ setup(){
     window.location.href=`./checklist.html?project=${projectId}`;
   };
 
+  // 员工点击会议纪要项目卡片 → 跳到 checklist.html 的会议纪要 tab
+  const goToMeeting=(projectId)=>{
+    window.location.href=`./checklist.html?project=${projectId}&tab=meeting`;
+  };
+
   onMounted(async()=>{
     document.documentElement.setAttribute('data-fontsize',fontSize.value);
     document.documentElement.setAttribute('data-theme',theme.value);
@@ -1445,7 +1506,7 @@ setup(){
     currentView, sidebarOpen, visibleNavItems, switchView,
     setNavRef, highlightStyle, highlightReady,
     projects, todos, events, members, stages, newTodo, newProject,
-    pendingTodos, doneTodos, groupedTodos, groupedDoneTodos,
+    pendingTodos, doneTodos, groupedTodos, groupedDoneTodos, myMeetingProjects,
     activeEvents, doneEvents, formatEventTimeShort,
     showAddTodo, showAddProject, editingTodo, editingSubTask, editingProject,
     linkDialogTarget, linkDialogValue,
@@ -1454,6 +1515,7 @@ setup(){
     openSearch, closeSearch, onSearchInput, searchNext, searchPrev, searchConfirm, selectResult, highlightMatch,
     toggleTodo, deleteTodo, editTodo, editSubTask, saveSubTask,
     isAssigneeSelected, toggleAssignee, closeTodoModal, saveTodo, openNewTodo,
+    isProjectMember, toggleProjectMember,
     openLinkDialog, saveLink, deleteLink,
     editProject, saveProjectEdit, deleteProjectConfirm, toggleFiled, toggleContracted, addProject,
     openAddEvent, editEvent, closeEventModal, saveEvent, toggleEvent, deleteEvent,
@@ -1461,7 +1523,8 @@ setup(){
     currentMonthName, todayDate, calendarDays, prevMonth, nextMonth, resetMonth,
     fontSize, setFontSize, theme, setTheme,
     pwdOld, pwdNew, pwdNew2, pwdMsg, pwdMsgOk, changePassword,
-    parseOwner, getDotColor, getProjectStyle, getStageColor, getProjStages, getRingGray, goToProject
+    parseOwner, getDotColor, getProjectStyle, getStageColor, getProjStages, getRingGray,
+    goToProject, goToMeeting
   };
 }
 }).mount('#app');
