@@ -18,7 +18,6 @@
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js" defer></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/lunar-javascript/1.6.12/lunar.js" defer></script>
 <style>
 [v-cloak]{display:none !important}
 html{font-size:16px}
@@ -69,6 +68,12 @@ html[data-fontsize="large"]{font-size:24px}
 
 *{box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* 启动页 */
+#boot-splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;background:var(--bg);color:var(--text)}
+.boot-spinner{width:2rem;height:2rem;border:3px solid color-mix(in srgb, var(--primary) 25%, transparent);border-top-color:var(--primary);border-radius:50%;animation:boot-spin .8s linear infinite}
+@keyframes boot-spin{to{transform:rotate(360deg)}}
+.boot-text{font-size:.875rem;opacity:.6}
 
 .login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.25rem;background:var(--bg)}
 .login-card{width:100%;max-width:23.75rem;background:var(--card);border:1px solid var(--border);border-radius:.875rem;padding:2.25rem 2rem;box-shadow:rgba(15,15,15,.08) 0 .75rem 2rem -.25rem}
@@ -145,7 +150,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .sub-circle.done{background:#4caf50;border-color:#3d8f40}
 .sub-text-done{text-decoration:line-through;opacity:.5}
 
-/* 数目圆圈：颜色跟随主题 */
 .count-circle{
   display:inline-flex;align-items:center;justify-content:center;
   min-width:1.375rem;height:1.375rem;padding:0 .375rem;
@@ -254,7 +258,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .meeting-proj-card:hover{border-color:var(--primary);transform:translateX(2px)}
 .meeting-proj-icon{width:2.5rem;height:2.5rem;border-radius:.625rem;background:var(--tag-bg);color:var(--tag-text);display:flex;align-items:center;justify-content:center;font-size:1.125rem;flex-shrink:0;font-weight:700}
 
-/* ====== 项目总览（桌面端一行；手机端三行） ====== */
+/* 项目总览 */
 .project-item{margin-bottom:.375rem;position:relative}
 .project-row{display:flex;align-items:center;gap:.75rem;padding:.5rem .875rem;background:var(--card);border:1px solid var(--border);border-radius:.625rem;cursor:pointer;transition:.15s}
 .project-row:hover{border-color:var(--primary)}
@@ -279,7 +283,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .item-check{display:flex;align-items:flex-start;gap:.375rem;padding:.25rem 0;font-size:.75rem;cursor:pointer;line-height:1.4}
 .item-check input{margin-top:.1875rem;flex-shrink:0}
 
-/* ====== 手机端（<1024px） ====== */
 @media(max-width:1023.98px){
   html{font-size:14px}
   html[data-fontsize="small"]{font-size:14px}
@@ -298,9 +301,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   .topbar{gap:.5rem}
   .user-chip{padding:.375rem .5rem;font-size:.75rem}
   .user-chip .name{max-width:4.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  /* 关键：防止 flex 子元素溢出把内容挤到右边 */
   .main-content > *, .card > *, .todo-row > *, .event-row > *, .arch-row > *{min-width:0}
-  /* 项目行：手机端重排成三行 */
   .project-row{flex-wrap:wrap;align-items:center;gap:.5rem;padding:.625rem .75rem}
   .project-row-head{flex-basis:100%;width:100%}
   .project-row-name{flex:1 1 auto;min-width:0;width:auto}
@@ -318,6 +319,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 </style>
 </head>
 <body>
+
+<!-- 启动页 -->
+<div id="boot-splash">
+  <div class="boot-spinner"></div>
+  <div class="boot-text">正在加载…</div>
+</div>
+<script>
+  // 兜底：即使 Vue 加载失败，8 秒后也隐藏启动页
+  setTimeout(function(){
+    var s=document.getElementById('boot-splash');
+    if(s) s.remove();
+  }, 8000);
+</script>
+
 <div id="app" v-cloak>
 
 <div v-if="!currentUser" class="login-page">
@@ -420,7 +435,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   <!-- ========== 主页 ========== -->
   <div v-if="currentView==='home'" class="flex flex-col lg:flex-1 lg:min-h-0 lg:flex-row gap-4">
 
-    <!-- ============ 员工视图：待办在上，精神零食在下 ============ -->
     <template v-if="!isPrivilegedView">
       <div class="lg:order-1 lg:w-3/5 flex flex-col lg:min-h-0">
         <div class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
@@ -489,7 +503,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
     </template>
 
-    <!-- ============ 特权视图 ============ -->
     <template v-else>
       <div class="order-1 col-my-todo flex flex-col lg:min-h-0">
         <div class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
@@ -623,7 +636,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
         </div>
       </div>
 
-      <!-- 列3：会议/出差 在上，精神零食 在下 -->
       <div class="order-3 col-hero flex flex-col gap-4 lg:min-h-0">
         <div class="card p-4">
           <div class="flex justify-between items-center mb-3">
@@ -979,7 +991,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
-<!-- 编辑/新建待办（普通型） -->
+<!-- 编辑/新建待办 -->
 <div v-if="editingTodo || showAddTodo" v-cloak class="modal-mask" @click.self="closeTodoModal">
   <div class="modal-card">
     <h3 class="modal-title">{{ editingTodo ? '编辑待办' : '新建待办' }}</h3>
@@ -1156,9 +1168,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 
 <script>
 const {createApp,ref,computed,onMounted,onUnmounted,watch,nextTick}=Vue;
+
+// ============ 带超时的 fetch ============
+const fetchT=(url,opts,ms=5000)=>{
+  return Promise.race([
+    fetch(url,opts),
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),ms))
+  ]);
+};
+
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
-const DATA_VERSION='2026-10-15-v25';
+const DATA_VERSION='2026-10-16-v26';
 
 const defaultUsers=[
   {name:'刘文辉', pinyin:'liuwenhui', password:'litian2026', role:'admin'},
@@ -1439,7 +1460,7 @@ setup(){
 
   const loadUsers=async()=>{
     try{
-      const res=await fetch('/api/sync?type=users&project=global');
+      const res=await fetchT('/api/sync?type=users&project=global');
       const data=await res.json();
       if(Array.isArray(data)&&data.length){
         users.value=data.map(u=>u.pinyin==='ouyanglin'&&u.role!=='manager'?{...u,role:'manager'}:u);
@@ -1449,7 +1470,7 @@ setup(){
   };
   const saveUsersToCloud=async()=>{
     try{
-      await fetch('/api/sync?type=users&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(users.value)});
+      await fetchT('/api/sync?type=users&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(users.value)});
     }catch(e){}
   };
 
@@ -1482,10 +1503,16 @@ setup(){
   const restoreLogin=()=>{
     try{
       const saved=JSON.parse(localStorage.getItem('studio_current_user')||'null');
-      if(saved && saved.pinyin){
+      if(!saved || !saved.pinyin) return;
+      if(saved.name && saved.role){
+        // 新格式：完整 user 对象，直接恢复
+        currentUser.value=saved;
+      }else{
+        // 旧格式兼容：需要 users 已加载
         const u=users.value.find(x=>x.pinyin===saved.pinyin);
-        if(u){ currentUser.value=u; viewAsPinyin.value=''; }
+        if(u) currentUser.value=u;
       }
+      viewAsPinyin.value='';
     }catch(e){}
     applyUserPrefs();
   };
@@ -1502,7 +1529,7 @@ setup(){
     if(u.password!==loginPassword.value){ loginError.value='密码错误'; return; }
     currentUser.value=u;
     viewAsPinyin.value='';
-    localStorage.setItem('studio_current_user',JSON.stringify({pinyin:u.pinyin}));
+    localStorage.setItem('studio_current_user',JSON.stringify(u));
     applyUserPrefs();
     loginError.value=''; loginPinyin.value=''; loginPassword.value='';
   };
@@ -1595,24 +1622,24 @@ setup(){
   const newTodo=ref({task:'',projectId:'',owner:'',important:false});
 
   const saveProjectsToCloud=async()=>{
-    try{await fetch('/api/sync?type=projects&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(projects.value)});}catch(e){}
+    try{await fetchT('/api/sync?type=projects&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(projects.value)});}catch(e){}
   };
   const saveTodosToCloud=async()=>{
-    try{await fetch('/api/sync?type=todos&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(todos.value)});}catch(e){}
+    try{await fetchT('/api/sync?type=todos&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(todos.value)});}catch(e){}
   };
   const saveEventsToCloud=async()=>{
-    try{await fetch('/api/sync?type=events&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(events.value)});}catch(e){}
+    try{await fetchT('/api/sync?type=events&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(events.value)});}catch(e){}
   };
   const saveProjectOrderToCloud=async()=>{
-    try{await fetch('/api/sync?type=projectOrder&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(projectOrder.value)});}catch(e){}
+    try{await fetchT('/api/sync?type=projectOrder&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(projectOrder.value)});}catch(e){}
   };
   const saveTodoOrderToCloud=async()=>{
-    try{await fetch('/api/sync?type=todoOrder&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(todoOrder.value)});}catch(e){}
+    try{await fetchT('/api/sync?type=todoOrder&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(todoOrder.value)});}catch(e){}
   };
 
   const loadProjectsAndTodosFromCloud=async()=>{
     try{
-      const r1=await fetch('/api/sync?type=projects&project=global');
+      const r1=await fetchT('/api/sync?type=projects&project=global');
       const d1=await r1.json();
       if(Array.isArray(d1)&&d1.length){
         projects.value=migrateProjects(d1);
@@ -1620,7 +1647,7 @@ setup(){
       }else{await saveProjectsToCloud();}
     }catch(e){}
     try{
-      const r2=await fetch('/api/sync?type=todos&project=global');
+      const r2=await fetchT('/api/sync?type=todos&project=global');
       const d2=await r2.json();
       if(Array.isArray(d2)){
         todos.value=migrateTodos(d2);
@@ -1628,7 +1655,7 @@ setup(){
       }else{await saveTodosToCloud();}
     }catch(e){}
     try{
-      const r3=await fetch('/api/sync?type=projectOrder&project=global');
+      const r3=await fetchT('/api/sync?type=projectOrder&project=global');
       const d3=await r3.json();
       if(Array.isArray(d3)&&d3.length){
         projectOrder.value=d3;
@@ -1636,7 +1663,7 @@ setup(){
       }
     }catch(e){}
     try{
-      const r4=await fetch('/api/sync?type=todoOrder&project=global');
+      const r4=await fetchT('/api/sync?type=todoOrder&project=global');
       const d4=await r4.json();
       if(Array.isArray(d4)&&d4.length){
         todoOrder.value=d4;
@@ -1647,7 +1674,7 @@ setup(){
 
   const loadEvents=async()=>{
     try{
-      const res=await fetch('/api/sync?type=events&project=global');
+      const res=await fetchT('/api/sync?type=events&project=global');
       const data=await res.json();
       if(Array.isArray(data)&&data.length){events.value=migrateEvents(data);}
       else{events.value=migrateEvents(defaultEvents);saveEventsToCloud();}
@@ -1907,7 +1934,7 @@ setup(){
   };
   const loadHeroes=async()=>{
     try{
-      const res=await fetch('./heroes/list.txt');
+      const res=await fetchT('./heroes/list.txt');
       if(!res.ok) throw new Error('not found');
       const text=await res.text();
       heroes.value=parseListTxt(text);
@@ -1936,17 +1963,6 @@ setup(){
   const todayDate=ref('');
   const calendarDays=ref([]);
   const calendarViewDate=ref(new Date());
-  const getLunarLabel=(y,m,d)=>{
-    try{
-      if(typeof Solar==='undefined') return '';
-      const solar=Solar.fromYmd(y,m,d);
-      const lunar=solar.getLunar();
-      const day=lunar.getDayInChinese();
-      if(day==='初一') return lunar.getMonthInChinese()+'月';
-      const jq=lunar.getJieQi(); if(jq) return jq;
-      return day;
-    }catch(e){return '';}
-  };
   const generateCalendar=()=>{
     const now=new Date();
     const todayY=now.getFullYear(),todayM=now.getMonth(),todayD=now.getDate();
@@ -1968,7 +1984,7 @@ setup(){
       const isWorkday=h&&h.type==='workday';
       const isWeekend=(dow===0||dow===6)&&!isWorkday;
       let label='';
-      if(isHoliday) label=h.name; else if(isWorkday) label=h.name||'班'; else label=getLunarLabel(y,m+1,d);
+      if(isHoliday) label=h.name; else if(isWorkday) label=h.name||'班';
       days.push({date:d,isCurrent:true,isToday:isCurrentMonth&&d===todayD,isWeekend:isWeekend&&!isHoliday,isHoliday,isWorkday,label});
     }
     calendarDays.value=days;
@@ -2278,6 +2294,8 @@ setup(){
     if(!u){ pwdMsg.value='用户不存在'; return; }
     u.password=pwdNew.value;
     currentUser.value=u;
+    // 同步更新本地缓存的完整 user
+    localStorage.setItem('studio_current_user',JSON.stringify(u));
     saveUsersToCloud();
     pwdMsg.value='密码已更新'; pwdMsgOk.value=true;
     pwdOld.value=''; pwdNew.value=''; pwdNew2.value='';
@@ -2305,13 +2323,30 @@ setup(){
   };
 
   onMounted(async()=>{
+    // 1. 立刻恢复登录态（本地缓存），字体主题立刻生效
+    restoreLogin();
     applyUserPrefs();
     generateCalendar();
-    await loadUsers();
-    restoreLogin();
+
+    // 2. Vue 挂载完，移除启动页
+    const splash=document.getElementById('boot-splash');
+    if(splash) splash.remove();
+
+    // 3. 后台拉取云端数据（不阻塞首屏）
+    loadUsers().then(()=>{
+      // users 加载完后，如果本地有完整用户，用云端最新数据覆盖
+      if(currentUser.value){
+        const fresh=users.value.find(u=>u.pinyin===currentUser.value.pinyin);
+        if(fresh){
+          currentUser.value=fresh;
+          localStorage.setItem('studio_current_user',JSON.stringify(fresh));
+          applyUserPrefs();
+        }
+      }
+    });
     loadHeroes();
     loadEvents();
-    await loadProjectsAndTodosFromCloud();
+    loadProjectsAndTodosFromCloud();
     nextTick(()=>updateHighlight());
     window.addEventListener('resize', updateHighlight);
     window.addEventListener('keydown', handleKeydown);
