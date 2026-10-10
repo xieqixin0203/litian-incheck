@@ -75,6 +75,7 @@ header{padding:1.5rem 1.75rem !important}
 .section-title.green{border-left-color:#68b988}
 .section-title.orange{border-left-color:#e0a868}
 .section-title.blue{border-left-color:#6890c8}
+.section-title.purple{border-left-color:#9b7bc8}
 .item-row{font-size:13px;padding:6px 0 6px 12px;border-bottom:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .item-meta{font-size:11px;opacity:.6}
 .status-badge{font-size:11px;padding:1px 8px;border-radius:9999px}
@@ -300,7 +301,9 @@ header{padding:1.5rem 1.75rem !important}
         <div class="section-title green">已确认事项 ({{ (mt.confirmed||[]).length }})</div>
         <div v-if="(mt.confirmed||[]).length === 0" class="text-xs opacity-50 pl-3">暂无</div>
         <div v-for="(c,i) in (mt.confirmed||[])" :key="'c'+i" class="item-row">{{ c.text }}</div>
-
+        <div class="section-title purple">待进行事项 ({{ (mt.todo||[]).length }})</div>
+        <div v-if="(mt.todo||[]).length === 0" class="text-xs opacity-50 pl-3">暂无</div>
+        <div v-for="(t,i) in (mt.todo||[])" :key="'t'+i" class="item-row">{{ t.text }}</div>
         <div class="section-title orange">待确认事项 ({{ (mt.pending||[]).length }})</div>
         <div v-if="(mt.pending||[]).length === 0" class="text-xs opacity-50 pl-3">暂无</div>
         <div v-for="(p,i) in (mt.pending||[])" :key="'p'+i" class="item-row">
@@ -369,7 +372,14 @@ header{padding:1.5rem 1.75rem !important}
       </div>
       <button @click="draftMeeting.confirmed.push({text:''})" class="btn-sm">+ 添加已确认事项</button>
     </div>
-
+<div class="mb-3">
+  <label class="form-label">待进行事项</label>
+  <div v-for="(t,i) in draftMeeting.todo" :key="'dt'+i" class="form-row">
+    <input v-model="t.text" placeholder="待进行内容" class="form-input" style="flex:1">
+    <button @click="draftMeeting.todo.splice(i,1)" class="btn-sm text-red-500">删</button>
+  </div>
+  <button @click="draftMeeting.todo.push({text:''})" class="btn-sm">+ 添加待进行事项</button>
+</div>
     <div class="mb-3">
       <label class="form-label">待确认事项</label>
       <div v-for="(p,i) in draftMeeting.pending" :key="'dp'+i" class="flex flex-wrap gap-2 mb-2 p-2 rounded" style="background:var(--bg)">
@@ -682,6 +692,7 @@ function makeEmptyMeeting(){
     memberParticipants:[],
     otherParticipants:'',
     confirmed:[{text:''}],
+    todo:[],
     pending:[],
     changes:[]
   };
@@ -701,6 +712,7 @@ const migrateMeetings=(arr)=>{
       otherParticipants:otherParticipants||'',
       recordedBy:m.recordedBy||'',
       confirmed:(m.confirmed||[]).map(c=>typeof c==='string'?{text:c}:c),
+      todo:m.todo||[],
       pending:m.pending||[],
       changes:m.changes||[]
     };
@@ -1007,6 +1019,7 @@ setup(){
       memberParticipants:(draftMeeting.value.memberParticipants||[]).slice(),
       otherParticipants:(draftMeeting.value.otherParticipants||'').trim(),
       confirmed:(draftMeeting.value.confirmed||[]).filter(c=>c.text&&c.text.trim()),
+      todo:(draftMeeting.value.todo||[]).filter(t=>t.text&&t.text.trim()),
       pending:(draftMeeting.value.pending||[]).filter(p=>p.text&&p.text.trim()),
       changes:(draftMeeting.value.changes||[]).filter(c=>c.text&&c.text.trim())
     };
@@ -1056,9 +1069,11 @@ ${mt.recordedBy?'<div><b>记录人：</b>'+esc(mt.recordedBy)+'</div>':''}
 </div>
 <h2>一、已确认事项</h2>
 ${(mt.confirmed||[]).length?`<ol>${mt.confirmed.map(c=>`<li>${esc(c.text)}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
-<h2>二、待确认事项</h2>
+<h2>二、待进行事项</h2>
+${(mt.todo||[]).length?`<ol>${mt.todo.map(t=>`<li>${esc(t.text)}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
+<h2>三、待确认事项</h2>
 ${(mt.pending||[]).length?`<ol>${mt.pending.map(p=>`<li>${esc(p.text)} — 负责人：${esc(p.owner)||'未指定'}${p.dueDate?'，截止：'+esc(p.dueDate):''}（${esc(p.status)}）</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
-<h2>三、变更事项</h2>
+<h2>四、变更事项</h2>
 ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||c.to?'（'+esc(c.from)+' → '+esc(c.to)+'）':''}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
 </body></html>`;
     const blob=new Blob(['\ufeff',html],{type:'application/msword'});
@@ -1074,10 +1089,11 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
     const text=importText.value||'';
     if(!text.trim()){alert('请粘贴内容');return}
     const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
-    const result={confirmed:[],pending:[],changes:[]};
+    const result={confirmed:[],todo:[],pending:[],changes:[]};
     let section=null;
     for(const line of lines){
       if(/已确认/.test(line)){section='confirmed';continue}
+      if(/待进行/.test(line)){section='todo';continue}
       if(/待确认/.test(line)){section='pending';continue}
       if(/变更/.test(line)){section='changes';continue}
       if(!section)continue;
@@ -1085,6 +1101,8 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
       if(!content)continue;
       if(section==='confirmed'){
         result.confirmed.push({text:content});
+      }else if(section==='todo'){
+        result.todo.push({text:content});
       }else if(section==='pending'){
         const parts=content.split(/[|｜]/).map(s=>s.trim());
         result.pending.push({text:parts[0]||'',owner:parts[1]||'',dueDate:parts[2]||'',status:'待确认'});
@@ -1093,7 +1111,7 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
         result.changes.push({text:parts[0]||'',from:parts[1]||'',to:parts[2]||''});
       }
     }
-    if(result.confirmed.length===0&&result.pending.length===0&&result.changes.length===0){
+    if(result.confirmed.length===0&&result.todo.length===0&&result.pending.length===0&&result.changes.length===0){
       alert('未识别到内容，请检查格式（需要有「已确认」「待确认」「变更」字样）');
       return;
     }
@@ -1103,6 +1121,7 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
       memberParticipants:[],
       otherParticipants:'',
       confirmed:result.confirmed.length?result.confirmed:[{text:''}],
+      todo:result.todo,
       pending:result.pending,
       changes:result.changes
     };
