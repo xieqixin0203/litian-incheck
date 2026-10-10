@@ -11,7 +11,6 @@
     var saved=null;
     if(raw){
       try{ saved=JSON.parse(raw); }catch(_){ saved=null; }
-      // 严格校验：不是合法对象 / 缺少关键字段 → 直接清掉
       if(!saved || typeof saved!=='object' || typeof saved.pinyin!=='string'){
         localStorage.removeItem('studio_current_user');
         saved=null;
@@ -25,8 +24,9 @@
   }catch(e){}
 })();
 </script>
+<!-- 注意：这两个都不能加 defer，必须同步按顺序加载 -->
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js" defer></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js"></script>
 <style>
 [v-cloak]{display:none !important}
 html{font-size:16px}
@@ -79,7 +79,7 @@ html[data-fontsize="large"]{font-size:24px}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
 
 #boot-splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;background:var(--bg);color:var(--text)}
-.boot-spinner{width:2rem;height:2rem;border:3px solid color-mix(in srgb, var(--primary) 25%, transparent);border-top-color:var(--primary);border-radius:50%;animation:boot-spin .8s linear infinite}
+.boot-spinner{width:2rem;height:2rem;border:3px solid rgba(143,163,200,.25);border-top-color:var(--primary);border-radius:50%;animation:boot-spin .8s linear infinite}
 @keyframes boot-spin{to{transform:rotate(360deg)}}
 .boot-text{font-size:.875rem;opacity:.6}
 .boot-error{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;background:var(--bg);color:var(--text);text-align:center;font-size:.875rem;line-height:1.6}
@@ -336,10 +336,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   <div class="boot-text">正在加载…</div>
 </div>
 <script>
+  // 兜底：8 秒后隐藏启动页
   setTimeout(function(){
     var s=document.getElementById('boot-splash');
     if(s) s.remove();
   }, 8000);
+
+  // 全局错误捕获：出错时显示错误卡片而不是白屏
+  window.addEventListener('error', function(e){
+    try{
+      var el=document.getElementById('boot-splash');
+      if(el) el.remove();
+      if(document.getElementById('boot-error-card')) return;
+      var div=document.createElement('div');
+      div.id='boot-error-card';
+      div.className='boot-error';
+      var msg=((e&&e.message)||'未知错误');
+      div.innerHTML='<div style="font-size:48px">⚠️</div><h3>页面出错</h3><div class="msg"></div><button>清缓存并刷新</button>';
+      div.querySelector('.msg').textContent=msg;
+      div.querySelector('button').onclick=function(){
+        try{ localStorage.clear(); }catch(_){}
+        location.reload();
+      };
+      document.body.appendChild(div);
+    }catch(_){}
+  });
 </script>
 
 <div id="app" v-cloak>
@@ -1162,21 +1183,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 </div>
 
 <script>
-const {createApp,ref,computed,onMounted,onUnmounted,watch,nextTick}=Vue;
+// Vue 全局检查（保证脚本执行时 Vue 已定义）
+if(typeof Vue==='undefined'){
+  var el=document.getElementById('boot-splash');
+  if(el) el.remove();
+  var div=document.createElement('div');
+  div.className='boot-error';
+  div.innerHTML='<div style="font-size:48px">⚠️</div><h3>核心库加载失败</h3><div class="msg">Vue 未能从 CDN 加载成功，请检查网络后重试</div><button>重新加载</button>';
+  div.querySelector('button').onclick=function(){ location.reload(); };
+  document.body.appendChild(div);
+  throw new Error('Vue not loaded');
+}
 
-// 全局错误捕获：出错时显示错误卡片而不是白屏
-window.addEventListener('error', function(e){
-  try{
-    var el=document.getElementById('boot-splash');
-    if(el) el.remove();
-    if(document.getElementById('boot-error-card')) return;
-    var div=document.createElement('div');
-    div.id='boot-error-card';
-    div.className='boot-error';
-    div.innerHTML='<div style="font-size:48px">⚠️</div><h3>页面出错</h3><div class="msg">'+((e&&e.message)||'未知错误').replace(/</g,'&lt;')+'</div><button onclick="try{localStorage.clear()}catch(e){};location.reload()">清缓存并刷新</button>';
-    document.body.appendChild(div);
-  }catch(_){}
-});
+const {createApp,ref,computed,onMounted,onUnmounted,watch,nextTick}=Vue;
 
 const fetchT=(url,opts,ms=5000)=>{
   return Promise.race([
@@ -1187,7 +1206,7 @@ const fetchT=(url,opts,ms=5000)=>{
 
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
-const DATA_VERSION='2026-10-17-v27';
+const DATA_VERSION='2026-10-18-v28';
 
 const defaultUsers=[
   {name:'刘文辉', pinyin:'liuwenhui', password:'litian2026', role:'admin'},
@@ -1507,20 +1526,16 @@ setup(){
     document.documentElement.setAttribute('data-theme',t);
   };
 
-  // ============ 严格恢复登录态 ============
   const restoreLogin=()=>{
     try{
       const raw=localStorage.getItem('studio_current_user');
       if(!raw) return;
       let saved=null;
       try{ saved=JSON.parse(raw); }catch(_){ saved=null; }
-
-      // 校验：必须是对象，且有 pinyin / name / role / password 且都是 string
       if(!saved || typeof saved!=='object' ||
          typeof saved.pinyin!=='string' ||
          typeof saved.name!=='string' ||
          typeof saved.role!=='string'){
-        // 数据不完整 → 清掉，避免渲染时崩溃
         localStorage.removeItem('studio_current_user');
         return;
       }
@@ -1543,7 +1558,6 @@ setup(){
     const u=users.value.find(x=>x.pinyin===p);
     if(!u){ loginError.value='账号不存在'; return; }
     if(u.password!==loginPassword.value){ loginError.value='密码错误'; return; }
-    // 保证存入 localStorage 的是完整对象
     currentUser.value=u;
     viewAsPinyin.value='';
     localStorage.setItem('studio_current_user',JSON.stringify(u));
@@ -2339,18 +2353,15 @@ setup(){
   };
 
   onMounted(async()=>{
-    // 1. 先恢复本地登录态
     restoreLogin();
     applyUserPrefs();
     generateCalendar();
 
-    // 2. Vue 完成一次视图更新后移除启动页
     nextTick(()=>{
       const splash=document.getElementById('boot-splash');
       if(splash) splash.remove();
     });
 
-    // 3. 后台拉取云端数据
     loadUsers().then(()=>{
       if(currentUser.value){
         const fresh=users.value.find(u=>u.pinyin===currentUser.value.pinyin);

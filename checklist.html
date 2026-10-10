@@ -11,7 +11,6 @@
     var saved=null;
     if(raw){
       try{ saved=JSON.parse(raw); }catch(_){ saved=null; }
-      // 严格校验：不是合法对象 / 缺少关键字段 → 直接清掉
       if(!saved || typeof saved!=='object' || typeof saved.pinyin!=='string'){
         localStorage.removeItem('studio_current_user');
         saved=null;
@@ -25,8 +24,9 @@
   }catch(e){}
 })();
 </script>
+<!-- 注意：这两个都不能加 defer -->
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js" defer></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js"></script>
 <style>
 [v-cloak]{display:none !important}
 html{font-size:16px}
@@ -99,7 +99,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 .complete-btn:hover{opacity:.9}
 .complete-banner{background:rgba(76,175,80,.12);border:1px solid rgba(76,175,80,.4);color:#4caf50;padding:10px 14px;border-radius:12px;text-align:center;font-size:13px;font-weight:600;margin-bottom:12px}
 
-/* 启动页 */
 #boot-splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;background:var(--bg);color:var(--text)}
 .boot-spinner{width:2rem;height:2rem;border:3px solid rgba(143,163,200,.25);border-top-color:var(--primary);border-radius:50%;animation:boot-spin .8s linear infinite}
 @keyframes boot-spin{to{transform:rotate(360deg)}}
@@ -109,7 +108,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 .boot-error .msg{opacity:.6;font-size:.75rem;word-break:break-all;max-width:22rem}
 .boot-error button{margin-top:1rem;padding:.5rem 1rem;border-radius:.5rem;border:none;background:var(--primary);color:#fff;font-weight:600;cursor:pointer}
 
-/* 检查项 */
 .check-item{padding:.625rem 1rem;border-top:1px solid var(--border)}
 .check-item-head{display:flex;align-items:flex-start;gap:.5rem;flex-wrap:wrap}
 .check-item-level{font-size:.75rem;padding:.125rem .375rem;border-radius:.25rem;font-weight:700;flex-shrink:0;margin-top:.0625rem}
@@ -122,19 +120,16 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 </head>
 <body>
 
-<!-- 启动页 -->
 <div id="boot-splash">
   <div class="boot-spinner"></div>
   <div class="boot-text">正在加载…</div>
 </div>
 <script>
-  // 兜底：即使 Vue 加载失败，8 秒后也隐藏启动页
   setTimeout(function(){
     var s=document.getElementById('boot-splash');
     if(s) s.remove();
   }, 8000);
 
-  // 全局错误捕获：出错时显示错误卡片而不是白屏
   window.addEventListener('error', function(e){
     try{
       var el=document.getElementById('boot-splash');
@@ -143,7 +138,13 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
       var div=document.createElement('div');
       div.id='boot-error-card';
       div.className='boot-error';
-      div.innerHTML='<div style="font-size:48px">⚠️</div><h3>页面出错</h3><div class="msg">'+((e&&e.message)||'未知错误').replace(/</g,'&lt;')+'</div><button onclick="try{localStorage.clear()}catch(e){};location.reload()">清缓存并刷新</button>';
+      var msg=((e&&e.message)||'未知错误');
+      div.innerHTML='<div style="font-size:48px">⚠️</div><h3>页面出错</h3><div class="msg"></div><button>清缓存并刷新</button>';
+      div.querySelector('.msg').textContent=msg;
+      div.querySelector('button').onclick=function(){
+        try{ localStorage.clear(); }catch(_){}
+        location.reload();
+      };
       document.body.appendChild(div);
     }catch(_){}
   });
@@ -174,7 +175,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
   </div>
 </header>
 
-<!-- 无权限提示 -->
 <div v-if="!canSeeAny" class="no-perm-card">
   <div style="font-size:48px">🔒</div>
   <div class="text-base font-bold mt-4">暂无访问权限</div>
@@ -182,15 +182,12 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
   <a href="./index.html" class="btn-home inline-block mt-5 px-4 py-2 rounded-lg text-xs" style="text-decoration:none">返回首页</a>
 </div>
 
-<!-- 已完工横幅 -->
 <div v-if="canSeeAny && projectCompleted" class="complete-banner">
   🏁 本项目已完工（{{ projectCompletedDate }}）
 </div>
 
-<!-- ============ 检查清单 TAB ============ -->
 <div v-if="canSeeAny && activeTab==='checklist' && canSeeChecklistTab">
 
-  <!-- 合同区域：主任/副主任/欧阳琳可见，无需密码 -->
   <div v-if="canSeeContract" class="mb-4 contract-section">
     <div class="px-4 py-3 text-white flex items-center justify-between" style="background:var(--primary)">
       <span class="font-bold text-base">合同文书</span>
@@ -208,7 +205,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
     </div>
   </div>
 
-  <!-- 检查项列表 -->
   <div v-if="canSeeChecks" class="space-y-3">
     <div v-for="(group, stageName) in groupedChecks" :key="stageName">
       <div class="rounded-xl shadow-sm overflow-hidden"
@@ -251,7 +247,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
         </div>
       </div>
 
-      <!-- 八、施工中 下面的完工按钮 -->
       <div v-if="stageName==='八、施工中' && canComplete" class="complete-btn-wrap">
         <button @click="completeProject" class="complete-btn">🏁 项目完工</button>
       </div>
@@ -260,7 +255,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 
 </div>
 
-<!-- ============ 会议纪要 TAB ============ -->
 <div v-if="canSeeAny && activeTab==='meeting' && canSeeMeetingTab">
 
   <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
@@ -333,7 +327,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 
 </div>
 
-<!-- ============ 会议编辑模态框 ============ -->
 <div v-if="showMeetingModal" v-cloak class="modal-mask" @click.self="closeMeetingModal">
   <div class="modal-box">
     <h3 class="font-bold text-lg mb-4">{{ editingMeetingId ? '编辑会议纪要' : '新增会议纪要' }}</h3>
@@ -409,7 +402,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
   </div>
 </div>
 
-<!-- ============ 导入会议模态框 ============ -->
 <div v-if="showImportModal" v-cloak class="modal-mask" @click.self="showImportModal=false">
   <div class="modal-box">
     <h3 class="font-bold text-lg mb-2">从 Word / 微信粘贴导入</h3>
@@ -432,7 +424,6 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
   </div>
 </div>
 
-<!-- ============ 编辑阶段模态框 ============ -->
 <div v-if="showStageModal" v-cloak class="modal-mask" @click.self="closeStageModal">
   <div class="modal-box" style="max-width:420px">
     <h3 class="font-bold text-lg mb-2">编辑当前阶段</h3>
@@ -453,9 +444,20 @@ select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 </div>
 
 <script>
+// Vue 全局检查
+if(typeof Vue==='undefined'){
+  var el=document.getElementById('boot-splash');
+  if(el) el.remove();
+  var div=document.createElement('div');
+  div.className='boot-error';
+  div.innerHTML='<div style="font-size:48px">⚠️</div><h3>核心库加载失败</h3><div class="msg">Vue 未能从 CDN 加载成功，请检查网络后重试</div><button>重新加载</button>';
+  div.querySelector('button').onclick=function(){ location.reload(); };
+  document.body.appendChild(div);
+  throw new Error('Vue not loaded');
+}
+
 const {createApp,ref,computed,onMounted,watch,nextTick}=Vue;
 
-// 带超时的 fetch
 const fetchT=(url,opts,ms=5000)=>{
   return Promise.race([
     fetch(url,opts),
@@ -529,7 +531,7 @@ const seedData=[
 {id:'CHK-02-001',stage:'二、方案设计',item:'民用建筑、民用非居住、非民用建筑三者遮挡/被遮挡关系',standard:'理清日照关系',level:'P0'},
 {id:'CHK-02-002',stage:'二、方案设计',item:'板式低层/多层短边间距',standard:'14m',level:'P0'},
 {id:'CHK-02-003',stage:'二、方案设计',item:'高层建筑消防扑救面宽度',standard:'15.5m / 16m（规范要求15m，预留尺寸方便布置车位）',level:'P0'},
-{id:'CHK-02-004',stage:'二、方案设计',item:'消防扑救面另一侧长边也需设通道',standard:'建规要求宽度不小于4m，转弯半径不应小于6m，宜为9m；大型消防车转弯半径宜为12米，不应小于9米',level:'P0'},
+{id:'CHK-02-004',stage:'二、方案设计',item:'消防扑救面另一侧长边也需设通道',standard:'宽度不小于4m，转弯半径不应小于6m，宜为9m',level:'P0'},
 {id:'CHK-02-005',stage:'二、方案设计',item:'相邻地块建筑退让、民用建筑退让距离、地下室退让',standard:'注意特殊条件',level:'P0'},
 {id:'CHK-02-006',stage:'二、方案设计',item:'工业仓储类建筑退让',standard:'按规范要求',level:'P0'},
 {id:'CHK-02-007',stage:'二、方案设计',item:'四周道路宽度/等级→退让道路红线基本距离',standard:'道路等级+建筑类型+增加退缩',level:'P0'},
@@ -704,12 +706,11 @@ const app=createApp({
 setup(){
   const urlParams=new URLSearchParams(window.location.search);
   const urlProject=urlParams.get('project')||'sl4';
-  const urlTab=urlParams.get('tab'); // 'meeting' | 'checklist' | null
+  const urlTab=urlParams.get('tab');
   const currentProject=ref(projectNameMap[urlProject]||urlProject);
   const projectKey=urlProject;
   const projectStages=ref(projectStageMap[urlProject]||['一、前期强排']);
 
-  // ============ 权限相关 ============
   const currentUserPinyin=ref('');
   try{
     const raw=localStorage.getItem('studio_current_user');
@@ -758,7 +759,6 @@ setup(){
   const canEditStage=computed(()=>isPrivileged.value);
   const canComplete=computed(()=>isPrivileged.value);
 
-  // 当前项目的成员名单
   const projectMembers=computed(()=>{
     const proj=projects.value.find(p=>p.id===projectKey);
     if(proj && Array.isArray(proj.members)) return proj.members;
@@ -773,7 +773,6 @@ setup(){
   const canSeeMeetingTab=computed(()=>isPrivileged.value || isProjectMember.value);
   const canSeeAny=computed(()=>canSeeChecklistTab.value || canSeeMeetingTab.value);
 
-  // ============ 当前 tab ============
   let initialTab='checklist';
   if(urlTab==='meeting') initialTab='meeting';
   else if(urlTab==='checklist') initialTab='checklist';
@@ -784,7 +783,6 @@ setup(){
     else if(activeTab.value==='meeting' && !cm && cl) activeTab.value='checklist';
   }, {immediate:true});
 
-  // ============ 项目完工状态 ============
   const projectCompleted=ref(false);
   const projectCompletedDate=ref('');
 
@@ -834,7 +832,6 @@ setup(){
     }
   };
 
-  // ============ 检查清单数据 ============
   const openGroups=ref({});
   const fileInput=ref(null);
   const checks=ref(initData());
@@ -879,7 +876,6 @@ setup(){
     showStageModal.value=false;
   };
 
-  // ============ 会议纪要 ============
   const meetings=ref([]);
   const showMeetingModal=ref(false);
   const editingMeetingId=ref(null);
@@ -1148,7 +1144,6 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
     await loadProjectCompletion();
     syncProjectName();
     initOpenGroups();
-    // Vue 完成一次视图更新后移除启动页
     nextTick(()=>{
       const splash=document.getElementById('boot-splash');
       if(splash) splash.remove();
@@ -1170,12 +1165,10 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
     projContracted,
     showStageModal,draftStages,stageOrder,
     openStageModal,closeStageModal,toggleDraftStage,confirmStages,
-    // 权限
     isAdmin,isManager,isPrivileged,
     canSeeContract,canSeeChecklistTab,canSeeChecks,canEditStage,
     canSeeMeetingTab,canSeeAny,
     projectMembers,currentUser,isProjectMember,
-    // 完工
     canComplete,completeProject,
     projectCompleted,projectCompletedDate
   };
