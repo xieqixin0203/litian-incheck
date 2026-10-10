@@ -518,6 +518,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
         </div>
       </div>
       <div class="lg:order-2 lg:w-[32%] flex flex-col gap-4">
+        <!-- 最近会议纪要 -->
+        <div class="card">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-bold text-sm">最近会议纪要</h3>
+          </div>
+          <div v-if="loadingRecentMeetings" class="text-xs opacity-50 text-center py-3">加载中…</div>
+          <div v-else-if="recentMeetings.length === 0" class="text-xs opacity-50 text-center py-3">暂无会议纪要</div>
+          <div v-else>
+            <div v-for="m in recentMeetings" :key="m.projectId+'_'+m.meetingId"
+                 class="recent-meeting-row" @click="goToMeetingItem(m)">
+              <div class="flex-1 min-w-0">
+                <div class="text-[0.8125rem] font-semibold truncate">{{ m.title || '未命名会议' }}</div>
+                <div class="text-[0.6875rem] opacity-55 truncate mt-0.5">📁 {{ m.projectName }}</div>
+                <div class="text-[0.6875rem] font-medium mt-0.5" style="color:var(--primary)">{{ m.date }}</div>
+              </div>
+              <div class="text-xs opacity-40">→</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 精神零食 -->
         <div class="card">
           <div class="hero-title">精神零食</div>
           <div v-if="currentHero" class="flex flex-col gap-4">
@@ -1756,11 +1777,24 @@ setup(){
   const recentMeetings=ref([]);
   const loadingRecentMeetings=ref(false);
 
-  const loadRecentMeetings=async()=>{
+    const loadRecentMeetings=async()=>{
     loadingRecentMeetings.value=true;
     try{
+      // 决定要拉哪些项目：
+      // 主任/副主任/经理 → 全部项目
+      // 员工 → 只拉自己参与的项目（members 包含自己的名字）
+      let targetProjects=projects.value;
+      if(!isPrivilegedView.value && effectiveUser.value){
+        const me=effectiveUser.value.name;
+        targetProjects=projects.value.filter(p=>Array.isArray(p.members)&&p.members.includes(me));
+      }
+      if(targetProjects.length===0){
+        recentMeetings.value=[];
+        loadingRecentMeetings.value=false;
+        return;
+      }
       const all=[];
-      const tasks=projects.value.map(async (proj)=>{
+      const tasks=targetProjects.map(async (proj)=>{
         try{
           const res=await fetchT(`/api/sync?project=${proj.id}&type=meeting`,null,4000);
           const data=await res.json();
