@@ -7,8 +7,17 @@
 <script>
 (function(){
   try{
-    var saved=JSON.parse(localStorage.getItem('studio_current_user')||'null');
-    var key=saved && saved.pinyin ? saved.pinyin : 'default';
+    var raw=localStorage.getItem('studio_current_user');
+    var saved=null;
+    if(raw){
+      try{ saved=JSON.parse(raw); }catch(_){ saved=null; }
+      // 严格校验：不是合法对象 / 缺少关键字段 → 直接清掉
+      if(!saved || typeof saved!=='object' || typeof saved.pinyin!=='string'){
+        localStorage.removeItem('studio_current_user');
+        saved=null;
+      }
+    }
+    var key=(saved && saved.pinyin) ? saved.pinyin : 'default';
     var f=localStorage.getItem('studio_fontsize_v2_'+key)||'medium';
     var t=localStorage.getItem('studio_theme_'+key)||'dark';
     document.documentElement.setAttribute('data-fontsize',f);
@@ -69,11 +78,14 @@ html[data-fontsize="large"]{font-size:24px}
 *{box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);transition:.3s;margin:0;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
 
-/* 启动页 */
 #boot-splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;background:var(--bg);color:var(--text)}
 .boot-spinner{width:2rem;height:2rem;border:3px solid color-mix(in srgb, var(--primary) 25%, transparent);border-top-color:var(--primary);border-radius:50%;animation:boot-spin .8s linear infinite}
 @keyframes boot-spin{to{transform:rotate(360deg)}}
 .boot-text{font-size:.875rem;opacity:.6}
+.boot-error{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;background:var(--bg);color:var(--text);text-align:center;font-size:.875rem;line-height:1.6}
+.boot-error h3{font-size:1rem;font-weight:700;margin:.75rem 0 .5rem}
+.boot-error .msg{opacity:.6;font-size:.75rem;word-break:break-all;max-width:22rem}
+.boot-error button{margin-top:1rem;padding:.5rem 1rem;border-radius:.5rem;border:none;background:var(--primary);color:#fff;font-weight:600;cursor:pointer}
 
 .login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.25rem;background:var(--bg)}
 .login-card{width:100%;max-width:23.75rem;background:var(--card);border:1px solid var(--border);border-radius:.875rem;padding:2.25rem 2rem;box-shadow:rgba(15,15,15,.08) 0 .75rem 2rem -.25rem}
@@ -258,7 +270,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .meeting-proj-card:hover{border-color:var(--primary);transform:translateX(2px)}
 .meeting-proj-icon{width:2.5rem;height:2.5rem;border-radius:.625rem;background:var(--tag-bg);color:var(--tag-text);display:flex;align-items:center;justify-content:center;font-size:1.125rem;flex-shrink:0;font-weight:700}
 
-/* 项目总览 */
 .project-item{margin-bottom:.375rem;position:relative}
 .project-row{display:flex;align-items:center;gap:.75rem;padding:.5rem .875rem;background:var(--card);border:1px solid var(--border);border-radius:.625rem;cursor:pointer;transition:.15s}
 .project-row:hover{border-color:var(--primary)}
@@ -320,13 +331,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 </head>
 <body>
 
-<!-- 启动页 -->
 <div id="boot-splash">
   <div class="boot-spinner"></div>
   <div class="boot-text">正在加载…</div>
 </div>
 <script>
-  // 兜底：即使 Vue 加载失败，8 秒后也隐藏启动页
   setTimeout(function(){
     var s=document.getElementById('boot-splash');
     if(s) s.remove();
@@ -426,13 +435,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       <option v-for="u in viewAsCandidates" :key="u.pinyin" :value="u.pinyin">{{ u.name }}</option>
     </select>
     <div class="user-chip">
-      <div class="avatar">{{ currentUser.name.charAt(0) }}</div>
-      <span class="name">{{ currentUser.name }}</span>
+      <div class="avatar">{{ (currentUser && currentUser.name) ? currentUser.name.charAt(0) : '?' }}</div>
+      <span class="name">{{ (currentUser && currentUser.name) || '' }}</span>
       <button @click="doLogout" class="logout" title="退出登录">⏻</button>
     </div>
   </div>
 
-  <!-- ========== 主页 ========== -->
   <div v-if="currentView==='home'" class="flex flex-col lg:flex-1 lg:min-h-0 lg:flex-row gap-4">
 
     <template v-if="!isPrivilegedView">
@@ -679,7 +687,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </template>
   </div>
 
-  <!-- ========== 最近待办详情 ========== -->
   <div v-if="currentView==='todos'" class="flex-1 min-h-0 overflow-y-auto">
     <div class="flex justify-between items-center mb-5 flex-wrap gap-2">
       <h1 class="text-2xl font-bold" style="letter-spacing:-.5px">{{ isPrivilegedView ? '最近待办' : '我的待办' }}</h1>
@@ -744,7 +751,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </div>
   </div>
 
-  <!-- ========== 项目会议纪要（员工专用） ========== -->
   <div v-if="currentView==='meetings'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-2" style="letter-spacing:-.5px">项目会议纪要</h1>
     <p class="text-xs opacity-55 mb-5">你是以下项目的成员，可以查看会议纪要内容。</p>
@@ -765,7 +771,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </div>
   </div>
 
-  <!-- ========== 已归档 ========== -->
   <div v-if="currentView==='archive'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">📦 已归档</h1>
 
@@ -824,7 +829,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </div>
   </div>
 
-  <!-- ========== 项目总览 ========== -->
   <div v-if="currentView==='projects'" class="flex-1 min-h-0 overflow-y-auto">
     <div class="flex justify-between items-center mb-5 flex-wrap gap-2">
       <h1 class="text-2xl font-bold" style="letter-spacing:-.5px">项目总览</h1>
@@ -872,7 +876,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </div>
   </div>
 
-  <!-- ========== 备忘录 ========== -->
   <div v-if="currentView==='memo'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">工作室备忘录</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -887,7 +890,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </div>
   </div>
 
-  <!-- ========== 设置 ========== -->
   <div v-if="currentView==='settings'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">设置</h1>
     <div class="card p-6 mb-4">
@@ -924,7 +926,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 </main>
 </div>
 
-<!-- 搜索面板 -->
 <transition name="fade">
   <div v-if="showSearch" class="search-overlay" @click.self="closeSearch">
     <div class="search-panel">
@@ -957,7 +958,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </transition>
 
-<!-- 会议/出差编辑 -->
 <div v-if="showEventModal" v-cloak class="modal-mask" @click.self="closeEventModal">
   <div class="modal-card">
     <h3 class="modal-title">{{ editingEventId ? '编辑会议/出差' : '新增会议/出差' }}</h3>
@@ -977,7 +977,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
-<!-- 编辑子任务 -->
 <div v-if="editingSubTask" v-cloak class="modal-mask" @click.self="editingSubTask=null">
   <div class="modal-card">
     <h3 class="modal-title">编辑小项</h3>
@@ -991,7 +990,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
-<!-- 编辑/新建待办 -->
 <div v-if="editingTodo || showAddTodo" v-cloak class="modal-mask" @click.self="closeTodoModal">
   <div class="modal-card">
     <h3 class="modal-title">{{ editingTodo ? '编辑待办' : '新建待办' }}</h3>
@@ -1037,7 +1035,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
-<!-- 指派检查项模态框 -->
 <div v-if="showAssignModal" v-cloak class="modal-mask" @click.self="closeAssignModal">
   <div class="modal-card" style="max-width:45rem">
     <h3 class="modal-title">{{ editingAssignTodoId ? '编辑指派' : '指派检查项' }}</h3>
@@ -1101,7 +1098,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
-<!-- 编辑项目 -->
 <div v-if="editingProject" v-cloak class="modal-mask" @click.self="editingProject=null">
   <div class="modal-card" style="max-width:32.5rem">
     <h3 class="modal-title">编辑项目</h3>
@@ -1143,7 +1139,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
-<!-- 新建项目 -->
 <div v-if="showAddProject" v-cloak class="modal-mask" @click.self="showAddProject=false">
   <div class="modal-card">
     <h3 class="modal-title">新建项目</h3>
@@ -1169,7 +1164,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 <script>
 const {createApp,ref,computed,onMounted,onUnmounted,watch,nextTick}=Vue;
 
-// ============ 带超时的 fetch ============
+// 全局错误捕获：出错时显示错误卡片而不是白屏
+window.addEventListener('error', function(e){
+  try{
+    var el=document.getElementById('boot-splash');
+    if(el) el.remove();
+    if(document.getElementById('boot-error-card')) return;
+    var div=document.createElement('div');
+    div.id='boot-error-card';
+    div.className='boot-error';
+    div.innerHTML='<div style="font-size:48px">⚠️</div><h3>页面出错</h3><div class="msg">'+((e&&e.message)||'未知错误').replace(/</g,'&lt;')+'</div><button onclick="try{localStorage.clear()}catch(e){};location.reload()">清缓存并刷新</button>';
+    document.body.appendChild(div);
+  }catch(_){}
+});
+
 const fetchT=(url,opts,ms=5000)=>{
   return Promise.race([
     fetch(url,opts),
@@ -1179,7 +1187,7 @@ const fetchT=(url,opts,ms=5000)=>{
 
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
-const DATA_VERSION='2026-10-16-v26';
+const DATA_VERSION='2026-10-17-v27';
 
 const defaultUsers=[
   {name:'刘文辉', pinyin:'liuwenhui', password:'litian2026', role:'admin'},
@@ -1447,7 +1455,7 @@ const migrateEvents=(arr)=>{
   return arr.map(e=>({id:e.id||'ev-'+Date.now()+Math.random(),title:e.title||'',location:e.location||'',date:e.date||'',timeStart:e.timeStart||'',timeEnd:e.timeEnd||'',done:!!e.done}));
 };
 
-createApp({
+const app=createApp({
 setup(){
   const savedVersion=localStorage.getItem('studio_data_version');
   if(savedVersion!==DATA_VERSION){
@@ -1474,12 +1482,11 @@ setup(){
     }catch(e){}
   };
 
-  // ============ 字体/主题按用户存储 ============
   const fontSize=ref('medium');
   const theme=ref('dark');
 
   const applyUserPrefs=()=>{
-    const key=currentUser.value?currentUser.value.pinyin:'default';
+    const key=(currentUser.value && typeof currentUser.value.pinyin==='string')?currentUser.value.pinyin:'default';
     const f=localStorage.getItem('studio_fontsize_v2_'+key)||'medium';
     const t=localStorage.getItem('studio_theme_'+key)||'dark';
     fontSize.value=f; theme.value=t;
@@ -1489,31 +1496,40 @@ setup(){
 
   const setFontSize=(s)=>{
     fontSize.value=s;
-    const key=currentUser.value?currentUser.value.pinyin:'default';
+    const key=(currentUser.value && currentUser.value.pinyin)?currentUser.value.pinyin:'default';
     localStorage.setItem('studio_fontsize_v2_'+key,s);
     document.documentElement.setAttribute('data-fontsize',s);
   };
   const setTheme=(t)=>{
     theme.value=t;
-    const key=currentUser.value?currentUser.value.pinyin:'default';
+    const key=(currentUser.value && currentUser.value.pinyin)?currentUser.value.pinyin:'default';
     localStorage.setItem('studio_theme_'+key,t);
     document.documentElement.setAttribute('data-theme',t);
   };
 
+  // ============ 严格恢复登录态 ============
   const restoreLogin=()=>{
     try{
-      const saved=JSON.parse(localStorage.getItem('studio_current_user')||'null');
-      if(!saved || !saved.pinyin) return;
-      if(saved.name && saved.role){
-        // 新格式：完整 user 对象，直接恢复
-        currentUser.value=saved;
-      }else{
-        // 旧格式兼容：需要 users 已加载
-        const u=users.value.find(x=>x.pinyin===saved.pinyin);
-        if(u) currentUser.value=u;
+      const raw=localStorage.getItem('studio_current_user');
+      if(!raw) return;
+      let saved=null;
+      try{ saved=JSON.parse(raw); }catch(_){ saved=null; }
+
+      // 校验：必须是对象，且有 pinyin / name / role / password 且都是 string
+      if(!saved || typeof saved!=='object' ||
+         typeof saved.pinyin!=='string' ||
+         typeof saved.name!=='string' ||
+         typeof saved.role!=='string'){
+        // 数据不完整 → 清掉，避免渲染时崩溃
+        localStorage.removeItem('studio_current_user');
+        return;
       }
+      currentUser.value=saved;
       viewAsPinyin.value='';
-    }catch(e){}
+    }catch(e){
+      try{ localStorage.removeItem('studio_current_user'); }catch(_){}
+      currentUser.value=null;
+    }
     applyUserPrefs();
   };
 
@@ -1527,6 +1543,7 @@ setup(){
     const u=users.value.find(x=>x.pinyin===p);
     if(!u){ loginError.value='账号不存在'; return; }
     if(u.password!==loginPassword.value){ loginError.value='密码错误'; return; }
+    // 保证存入 localStorage 的是完整对象
     currentUser.value=u;
     viewAsPinyin.value='';
     localStorage.setItem('studio_current_user',JSON.stringify(u));
@@ -1847,7 +1864,7 @@ setup(){
       if(todo.employeeDone){
         if(confirm('确认归档此待办？（归档后可在已归档中查看）')){
           todo.done=true;
-          if(!todo.completedBy) todo.completedBy=currentUser.value.name;
+          if(!todo.completedBy) todo.completedBy=(currentUser.value&&currentUser.value.name)||'';
           saveData();
         }
       }else{
@@ -2120,7 +2137,7 @@ setup(){
       if(!isPrivilegedView.value) return;
       if(!confirm('确认归档此待办？')) return;
       todo.done=true; todo.employeeDone=true;
-      if(!todo.completedBy) todo.completedBy=currentUser.value.name;
+      if(!todo.completedBy) todo.completedBy=(currentUser.value&&currentUser.value.name)||'';
       saveData();
     }
   };
@@ -2294,7 +2311,6 @@ setup(){
     if(!u){ pwdMsg.value='用户不存在'; return; }
     u.password=pwdNew.value;
     currentUser.value=u;
-    // 同步更新本地缓存的完整 user
     localStorage.setItem('studio_current_user',JSON.stringify(u));
     saveUsersToCloud();
     pwdMsg.value='密码已更新'; pwdMsgOk.value=true;
@@ -2323,18 +2339,19 @@ setup(){
   };
 
   onMounted(async()=>{
-    // 1. 立刻恢复登录态（本地缓存），字体主题立刻生效
+    // 1. 先恢复本地登录态
     restoreLogin();
     applyUserPrefs();
     generateCalendar();
 
-    // 2. Vue 挂载完，移除启动页
-    const splash=document.getElementById('boot-splash');
-    if(splash) splash.remove();
+    // 2. Vue 完成一次视图更新后移除启动页
+    nextTick(()=>{
+      const splash=document.getElementById('boot-splash');
+      if(splash) splash.remove();
+    });
 
-    // 3. 后台拉取云端数据（不阻塞首屏）
+    // 3. 后台拉取云端数据
     loadUsers().then(()=>{
-      // users 加载完后，如果本地有完整用户，用云端最新数据覆盖
       if(currentUser.value){
         const fresh=users.value.find(u=>u.pinyin===currentUser.value.pinyin);
         if(fresh){
@@ -2394,7 +2411,13 @@ setup(){
     saveAssign, deleteAssignTodo, onAssignProjectChange
   };
 }
-}).mount('#app');
+});
+
+app.config.errorHandler=function(err, instance, info){
+  console.error('[Vue Error]', err, info);
+};
+
+app.mount('#app');
 </script>
 
 <style>
