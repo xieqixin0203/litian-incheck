@@ -732,6 +732,7 @@ setup(){
   const urlParams=new URLSearchParams(window.location.search);
   const urlProject=urlParams.get('project')||'sl4';
   const urlTab=urlParams.get('tab');
+  const urlMeetingId=urlParams.get('meeting');
   const currentProject=ref(projectNameMap[urlProject]||urlProject);
   const projectKey=urlProject;
   const projectStages=ref(projectStageMap[urlProject]||['一、前期强排']);
@@ -967,7 +968,14 @@ setup(){
     try{
       const res=await fetchT(`/api/sync?project=${projectKey}&type=meeting`);
       const data=await res.json();
-      if(Array.isArray(data))meetings.value=migrateMeetings(data).map(m=>({...m,expanded:false}));
+      if(Array.isArray(data)){
+        const mig=migrateMeetings(data).map(m=>({...m,expanded:false}));
+        if(urlMeetingId){
+          const target=mig.find(m=>String(m.id)===String(urlMeetingId));
+          if(target) target.expanded=true;
+        }
+        meetings.value=mig;
+      }
     }catch(e){console.warn('会议读取失败',e)}
   };
   const saveMeetings=async()=>{

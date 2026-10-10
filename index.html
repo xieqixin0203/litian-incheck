@@ -24,9 +24,8 @@
   }catch(e){}
 })();
 </script>
-<!-- 注意：这两个都不能加 defer，必须同步按顺序加载 -->
-<link rel="stylesheet" href="./tailwind.css">
-<script src="./vue.global.prod.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js"></script>
 <style>
 [v-cloak]{display:none !important}
 html{font-size:16px}
@@ -206,6 +205,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .event-row:last-child{border-bottom:none}
 .event-row:hover .edit-btn{opacity:1}
 
+.recent-meeting-row{display:flex;align-items:center;gap:.5rem;padding:.5rem .625rem;border-radius:.5rem;cursor:pointer;transition:.15s}
+.recent-meeting-row:hover{background:var(--bg)}
+.recent-meeting-row + .recent-meeting-row{margin-top:.125rem}
+
 .arch-row{display:flex;align-items:center;gap:.625rem;padding:.5rem .25rem;border-bottom:1px dashed var(--border);font-size:.8125rem}
 .arch-row:last-child{border-bottom:none}
 
@@ -310,6 +313,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   .search-overlay{padding-top:6vh}
   .result-desc{display:none}
   .col-my-todo,.col-all-todo,.col-hero{width:100%;min-width:0}
+  .card{padding:1rem 1.25rem !important}
+  .card.p-3{padding:.875rem 1rem !important}
   .topbar{gap:.5rem}
   .user-chip{padding:.375rem .5rem;font-size:.75rem}
   .user-chip .name{max-width:4.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -322,8 +327,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   .project-row-progress{flex-basis:100%;width:100%}
   .project-row-members{flex:1 1 auto;max-width:none;min-width:0}
   .project-row-status{flex-shrink:0}
-  .card{padding:1rem 1.25rem !important}
-  .card.p-3{padding:.875rem 1rem !important}
 }
 @media(max-width:480px){
   .search-btn .kbd{display:none}
@@ -339,13 +342,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   <div class="boot-text">正在加载…</div>
 </div>
 <script>
-  // 兜底：8 秒后隐藏启动页
   setTimeout(function(){
     var s=document.getElementById('boot-splash');
     if(s) s.remove();
   }, 8000);
-
-  // 全局错误捕获：出错时显示错误卡片而不是白屏
   window.addEventListener('error', function(e){
     try{
       var el=document.getElementById('boot-splash');
@@ -465,11 +465,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </div>
   </div>
 
+  <!-- ========== 主页 ========== -->
   <div v-if="currentView==='home'" class="flex flex-col lg:flex-1 lg:min-h-0 lg:flex-row gap-4">
 
+    <!-- 员工视图 -->
     <template v-if="!isPrivilegedView">
       <div class="lg:order-1 lg:w-[68%] flex flex-col lg:min-h-0">
-        <div class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
+        <div class="card flex flex-col lg:flex-1 lg:min-h-0">
           <div class="flex justify-between items-center mb-3 flex-shrink-0">
             <h3 class="font-bold text-sm">我的待办</h3>
             <div class="flex items-center gap-2">
@@ -516,7 +518,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
         </div>
       </div>
       <div class="lg:order-2 lg:w-[32%] flex flex-col gap-4">
-        <div class="card p-4">
+        <div class="card">
           <div class="hero-title">精神零食</div>
           <div v-if="currentHero" class="flex flex-col gap-4">
             <div class="hero-img-wrap" @click="nextHero">
@@ -535,9 +537,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
     </template>
 
+    <!-- 特权视图（主任/副主任/经理） -->
     <template v-else>
       <div class="order-1 col-my-todo flex flex-col lg:min-h-0">
-        <div class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
+        <div class="card flex flex-col lg:flex-1 lg:min-h-0">
           <div class="flex justify-between items-center mb-3 flex-shrink-0">
             <h3 class="font-bold text-sm">我的待办</h3>
             <span class="count-circle">{{ myTodos.length }}</span>
@@ -579,7 +582,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
 
       <div class="order-2 col-all-todo flex flex-col lg:min-h-0">
-        <div v-if="isRealAdmin" class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
+        <div v-if="isRealAdmin" class="card flex flex-col lg:flex-1 lg:min-h-0">
           <div class="flex justify-between items-center mb-3 flex-shrink-0">
             <h3 class="font-bold text-sm">工作室待办</h3>
             <div class="flex items-center gap-2">
@@ -645,7 +648,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
           </div>
         </div>
 
-        <div v-else class="card p-4 flex flex-col lg:flex-1 lg:min-h-0">
+        <div v-else class="card flex flex-col lg:flex-1 lg:min-h-0">
           <div class="flex justify-between items-center mb-3 flex-shrink-0">
             <h3 class="font-bold text-sm">项目进度</h3>
             <span class="count-circle">{{ activeProjects.length }}</span>
@@ -669,7 +672,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
 
       <div class="order-3 col-hero flex flex-col gap-4 lg:min-h-0">
-        <div class="card p-4">
+        <!-- 会议/出差安排 -->
+        <div class="card">
           <div class="flex justify-between items-center mb-3">
             <h3 class="font-bold text-sm">会议/出差安排</h3>
             <button @click="openAddEvent" class="btn-ghost" style="font-size:.9375rem;padding:2px .5625rem;line-height:1">+</button>
@@ -691,7 +695,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
           </div>
         </div>
 
-        <div class="card p-4">
+        <!-- 最近会议纪要 -->
+        <div class="card">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-bold text-sm">最近会议纪要</h3>
+          </div>
+          <div v-if="loadingRecentMeetings" class="text-xs opacity-50 text-center py-3">加载中…</div>
+          <div v-else-if="recentMeetings.length === 0" class="text-xs opacity-50 text-center py-3">暂无会议纪要</div>
+          <div v-else>
+            <div v-for="m in recentMeetings" :key="m.projectId+'_'+m.meetingId"
+                 class="recent-meeting-row" @click="goToMeetingItem(m)">
+              <div class="flex-1 min-w-0">
+                <div class="text-[0.8125rem] font-semibold truncate">{{ m.title || '未命名会议' }}</div>
+                <div class="text-[0.6875rem] opacity-55 truncate mt-0.5">📁 {{ m.projectName }}</div>
+                <div class="text-[0.6875rem] font-medium mt-0.5" style="color:var(--primary)">{{ m.date }}</div>
+              </div>
+              <div class="text-xs opacity-40">→</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 精神零食 -->
+        <div class="card">
           <div class="hero-title">精神零食</div>
           <div v-if="currentHero" class="flex flex-col gap-4">
             <div class="hero-img-wrap" @click="nextHero">
@@ -711,6 +736,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </template>
   </div>
 
+  <!-- 最近待办详情 -->
   <div v-if="currentView==='todos'" class="flex-1 min-h-0 overflow-y-auto">
     <div class="flex justify-between items-center mb-5 flex-wrap gap-2">
       <h1 class="text-2xl font-bold" style="letter-spacing:-.5px">{{ isPrivilegedView ? '最近待办' : '我的待办' }}</h1>
@@ -725,7 +751,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       <div class="text-sm">暂无任务</div>
     </div>
     <div class="space-y-3">
-      <div v-for="(group,projName) in groupedTodos" :key="projName" class="card p-5">
+      <div v-for="(group,projName) in groupedTodos" :key="projName" class="card" style="padding:1.5rem">
         <div class="todo-project-title" style="font-size:.875rem;margin-bottom:.625rem">{{ projName }}</div>
         <div>
           <template v-for="todo in group" :key="todo.id">
@@ -775,6 +801,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </div>
   </div>
 
+  <!-- 项目会议纪要（员工专用） -->
   <div v-if="currentView==='meetings'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-2" style="letter-spacing:-.5px">项目会议纪要</h1>
     <p class="text-xs opacity-55 mb-5">你是以下项目的成员，可以查看会议纪要内容。</p>
@@ -795,10 +822,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </div>
   </div>
 
+  <!-- 已归档 -->
   <div v-if="currentView==='archive'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">📦 已归档</h1>
 
-    <div class="card p-5 mb-4">
+    <div class="card mb-4" style="padding:1.5rem">
       <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">🏁 已完成项目 ({{ completedProjects.length }})</h3>
       <div v-if="completedProjects.length === 0" class="text-xs opacity-50 text-center py-5">暂无已完成的项目</div>
       <div v-else>
@@ -816,7 +844,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
     </div>
 
-    <div v-if="isPrivilegedView" class="card p-5 mb-4">
+    <div v-if="isPrivilegedView" class="card mb-4" style="padding:1.5rem">
       <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">会议/出差安排 · 已完成 ({{ doneEvents.length }})</h3>
       <div v-if="doneEvents.length === 0" class="text-xs opacity-50 text-center py-5">暂无已完成</div>
       <div v-else>
@@ -834,7 +862,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
     </div>
 
-    <div class="card p-5">
+    <div class="card" style="padding:1.5rem">
       <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">{{ isPrivilegedView ? '最近待办' : '我的待办' }} · 已完成 ({{ doneTodos.length }})</h3>
       <div v-if="doneTodos.length === 0" class="text-xs opacity-50 text-center py-5">暂无已完成</div>
       <div v-else>
@@ -853,6 +881,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </div>
   </div>
 
+  <!-- 项目总览 -->
   <div v-if="currentView==='projects'" class="flex-1 min-h-0 overflow-y-auto">
     <div class="flex justify-between items-center mb-5 flex-wrap gap-2">
       <h1 class="text-2xl font-bold" style="letter-spacing:-.5px">项目总览</h1>
@@ -900,23 +929,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </div>
   </div>
 
+  <!-- 备忘录 -->
   <div v-if="currentView==='memo'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">工作室备忘录</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <a href="./materials.html" class="card p-6 hover:shadow-lg transition block">
+      <a href="./materials.html" class="card hover:shadow-lg transition block" style="padding:1.5rem;text-decoration:none;color:inherit">
         <h3 class="font-bold text-sm mb-1">📊 材料造价库</h3>
         <p class="text-xs opacity-65">市政、景观、立面、幕墙、室内、栏杆</p>
       </a>
-      <div class="card p-6"><h3 class="font-bold text-sm mb-1">SketchUp 建模规范</h3><p class="text-xs opacity-65">圆弧段数、组件命名、清理标准</p></div>
-      <div class="card p-6"><h3 class="font-bold text-sm mb-1">AI 效果图关键词库</h3><p class="text-xs opacity-65">按项目类型分类的提示词参考</p></div>
-      <div class="card p-6"><h3 class="font-bold text-sm mb-1">合同模板库</h3><p class="text-xs opacity-65">设计合同、分包、变更、验收</p></div>
-      <div class="card p-6"><h3 class="font-bold text-sm mb-1">会议纪要模板</h3><p class="text-xs opacity-65">已确认/待确认事项标准格式</p></div>
+      <div class="card" style="padding:1.5rem"><h3 class="font-bold text-sm mb-1">SketchUp 建模规范</h3><p class="text-xs opacity-65">圆弧段数、组件命名、清理标准</p></div>
+      <div class="card" style="padding:1.5rem"><h3 class="font-bold text-sm mb-1">AI 效果图关键词库</h3><p class="text-xs opacity-65">按项目类型分类的提示词参考</p></div>
+      <div class="card" style="padding:1.5rem"><h3 class="font-bold text-sm mb-1">合同模板库</h3><p class="text-xs opacity-65">设计合同、分包、变更、验收</p></div>
+      <div class="card" style="padding:1.5rem"><h3 class="font-bold text-sm mb-1">会议纪要模板</h3><p class="text-xs opacity-65">已确认/待确认事项标准格式</p></div>
     </div>
   </div>
 
+  <!-- 设置 -->
   <div v-if="currentView==='settings'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">设置</h1>
-    <div class="card p-6 mb-4">
+    <div class="card mb-4" style="padding:1.5rem">
       <p class="text-sm font-semibold mb-3">字号</p>
       <div class="flex gap-2 mb-6">
         <button @click="setFontSize('small')"  :class="['btn-ghost', fontSize==='small'?'btn-primary':'']">小</button>
@@ -932,7 +963,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
     </div>
 
-    <div class="card p-6 mb-4">
+    <div class="card mb-4" style="padding:1.5rem">
       <p class="text-sm font-semibold mb-4">修改密码</p>
       <div class="space-y-3" style="max-width:22.5rem">
         <div><label class="form-label">原密码</label><input v-model="pwdOld" type="password" class="form-input" placeholder="当前密码"></div>
@@ -943,13 +974,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
     </div>
 
-    <div class="card p-6">
+    <div class="card" style="padding:1.5rem">
       <p class="text-xs opacity-60">项目、待办、会议/出差已启用云端同步。任何设备上的修改会在刷新后同步到所有设备。</p>
     </div>
   </div>
 </main>
 </div>
 
+<!-- 搜索面板 -->
 <transition name="fade">
   <div v-if="showSearch" class="search-overlay" @click.self="closeSearch">
     <div class="search-panel">
@@ -982,6 +1014,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </transition>
 
+<!-- 会议/出差编辑 -->
 <div v-if="showEventModal" v-cloak class="modal-mask" @click.self="closeEventModal">
   <div class="modal-card">
     <h3 class="modal-title">{{ editingEventId ? '编辑会议/出差' : '新增会议/出差' }}</h3>
@@ -1001,6 +1034,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
+<!-- 编辑子任务 -->
 <div v-if="editingSubTask" v-cloak class="modal-mask" @click.self="editingSubTask=null">
   <div class="modal-card">
     <h3 class="modal-title">编辑小项</h3>
@@ -1014,6 +1048,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
+<!-- 编辑/新建待办 -->
 <div v-if="editingTodo || showAddTodo" v-cloak class="modal-mask" @click.self="closeTodoModal">
   <div class="modal-card">
     <h3 class="modal-title">{{ editingTodo ? '编辑待办' : '新建待办' }}</h3>
@@ -1059,6 +1094,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
+<!-- 指派检查项 -->
 <div v-if="showAssignModal" v-cloak class="modal-mask" @click.self="closeAssignModal">
   <div class="modal-card" style="max-width:45rem">
     <h3 class="modal-title">{{ editingAssignTodoId ? '编辑指派' : '指派检查项' }}</h3>
@@ -1122,6 +1158,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
+<!-- 编辑项目 -->
 <div v-if="editingProject" v-cloak class="modal-mask" @click.self="editingProject=null">
   <div class="modal-card" style="max-width:32.5rem">
     <h3 class="modal-title">编辑项目</h3>
@@ -1163,6 +1200,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   </div>
 </div>
 
+<!-- 新建项目 -->
 <div v-if="showAddProject" v-cloak class="modal-mask" @click.self="showAddProject=false">
   <div class="modal-card">
     <h3 class="modal-title">新建项目</h3>
@@ -1186,7 +1224,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 </div>
 
 <script>
-// Vue 全局检查（保证脚本执行时 Vue 已定义）
 if(typeof Vue==='undefined'){
   var el=document.getElementById('boot-splash');
   if(el) el.remove();
@@ -1209,7 +1246,7 @@ const fetchT=(url,opts,ms=5000)=>{
 
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
-const DATA_VERSION='2026-10-18-v28';
+const DATA_VERSION='2026-10-19-v29';
 
 const defaultUsers=[
   {name:'刘文辉', pinyin:'liuwenhui', password:'litian2026', role:'admin'},
@@ -1713,6 +1750,50 @@ setup(){
       if(Array.isArray(data)&&data.length){events.value=migrateEvents(data);}
       else{events.value=migrateEvents(defaultEvents);saveEventsToCloud();}
     }catch(e){events.value=migrateEvents(defaultEvents);}
+  };
+
+  // ============ 最近会议纪要 ============
+  const recentMeetings=ref([]);
+  const loadingRecentMeetings=ref(false);
+
+  const loadRecentMeetings=async()=>{
+    loadingRecentMeetings.value=true;
+    try{
+      const all=[];
+      const tasks=projects.value.map(async (proj)=>{
+        try{
+          const res=await fetchT(`/api/sync?project=${proj.id}&type=meeting`,null,4000);
+          const data=await res.json();
+          if(Array.isArray(data)){
+            data.forEach(m=>{
+              all.push({
+                meetingId:m.id,
+                projectId:proj.id,
+                projectName:proj.name,
+                date:m.date||'',
+                title:m.title||'',
+                recordedBy:m.recordedBy||''
+              });
+            });
+          }
+        }catch(e){}
+      });
+      await Promise.all(tasks);
+      all.sort((a,b)=>{
+        const dc=(b.date||'').localeCompare(a.date||'');
+        if(dc!==0) return dc;
+        return String(b.meetingId||'').localeCompare(String(a.meetingId||''));
+      });
+      recentMeetings.value=all.slice(0,10);
+    }catch(e){
+      recentMeetings.value=[];
+    }
+    loadingRecentMeetings.value=false;
+  };
+
+  const goToMeetingItem=(m)=>{
+    const mid=m.meetingId?`&meeting=${encodeURIComponent(m.meetingId)}`:'';
+    window.location.href=`./checklist.html?project=${m.projectId}&tab=meeting${mid}`;
   };
 
   const sortedProjects=computed(()=>{
@@ -2377,7 +2458,7 @@ setup(){
     });
     loadHeroes();
     loadEvents();
-    loadProjectsAndTodosFromCloud();
+    loadProjectsAndTodosFromCloud().then(()=>{ loadRecentMeetings(); });
     nextTick(()=>updateHighlight());
     window.addEventListener('resize', updateHighlight);
     window.addEventListener('keydown', handleKeydown);
@@ -2402,6 +2483,7 @@ setup(){
     myTodos, groupedMyTodos, allPendingTodos, groupedAllTodos,
     myMeetingProjects, expandedTodos, toggleChecklistExpand,
     activeEvents, doneEvents, formatEventTimeShort,
+    recentMeetings, loadingRecentMeetings, goToMeetingItem,
     showAddTodo, showAddProject, editingTodo, editingSubTask, editingProject,
     showEventModal, editingEventId, draftEvent,
     showSearch, searchQuery, searchActiveIndex, searchInput, searchResults,
