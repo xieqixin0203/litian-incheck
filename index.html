@@ -136,7 +136,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .cal-nav:hover{opacity:1}
 
 .main-content{flex:1;padding:1.75rem 2rem;overflow:hidden;height:100vh;display:flex;flex-direction:column;gap:1rem}
-.card{background:var(--card);border:1px solid var(--border);border-radius:.75rem;transition:.2s;padding:1.25rem 1.5rem}
+.card{background:var(--card);border:1px solid var(--border-strong);border-radius:.75rem;transition:.2s;padding:1.25rem 1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .card.p-3{padding:1rem 1.25rem}
 
 .topbar{display:flex;align-items:center;gap:.625rem;flex-shrink:0}
@@ -180,7 +180,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .hero-meta .author{opacity:.65}
 
 .todo-project-group{margin-bottom:.75rem}
-.todo-project-title{font-size:.84375rem;font-weight:700;margin:.5rem 0 .375rem;padding-left:2px;color:var(--primary);letter-spacing:-.2px}
+.todo-project-title{font-size:.84375rem;font-weight:700;margin:.5rem 0 .375rem;padding-left:2px;color:var(--primary);letter-spacing:-.2px;display:flex;align-items:center;gap:.375rem}
+.todo-group-order-btns{display:inline-flex;gap:.125rem;margin-left:auto;opacity:0;transition:.15s}
+.todo-project-group:hover .todo-group-order-btns{opacity:1}
+.todo-group-order-btns button{background:transparent;border:1px solid var(--border);color:var(--text-tertiary);width:1.125rem;height:1.125rem;font-size:.5625rem;line-height:1;padding:0;cursor:pointer;border-radius:.1875rem;display:inline-flex;align-items:center;justify-content:center}
+.todo-group-order-btns button:hover{background:var(--bg);color:var(--text);border-color:var(--border-strong)}
+
 .todo-row{font-size:.78125rem;padding-left:.875rem;position:relative;display:flex;align-items:center;gap:.4375rem;padding-top:.25rem;padding-bottom:.25rem;border-bottom:1px dashed var(--border);transition:.15s}
 .todo-row:last-child{border-bottom:none}
 .todo-row::before{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:var(--border-strong)}
@@ -252,7 +257,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .search-result-item.active .result-title{color:var(--primary);font-weight:600}
 .result-type{font-size:.65625rem;padding:2px 7px;border-radius:.3125rem;font-weight:600;flex-shrink:0;background:var(--tag-bg);color:var(--tag-text)}
 .result-title{font-size:.84375rem;font-weight:500;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.result-desc{font-size:.71875rem;color:var(--text-tertiary);flex-shrink:0;max-width:11.25rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.result-desc{font-size:.71875rem;color:var(--text-tertiary);flex-shrink:0;max-width:16rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .result-title mark, .result-desc mark{background:color-mix(in srgb, var(--primary) 30%, transparent);color:var(--primary-deep);font-weight:700;padding:0 2px;border-radius:.1875rem}
 .search-empty{padding:2.5rem 1.25rem;text-align:center;color:var(--text-tertiary);font-size:.8125rem}
 .search-footer{padding:.5rem .875rem;border-top:1px solid var(--border);display:flex;gap:.875rem;font-size:.6875rem;color:var(--text-tertiary);opacity:.8}
@@ -270,6 +275,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .col-all-todo{width:46%}
 .col-hero{width:32%}
 .col-my-todo-wide{width:68%}
+.col-my-todo,.col-my-todo-wide,.col-all-todo,.col-hero{flex-shrink:0}
 
 .meeting-proj-card{display:flex;align-items:center;gap:.875rem;padding:1rem 1.125rem;cursor:pointer;transition:.2s;background:var(--card);border:1px solid var(--border);border-radius:.75rem}
 .meeting-proj-card:hover{border-color:var(--primary);transform:translateX(2px)}
@@ -313,7 +319,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   .search-panel{max-height:80vh;margin:0 .5rem}
   .search-overlay{padding-top:6vh}
   .result-desc{display:none}
-  .col-my-todo,.col-all-todo,.col-hero{width:100%;min-width:0}
+  .col-my-todo,.col-all-todo,.col-hero,.col-my-todo-wide{width:100%;min-width:0}
   .card{padding:1rem 1.25rem !important}
   .card.p-3{padding:.875rem 1rem !important}
   .topbar{gap:.5rem}
@@ -466,7 +472,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
     </div>
   </div>
 
-  <!-- ========== 主页 ========== -->
+  <!-- 主页 -->
   <div v-if="currentView==='home'" class="flex flex-col lg:flex-1 lg:min-h-0 lg:flex-row gap-4">
 
     <!-- 员工视图 -->
@@ -519,7 +525,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
         </div>
       </div>
       <div class="lg:order-2 lg:w-[32%] flex flex-col gap-4">
-        <!-- 最近会议纪要 -->
         <div class="card">
           <div class="flex justify-between items-center mb-3">
             <h3 class="font-bold text-sm">最近会议纪要</h3>
@@ -538,8 +543,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
             </div>
           </div>
         </div>
-
-        <!-- 精神零食 -->
         <div class="card">
           <div class="hero-title">精神零食</div>
           <div v-if="currentHero" class="flex flex-col gap-4">
@@ -559,7 +562,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
     </template>
 
-    <!-- 特权视图（主任/副主任/经理） -->
+    <!-- 特权视图 -->
     <template v-else>
       <div class="order-1 flex flex-col lg:min-h-0" :class="isEffectiveAdmin ? 'col-my-todo' : 'col-my-todo-wide'">
         <div class="card flex flex-col lg:flex-1 lg:min-h-0">
@@ -603,8 +606,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
         </div>
       </div>
 
-<div v-if="isEffectiveAdmin" class="order-2 col-all-todo flex flex-col lg:min-h-0">
-        <div v-if="isEffectiveAdmin" class="card flex flex-col lg:flex-1 lg:min-h-0">
+      <div v-if="isEffectiveAdmin" class="order-2 col-all-todo flex flex-col lg:min-h-0">
+        <div class="card flex flex-col lg:flex-1 lg:min-h-0">
           <div class="flex justify-between items-center mb-3 flex-shrink-0">
             <h3 class="font-bold text-sm">工作室待办</h3>
             <div class="flex items-center gap-2">
@@ -616,7 +619,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
           <div class="scroll-area flex-1 min-h-0">
             <div v-if="allPendingTodos.length === 0" class="text-xs opacity-50 text-center py-4">暂无待办</div>
             <div v-for="(group,projName) in groupedAllTodos" :key="projName" class="todo-project-group">
-              <div class="todo-project-title">{{ projName }}</div>
+              <div class="todo-project-title">
+                <span>{{ projName }}</span>
+                <span v-if="canReorderTodos" class="todo-group-order-btns" @click.stop>
+                  <button @click="moveTodoGroup(projName,-1)" title="整个项目分组上移">▲</button>
+                  <button @click="moveTodoGroup(projName,1)" title="整个项目分组下移">▼</button>
+                </span>
+              </div>
               <template v-for="todo in group" :key="todo.id">
                 <template v-if="todo.isChecklist">
                   <div class="todo-row">
@@ -669,8 +678,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
             </div>
           </div>
         </div>
+      </div>
 
-        <div v-else class="card flex flex-col lg:flex-1 lg:min-h-0">
+      <div v-else class="order-2 col-all-todo flex flex-col lg:min-h-0">
+        <div class="card flex flex-col lg:flex-1 lg:min-h-0">
           <div class="flex justify-between items-center mb-3 flex-shrink-0">
             <h3 class="font-bold text-sm">项目进度</h3>
             <span class="count-circle">{{ activeProjects.length }}</span>
@@ -694,7 +705,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
 
       <div class="order-3 col-hero flex flex-col gap-4 lg:min-h-0">
-        <!-- 会议/出差安排 -->
         <div class="card">
           <div class="flex justify-between items-center mb-3">
             <h3 class="font-bold text-sm">会议/出差安排</h3>
@@ -717,7 +727,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
           </div>
         </div>
 
-        <!-- 最近会议纪要 -->
         <div class="card">
           <div class="flex justify-between items-center mb-3">
             <h3 class="font-bold text-sm">最近会议纪要</h3>
@@ -737,7 +746,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
           </div>
         </div>
 
-        <!-- 精神零食 -->
         <div class="card">
           <div class="hero-title">精神零食</div>
           <div v-if="currentHero" class="flex flex-col gap-4">
@@ -773,7 +781,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       <div class="text-sm">暂无任务</div>
     </div>
     <div class="space-y-3">
-      <div v-for="(group,projName) in groupedTodos" :key="projName" class="card" style="padding:1.5rem">
+      <div v-for="(group,projName) in groupedTodos" :key="projName" class="card">
         <div class="todo-project-title" style="font-size:.875rem;margin-bottom:.625rem">{{ projName }}</div>
         <div>
           <template v-for="todo in group" :key="todo.id">
@@ -848,7 +856,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   <div v-if="currentView==='archive'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">📦 已归档</h1>
 
-    <div class="card mb-4" style="padding:1.5rem">
+    <div class="card mb-4">
       <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">🏁 已完成项目 ({{ completedProjects.length }})</h3>
       <div v-if="completedProjects.length === 0" class="text-xs opacity-50 text-center py-5">暂无已完成的项目</div>
       <div v-else>
@@ -866,7 +874,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
     </div>
 
-    <div v-if="isPrivilegedView" class="card mb-4" style="padding:1.5rem">
+    <div v-if="isPrivilegedView" class="card mb-4">
       <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">会议/出差安排 · 已完成 ({{ doneEvents.length }})</h3>
       <div v-if="doneEvents.length === 0" class="text-xs opacity-50 text-center py-5">暂无已完成</div>
       <div v-else>
@@ -884,7 +892,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
     </div>
 
-    <div class="card" style="padding:1.5rem">
+    <div class="card">
       <h3 class="font-bold text-sm mb-3 pb-3" style="border-bottom:1px solid var(--border)">{{ isPrivilegedView ? '最近待办' : '我的待办' }} · 已完成 ({{ doneTodos.length }})</h3>
       <div v-if="doneTodos.length === 0" class="text-xs opacity-50 text-center py-5">暂无已完成</div>
       <div v-else>
@@ -955,21 +963,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
   <div v-if="currentView==='memo'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">工作室备忘录</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <a href="./materials.html" class="card hover:shadow-lg transition block" style="padding:1.5rem;text-decoration:none;color:inherit">
+      <a href="./materials.html" class="card hover:shadow-lg transition block" style="text-decoration:none;color:inherit">
         <h3 class="font-bold text-sm mb-1">📊 材料造价库</h3>
         <p class="text-xs opacity-65">市政、景观、立面、幕墙、室内、栏杆</p>
       </a>
-      <div class="card" style="padding:1.5rem"><h3 class="font-bold text-sm mb-1">SketchUp 建模规范</h3><p class="text-xs opacity-65">圆弧段数、组件命名、清理标准</p></div>
-      <div class="card" style="padding:1.5rem"><h3 class="font-bold text-sm mb-1">AI 效果图关键词库</h3><p class="text-xs opacity-65">按项目类型分类的提示词参考</p></div>
-      <div class="card" style="padding:1.5rem"><h3 class="font-bold text-sm mb-1">合同模板库</h3><p class="text-xs opacity-65">设计合同、分包、变更、验收</p></div>
-      <div class="card" style="padding:1.5rem"><h3 class="font-bold text-sm mb-1">会议纪要模板</h3><p class="text-xs opacity-65">已确认/待确认事项标准格式</p></div>
+      <div class="card"><h3 class="font-bold text-sm mb-1">SketchUp 建模规范</h3><p class="text-xs opacity-65">圆弧段数、组件命名、清理标准</p></div>
+      <div class="card"><h3 class="font-bold text-sm mb-1">AI 效果图关键词库</h3><p class="text-xs opacity-65">按项目类型分类的提示词参考</p></div>
+      <div class="card"><h3 class="font-bold text-sm mb-1">合同模板库</h3><p class="text-xs opacity-65">设计合同、分包、变更、验收</p></div>
+      <div class="card"><h3 class="font-bold text-sm mb-1">会议纪要模板</h3><p class="text-xs opacity-65">已确认/待确认事项标准格式</p></div>
     </div>
   </div>
 
   <!-- 设置 -->
   <div v-if="currentView==='settings'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">设置</h1>
-    <div class="card mb-4" style="padding:1.5rem">
+    <div class="card mb-4">
       <p class="text-sm font-semibold mb-3">字号</p>
       <div class="flex gap-2 mb-6">
         <button @click="setFontSize('small')"  :class="['btn-ghost', fontSize==='small'?'btn-primary':'']">小</button>
@@ -985,7 +993,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
     </div>
 
-    <div class="card mb-4" style="padding:1.5rem">
+    <div class="card mb-4">
       <p class="text-sm font-semibold mb-4">修改密码</p>
       <div class="space-y-3" style="max-width:22.5rem">
         <div><label class="form-label">原密码</label><input v-model="pwdOld" type="password" class="form-input" placeholder="当前密码"></div>
@@ -996,7 +1004,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
     </div>
 
-    <div class="card" style="padding:1.5rem">
+    <div class="card">
       <p class="text-xs opacity-60">项目、待办、会议/出差已启用云端同步。任何设备上的修改会在刷新后同步到所有设备。</p>
     </div>
   </div>
@@ -1268,7 +1276,7 @@ const fetchT=(url,opts,ms=5000)=>{
 
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
-const DATA_VERSION='2026-10-19-v29';
+const DATA_VERSION='2026-10-20-v30';
 
 const defaultUsers=[
   {name:'刘文辉', pinyin:'liuwenhui', password:'litian2026', role:'admin'},
@@ -1653,7 +1661,7 @@ setup(){
   });
   const isPrivilegedView=computed(()=>effectiveUser.value && (effectiveUser.value.role==='admin'||effectiveUser.value.role==='manager'));
   const isRealAdmin=computed(()=>currentUser.value && currentUser.value.role==='admin');
-const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.role==='admin');
+  const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.role==='admin');
   const canReorder=computed(()=>currentUser.value && currentUser.value.pinyin==='xieqixin');
   const canReorderTodos=computed(()=>currentUser.value && currentUser.value.role==='admin' && isPrivilegedView.value);
 
@@ -1670,6 +1678,10 @@ const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.r
   const searchQuery=ref('');
   const searchActiveIndex=ref(0);
   const searchInput=ref(null);
+
+  const allMeetingsForSearch=ref([]);
+  const meetingsSearchLoaded=ref(false);
+  const loadingMeetingsSearch=ref(false);
 
   const navRefs=ref({});
   const highlightStyle=ref({});
@@ -1712,6 +1724,7 @@ const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.r
   const events=ref([]);
   const projectOrder=ref(JSON.parse(localStorage.getItem('studio_project_order'))||[]);
   const todoOrder=ref(JSON.parse(localStorage.getItem('studio_todo_order'))||[]);
+  const todoGroupOrder=ref(JSON.parse(localStorage.getItem('studio_todo_group_order'))||[]);
   const newProject=ref({name:'',stage:stages[0],owner:''});
   const newTodo=ref({task:'',projectId:'',owner:'',important:false});
 
@@ -1729,6 +1742,9 @@ const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.r
   };
   const saveTodoOrderToCloud=async()=>{
     try{await fetchT('/api/sync?type=todoOrder&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(todoOrder.value)});}catch(e){}
+  };
+  const saveTodoGroupOrderToCloud=async()=>{
+    try{await fetchT('/api/sync?type=todoGroupOrder&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(todoGroupOrder.value)});}catch(e){}
   };
 
   const loadProjectsAndTodosFromCloud=async()=>{
@@ -1764,6 +1780,14 @@ const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.r
         localStorage.setItem('studio_todo_order',JSON.stringify(d4));
       }
     }catch(e){}
+    try{
+      const r5=await fetchT('/api/sync?type=todoGroupOrder&project=global');
+      const d5=await r5.json();
+      if(Array.isArray(d5)&&d5.length){
+        todoGroupOrder.value=d5;
+        localStorage.setItem('studio_todo_group_order',JSON.stringify(d5));
+      }
+    }catch(e){}
   };
 
   const loadEvents=async()=>{
@@ -1775,16 +1799,12 @@ const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.r
     }catch(e){events.value=migrateEvents(defaultEvents);}
   };
 
-  // ============ 最近会议纪要 ============
   const recentMeetings=ref([]);
   const loadingRecentMeetings=ref(false);
 
-    const loadRecentMeetings=async()=>{
+  const loadRecentMeetings=async()=>{
     loadingRecentMeetings.value=true;
     try{
-      // 决定要拉哪些项目：
-      // 主任/副主任/经理 → 全部项目
-      // 员工 → 只拉自己参与的项目（members 包含自己的名字）
       let targetProjects=projects.value;
       if(!isPrivilegedView.value && effectiveUser.value){
         const me=effectiveUser.value.name;
@@ -1825,6 +1845,48 @@ const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.r
       recentMeetings.value=[];
     }
     loadingRecentMeetings.value=false;
+  };
+
+  const loadAllMeetingsForSearch=async()=>{
+    if(meetingsSearchLoaded.value || loadingMeetingsSearch.value) return;
+    loadingMeetingsSearch.value=true;
+    try{
+      const items=[];
+      const tasks=projects.value.map(async (proj)=>{
+        try{
+          const res=await fetchT(`/api/sync?project=${proj.id}&type=meeting`,null,5000);
+          const data=await res.json();
+          if(Array.isArray(data)){
+            data.forEach(m=>{
+              const base={
+                meetingId:m.id,
+                projectId:proj.id,
+                projectName:proj.name,
+                date:m.date||'',
+                title:m.title||'未命名会议'
+              };
+              items.push({...base,kind:'meeting',section:'',text:''});
+              const sections=[
+                {key:'confirmed',label:'已确认'},
+                {key:'todo',label:'待进行'},
+                {key:'pending',label:'待确认'},
+                {key:'changes',label:'变更'}
+              ];
+              sections.forEach(sec=>{
+                (m[sec.key]||[]).forEach(it=>{
+                  const text=(typeof it==='string')?it:(it.text||'');
+                  if(text) items.push({...base,kind:'item',section:sec.label,text});
+                });
+              });
+            });
+          }
+        }catch(e){}
+      });
+      await Promise.all(tasks);
+      allMeetingsForSearch.value=items;
+      meetingsSearchLoaded.value=true;
+    }catch(e){}
+    loadingMeetingsSearch.value=false;
   };
 
   const goToMeetingItem=(m)=>{
@@ -1902,8 +1964,18 @@ const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.r
   const groupTodosWithOrder=(arr)=>{
     const g={};
     arr.forEach(t=>{ if(!g[t.projectName])g[t.projectName]=[]; g[t.projectName].push(t); });
+    const keys=Object.keys(g);
+    const order=todoGroupOrder.value;
+    const sortedKeys=[...keys].sort((a,b)=>{
+      const ia=order.indexOf(a);
+      const ib=order.indexOf(b);
+      if(ia===-1 && ib===-1) return 0;
+      if(ia===-1) return 1;
+      if(ib===-1) return -1;
+      return ia-ib;
+    });
     const sorted={};
-    Object.keys(g).forEach(k=>{ sorted[k]=sortTodosByOrder(g[k]); });
+    sortedKeys.forEach(k=>{ sorted[k]=sortTodosByOrder(g[k]); });
     return sorted;
   };
 
@@ -1920,6 +1992,18 @@ const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.r
     todoOrder.value=withoutGroup.concat(ids);
     localStorage.setItem('studio_todo_order',JSON.stringify(todoOrder.value));
     saveTodoOrderToCloud();
+  };
+
+  const moveTodoGroup=(projName,dir)=>{
+    if(!canReorderTodos.value) return;
+    const keys=Object.keys(groupedAllTodos.value);
+    const idx=keys.indexOf(projName);
+    const newIdx=idx+dir;
+    if(newIdx<0 || newIdx>=keys.length) return;
+    [keys[idx],keys[newIdx]]=[keys[newIdx],keys[idx]];
+    todoGroupOrder.value=keys;
+    localStorage.setItem('studio_todo_group_order',JSON.stringify(keys));
+    saveTodoGroupOrderToCloud();
   };
 
   const groupedTodos=computed(()=>groupTodosWithOrder(pendingTodos.value));
@@ -2180,11 +2264,35 @@ const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.r
     if(isPrivilegedView.value){
       events.value.forEach(e=>{
         if(e.title.toLowerCase().includes(kw) || (e.location||'').toLowerCase().includes(kw)){
-          results.push({type:'event',typeLabel:'会议',title:e.title,desc:e.location||'',action:()=>{switchView('home');closeSearch();}});
+          results.push({type:'event',typeLabel:'会议安排',title:e.title,desc:e.location||'',action:()=>{switchView('home');closeSearch();}});
         }
       });
     }
-    return results.slice(0,20);
+    allMeetingsForSearch.value.forEach(m=>{
+      const titleLower=(m.title||'').toLowerCase();
+      const textLower=(m.text||'').toLowerCase();
+      const projLower=(m.projectName||'').toLowerCase();
+      if(titleLower.includes(kw) || textLower.includes(kw) || projLower.includes(kw)){
+        if(m.kind==='item'){
+          results.push({
+            type:'meeting-item',
+            typeLabel:m.section||'纪要',
+            title:m.text,
+            desc:`${m.projectName} · ${m.date} · ${m.title}`,
+            action:()=>goToMeetingItem(m)
+          });
+        }else{
+          results.push({
+            type:'meeting',
+            typeLabel:'会议纪要',
+            title:m.title,
+            desc:`${m.projectName} · ${m.date}`,
+            action:()=>goToMeetingItem(m)
+          });
+        }
+      }
+    });
+    return results.slice(0,30);
   });
   const searchResults=searchAllResults;
   const onSearchInput=()=>{ searchActiveIndex.value=0; };
@@ -2193,7 +2301,11 @@ const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.r
   const searchConfirm=()=>{ const r=searchResults.value[searchActiveIndex.value]; if(r) r.action(); };
   const selectResult=(r)=>{ r.action(); };
   const closeSearch=()=>{ showSearch.value=false; searchQuery.value=''; searchActiveIndex.value=0; };
-  const openSearch=()=>{ showSearch.value=true; nextTick(()=>{ searchInput.value && searchInput.value.focus(); }); };
+  const openSearch=()=>{
+    showSearch.value=true;
+    if(!meetingsSearchLoaded.value) loadAllMeetingsForSearch();
+    nextTick(()=>{ searchInput.value && searchInput.value.focus(); });
+  };
   const highlightMatch=(text, kw)=>{
     if(!kw) return text;
     const esc=kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
@@ -2512,7 +2624,7 @@ const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.r
     currentView, sidebarOpen, visibleNavItems, switchView,
     setNavRef, highlightStyle, highlightReady,
     projects, todos, events, members, stages, newTodo, newProject,
-    sortedProjects, activeProjects, completedProjects, projectOrder, moveProject, moveTodoInProject,
+    sortedProjects, activeProjects, completedProjects, projectOrder, moveProject, moveTodoInProject, moveTodoGroup,
     getStageProgress,
     completeProject, reopenProject, deleteCompletedProject,
     pendingTodos, doneTodos, groupedTodos, groupedDoneTodos,
@@ -2522,7 +2634,7 @@ const isEffectiveAdmin=computed(()=>effectiveUser.value && effectiveUser.value.r
     recentMeetings, loadingRecentMeetings, goToMeetingItem,
     showAddTodo, showAddProject, editingTodo, editingSubTask, editingProject,
     showEventModal, editingEventId, draftEvent,
-    showSearch, searchQuery, searchActiveIndex, searchInput, searchResults,
+    showSearch, searchQuery, searchActiveIndex, searchInput, searchResults, loadingMeetingsSearch,
     openSearch, closeSearch, onSearchInput, searchNext, searchPrev, searchConfirm, selectResult, highlightMatch,
     toggleTodo, deleteTodo, editTodo, editSubTask, saveSubTask,
     toggleSubTask, deleteSubTask,
