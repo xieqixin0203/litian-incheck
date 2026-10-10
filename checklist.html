@@ -24,9 +24,8 @@
   }catch(e){}
 })();
 </script>
-<!-- 注意：这两个都不能加 defer -->
-<link rel="stylesheet" href="./tailwind.css">
-<script src="./vue.global.prod.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/3.4.21/vue.global.prod.js"></script>
 <style>
 [v-cloak]{display:none !important}
 html{font-size:16px}
@@ -63,13 +62,10 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .stage-current{background:var(--card) !important;border-left:4px solid var(--primary) !important}
 select,input,textarea{background:transparent;color:var(--text);font-size:13px}
 .contract-section{border:2px solid var(--primary);border-radius:16px;overflow:hidden}
-.contract-section > div{padding:1.25rem 1.5rem}
-header{padding:1.5rem 1.75rem !important}
+.contract-section > div{padding:1rem 1.5rem}
 .tab-btn{padding:8px 18px;border-radius:10px 10px 0 0;font-size:14px;font-weight:500;cursor:pointer;border:1px solid transparent;border-bottom:none;background:transparent;color:var(--text);opacity:.6}
 .tab-btn.active{background:var(--card);border-color:var(--border);opacity:1;font-weight:bold;color:var(--primary)}
 .meeting-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px}
-.meeting-checkbox{width:1.125rem;height:1.125rem;cursor:pointer;flex-shrink:0;accent-color:var(--primary);margin-right:.25rem}
-.meeting-selected{border-color:var(--primary) !important;box-shadow:0 0 0 2px color-mix(in srgb, var(--primary) 30%, transparent)}
 .meeting-header{padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
 .meeting-header:hover{background:var(--bg)}
 .meeting-body{padding:0 16px 16px 16px}
@@ -95,8 +91,6 @@ header{padding:1.5rem 1.75rem !important}
 .member-check{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:3px 8px;border-radius:9999px;border:1px solid var(--border);cursor:pointer;user-select:none}
 .member-check input{margin:0}
 .member-check.on{background:var(--primary);color:#fff;border-color:var(--primary)}
-.btn-export{background:var(--primary);color:#fff}
-.btn-import{background:var(--btn-secondary);color:#fff}
 .btn-home{background:var(--primary);color:#fff !important;padding:.6875rem 1.375rem;border-radius:.625rem;font-weight:700;font-size:.875rem;text-decoration:none;display:inline-flex;align-items:center;gap:.375rem;transition:.15s;box-shadow:0 2px 10px rgba(0,0,0,.15)}
 .btn-home:hover{background:var(--primary-pressed);transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.22)}
 .btn-home:active{transform:translateY(0);box-shadow:0 2px 6px rgba(0,0,0,.15)}
@@ -115,17 +109,20 @@ header{padding:1.5rem 1.75rem !important}
 .boot-error .msg{opacity:.6;font-size:.75rem;word-break:break-all;max-width:22rem}
 .boot-error button{margin-top:1rem;padding:.5rem 1rem;border-radius:.5rem;border:none;background:var(--primary);color:#fff;font-weight:600;cursor:pointer}
 
+header{padding:1.5rem 1.75rem !important}
 .check-item{padding:1rem 1.5rem;border-top:1px solid var(--border)}
 .check-item-head{display:flex;align-items:flex-start;gap:.5rem;flex-wrap:wrap}
 .check-item + .check-item{margin-top:.25rem}
-.check-item-std{margin-top:.5rem}
-.check-item-actions{margin-top:.75rem}
 .check-item-level{font-size:.75rem;padding:.125rem .375rem;border-radius:.25rem;font-weight:700;flex-shrink:0;margin-top:.0625rem}
 .check-item-level.lv-p0{background:#fee2e2;color:#b91c1c}
 .check-item-level.lv-p1{background:#ffedd5;color:#c2410c}
 .check-item-name{font-size:.875rem;font-weight:700;flex:1;min-width:0;line-height:1.4}
-.check-item-std{font-size:.75rem;opacity:.7;margin-top:.25rem;line-height:1.5;word-break:break-word}
-.check-item-actions{display:flex;align-items:center;gap:.5rem;margin-top:.5rem;flex-wrap:wrap}
+.check-item-std{font-size:.75rem;opacity:.7;margin-top:.5rem;line-height:1.5;word-break:break-word}
+.check-item-actions{display:flex;align-items:center;gap:.5rem;margin-top:.75rem;flex-wrap:wrap}
+.stage-edit-btn{background:transparent;border:1px solid var(--border);color:var(--text-secondary);font-size:.6875rem;width:1.5rem;height:1.5rem;border-radius:.375rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-left:.25rem;transition:.15s}
+.stage-edit-btn:hover{background:var(--bg);color:var(--text);border-color:var(--border-strong)}
+.check-edit-btn{background:transparent;border:none;color:var(--text-tertiary);cursor:pointer;padding:2px 4px;font-size:.75rem;border-radius:.25rem}
+.check-edit-btn:hover{background:var(--bg);color:var(--text)}
 </style>
 </head>
 <body>
@@ -139,7 +136,6 @@ header{padding:1.5rem 1.75rem !important}
     var s=document.getElementById('boot-splash');
     if(s) s.remove();
   }, 8000);
-
   window.addEventListener('error', function(e){
     try{
       var el=document.getElementById('boot-splash');
@@ -162,20 +158,19 @@ header{padding:1.5rem 1.75rem !important}
 
 <div id="app" v-cloak class="max-w-5xl mx-auto">
 
-<header class="mb-3 p-4 rounded-2xl shadow-sm" style="background:var(--card);border:1px solid var(--border)">
+<header class="mb-3 rounded-2xl shadow-sm" style="background:var(--card);border:1px solid var(--border)">
   <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
     <div class="flex-1 min-w-0">
       <h1 class="text-2xl font-bold" style="color:var(--primary)">{{ currentProject }}</h1>
       <p class="text-sm mt-1 opacity-85 font-medium flex items-center gap-2 flex-wrap">
         <span>当前阶段：<span class="font-bold">{{ projectStages.join('、') }}</span></span>
         <button v-if="canEditStage" @click="openStageModal" class="text-xs px-2 py-0.5 rounded font-medium" style="background:var(--primary);color:#fff">✎ 改阶段</button>
-        <span v-if="canSeeChecklistTab">· 进度：<span class="font-bold">{{ doneCount }}/{{ totalCount }}</span></span>
+        <span v-if="isAdmin || isManager">· 进度：<span class="font-bold">{{ visibleDoneCount }}/{{ visibleTotalCount }}</span></span>
       </p>
     </div>
-<div class="flex gap-2 flex-wrap items-center">
-  <a href="./index.html" class="btn-home">← 返回首页</a>
-  <input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport">
-</div>
+    <div class="flex gap-2 flex-wrap items-center">
+      <a href="./index.html" class="btn-home">← 返回首页</a>
+    </div>
   </div>
   <div v-if="canSeeAny" class="mt-3 flex" style="border-bottom:1px solid var(--border)">
     <button v-if="canSeeChecklistTab" class="tab-btn" :class="{'active':activeTab==='checklist'}" @click="activeTab='checklist'">检查清单</button>
@@ -187,21 +182,23 @@ header{padding:1.5rem 1.75rem !important}
   <div style="font-size:48px">🔒</div>
   <div class="text-base font-bold mt-4">暂无访问权限</div>
   <p class="text-xs opacity-60 mt-2">你的账号不在该项目成员名单中，请联系主任把你加入项目。</p>
-  <a href="./index.html" class="btn-home inline-block mt-5 px-4 py-2 rounded-lg text-xs" style="text-decoration:none">返回首页</a>
+  <a href="./index.html" class="btn-home inline-block mt-5">← 返回首页</a>
 </div>
 
 <div v-if="canSeeAny && projectCompleted" class="complete-banner">
   🏁 本项目已完工（{{ projectCompletedDate }}）
 </div>
 
+<!-- ============ 检查清单 TAB ============ -->
 <div v-if="canSeeAny && activeTab==='checklist' && canSeeChecklistTab">
 
+  <!-- 合同区 -->
   <div v-if="canSeeContract" class="mb-4 contract-section">
-    <div class="px-4 py-3 text-white flex items-center justify-between" style="background:var(--primary)">
+    <div class="text-white flex items-center justify-between" style="background:var(--primary)">
       <span class="font-bold text-base">合同文书</span>
       <span class="text-sm">{{ projContracted?'已入合同':'未入合同' }}</span>
     </div>
-    <div class="p-4" style="background:var(--card)">
+    <div style="background:var(--card)">
       <div class="flex items-center justify-between p-2 rounded-lg mb-2" style="background:var(--bg)">
         <span class="text-sm">设计合同</span>
         <span class="text-xs px-2 py-1 rounded bg-green-100 text-green-700">已有</span>
@@ -213,8 +210,9 @@ header{padding:1.5rem 1.75rem !important}
     </div>
   </div>
 
-  <div v-if="canSeeChecks" class="space-y-3">
-    <div v-for="(group, stageName) in groupedChecks" :key="stageName">
+  <!-- 检查项 -->
+  <div class="space-y-3">
+    <div v-for="stageName in allStages" :key="stageName">
       <div class="rounded-xl shadow-sm overflow-hidden"
            style="border:1px solid var(--border)"
            :class="getStageClass(stageName)">
@@ -222,35 +220,55 @@ header{padding:1.5rem 1.75rem !important}
           <div class="flex items-center gap-2 flex-wrap">
             <span class="text-base font-bold stage-title">{{ stageName }}</span>
             <span class="text-xs px-2 py-0.5 rounded-full font-medium stage-count" style="background:rgba(0,0,0,.06)">
-              {{ group.filter(i=>i.status==='合格').length }}/{{ group.length }}
+              {{ checksForStage(stageName).filter(i=>i.status==='合格').length }}/{{ checksForStage(stageName).length }}
             </span>
             <span v-if="isCurrentStage(stageName)" class="text-xs px-2 py-0.5 rounded-full bg-green-500 text-white font-bold">当前阶段</span>
-            <span v-if="group.length===0" class="text-xs opacity-50">（暂无检查项）</span>
+            <span v-if="isAdmin" @click.stop>
+              <button @click.stop="renameStage(stageName)" class="stage-edit-btn" title="重命名该阶段">✎</button>
+              <button @click.stop="deleteStage(stageName)" class="stage-edit-btn" title="删除该阶段（连同检查项）" style="color:var(--error)">✕</button>
+            </span>
           </div>
           <span class="text-sm opacity-60">{{ openGroups[stageName] ? '▼' : '▶' }}</span>
         </div>
 
-        <div v-if="openGroups[stageName] && group.length > 0">
-          <div v-for="item in group" :key="item.id" class="check-item">
-            <div class="check-item-head">
-              <span class="check-item-level" :class="item.level==='P0' ? 'lv-p0' : 'lv-p1'">{{ item.level }}</span>
-              <span class="check-item-name">{{ item.item }}</span>
+        <div v-if="openGroups[stageName]">
+          <div v-if="checksForStage(stageName).length > 0">
+            <div v-for="item in checksForStage(stageName)" :key="item.id" class="check-item">
+              <div class="check-item-head">
+                <span class="check-item-level" :class="item.level==='P0' ? 'lv-p0' : 'lv-p1'">{{ item.level }}</span>
+                <span class="check-item-name">{{ item.item }}</span>
+                <span v-if="isAdmin" style="margin-left:auto">
+                  <button @click="editCheckItem(item)" class="check-edit-btn" title="编辑">✎</button>
+                  <button @click="deleteCheckItem(item)" class="check-edit-btn" style="color:var(--error)" title="删除">✕</button>
+                </span>
+              </div>
+              <div v-if="item.standard" class="check-item-std">— {{ item.standard }}</div>
+              <div class="check-item-actions">
+                <button v-if="!item.showNote && !item.note" @click="item.showNote=true" class="btn-sm" style="color:var(--primary);border:none;padding:2px 6px">+备注</button>
+                <input v-if="item.showNote" v-model="item.note" @change="saveData" @blur="item.showNote=false" placeholder="备注" class="text-xs border rounded px-1.5 py-0.5" style="border-color:var(--border);min-width:7rem;flex:1">
+                <span v-if="!item.showNote && item.note" class="text-xs text-red-500 cursor-pointer" @click="item.showNote=true" title="点击编辑">💬 {{ item.note }}</span>
+                <select v-model="item.status" @change="saveData"
+                        class="text-xs border rounded px-1.5 py-1 font-medium"
+                        style="border-color:var(--border);margin-left:auto"
+                        :class="{'text-green-600 font-bold':item.status==='合格','text-red-600 font-bold':item.status==='不合格','text-blue-600':item.status==='进行中','opacity-60':item.status==='待检'}">
+                  <option value="待检">待检</option>
+                  <option value="进行中">进行中</option>
+                  <option value="合格">合格</option>
+                  <option value="不合格">不合格</option>
+                </select>
+              </div>
             </div>
-            <div v-if="item.standard" class="check-item-std">— {{ item.standard }}</div>
-            <div class="check-item-actions">
-              <button v-if="!item.showNote && !item.note" @click="item.showNote=true" class="btn-sm" style="color:var(--primary);border:none;padding:2px 6px">+备注</button>
-              <input v-if="item.showNote" v-model="item.note" @change="saveData" @blur="item.showNote=false" placeholder="备注" class="text-xs border rounded px-1.5 py-0.5" style="border-color:var(--border);min-width:7rem;flex:1">
-              <span v-if="!item.showNote && item.note" class="text-xs text-red-500 cursor-pointer" @click="item.showNote=true" title="点击编辑">💬 {{ item.note }}</span>
-              <select v-model="item.status" @change="saveData"
-                      class="text-xs border rounded px-1.5 py-1 font-medium"
-                      style="border-color:var(--border);margin-left:auto"
-                      :class="{'text-green-600 font-bold':item.status==='合格','text-red-600 font-bold':item.status==='不合格','text-blue-600':item.status==='进行中','opacity-60':item.status==='待检'}">
-                <option value="待检">待检</option>
-                <option value="进行中">进行中</option>
-                <option value="合格">合格</option>
-                <option value="不合格">不合格</option>
-              </select>
-            </div>
+          </div>
+          <div v-else-if="hasRawChecks(stageName) && !isAdmin" class="px-4 py-3 text-xs opacity-60">
+            🔒 本阶段的检查项仅对主任/副主任可见
+          </div>
+          <div v-else-if="!hasRawChecks(stageName)" class="px-4 py-3 text-xs opacity-50">
+            （暂无检查项）
+          </div>
+
+          <!-- 添加检查项按钮（admin） -->
+          <div v-if="isAdmin" class="px-4 py-2" style="border-top:1px solid var(--border)">
+            <button @click="addCheckItem(stageName)" class="btn-sm" style="color:var(--primary);font-weight:600">+ 添加检查项</button>
           </div>
         </div>
       </div>
@@ -263,33 +281,35 @@ header{padding:1.5rem 1.75rem !important}
 
 </div>
 
+<!-- ============ 会议纪要 TAB ============ -->
 <div v-if="canSeeAny && activeTab==='meeting' && canSeeMeetingTab">
 
   <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
     <h2 class="text-lg font-bold">会议纪要</h2>
-<div class="flex gap-2 flex-wrap items-center">
-  <button @click="showConfirmSummary = !showConfirmSummary" class="btn-sm">
-    {{ showConfirmSummary ? '查看历次会议' : '查看确认汇总' }}
-  </button>
-  <button v-if="isPrivileged" @click="showImportModal = true" class="btn-sm">📥 导入</button>
-  <button @click="openAddMeeting" class="btn-primary">+ 新增会议纪要</button>
-  <template v-if="selectedMeetingIds.length">
-    <span class="text-xs opacity-70" style="font-weight:600">已选 {{ selectedMeetingIds.length }} 条</span>
-    <button @click="exportSelectedMeetings('word')" class="btn-sm" style="background:var(--primary);color:#fff;border-color:var(--primary);font-weight:600">📄 导出 Word</button>
-    <button @click="exportSelectedMeetings('text')" class="btn-sm" style="font-weight:600">📋 复制到微信</button>
-    <button @click="clearMeetingSelection" class="btn-sm">清空</button>
-  </template>
-</div>
+    <div class="flex gap-2 flex-wrap items-center">
+      <button @click="showConfirmSummary = !showConfirmSummary" class="btn-sm">
+        {{ showConfirmSummary ? '查看历次会议' : '查看确认汇总' }}
+      </button>
+      <button v-if="isPrivileged" @click="showImportModal = true" class="btn-sm">📥 导入</button>
+      <button @click="openAddMeeting" class="btn-primary">+ 新增会议纪要</button>
+      <template v-if="selectedMeetingIds.length">
+        <span class="text-xs opacity-70" style="font-weight:600">已选 {{ selectedMeetingIds.length }} 条</span>
+        <button @click="exportSelectedMeetings('word')" class="btn-sm" style="background:var(--primary);color:#fff;border-color:var(--primary);font-weight:600">📄 导出 Word</button>
+        <button @click="exportSelectedMeetings('text')" class="btn-sm" style="font-weight:600">📋 复制到微信</button>
+        <button @click="clearMeetingSelection" class="btn-sm">清空</button>
+      </template>
+    </div>
   </div>
 
   <div v-if="!showConfirmSummary">
     <div v-if="meetings.length === 0" class="p-8 text-center opacity-60 text-sm rounded-xl" style="background:var(--card);border:1px solid var(--border)">
       暂无会议纪要，点击右上角「+ 新增会议纪要」开始记录。
     </div>
-<div v-for="mt in sortedMeetings" :key="mt.id" class="meeting-card" :class="{'meeting-selected': selectedMeetingIds.includes(mt.id)}">
-  <div class="meeting-header" @click="mt.expanded = !mt.expanded">
-    <input type="checkbox" :checked="selectedMeetingIds.includes(mt.id)" @click.stop="toggleMeetingSelect(mt)" class="meeting-checkbox">
-    <div class="flex-1 min-w-0">
+
+    <div v-for="mt in sortedMeetings" :key="mt.id" class="meeting-card" :class="{'meeting-selected': selectedMeetingIds.includes(mt.id)}">
+      <div class="meeting-header" @click="mt.expanded = !mt.expanded">
+        <input type="checkbox" :checked="selectedMeetingIds.includes(mt.id)" @click.stop="toggleMeetingSelect(mt)" class="meeting-checkbox">
+        <div class="flex-1 min-w-0">
           <div class="font-bold text-sm">
             <span style="color:var(--primary)">{{ mt.date }}</span>
             <span v-if="mt.title" class="ml-2">{{ mt.title }}</span>
@@ -309,9 +329,11 @@ header{padding:1.5rem 1.75rem !important}
         <div class="section-title green">已确认事项 ({{ (mt.confirmed||[]).length }})</div>
         <div v-if="(mt.confirmed||[]).length === 0" class="text-xs opacity-50 pl-3">暂无</div>
         <div v-for="(c,i) in (mt.confirmed||[])" :key="'c'+i" class="item-row">{{ c.text }}</div>
+
         <div class="section-title purple">待进行事项 ({{ (mt.todo||[]).length }})</div>
         <div v-if="(mt.todo||[]).length === 0" class="text-xs opacity-50 pl-3">暂无</div>
         <div v-for="(t,i) in (mt.todo||[])" :key="'t'+i" class="item-row">{{ t.text }}</div>
+
         <div class="section-title orange">待确认事项 ({{ (mt.pending||[]).length }})</div>
         <div v-if="(mt.pending||[]).length === 0" class="text-xs opacity-50 pl-3">暂无</div>
         <div v-for="(p,i) in (mt.pending||[])" :key="'p'+i" class="item-row">
@@ -343,20 +365,12 @@ header{padding:1.5rem 1.75rem !important}
 
 </div>
 
+<!-- ============ 会议编辑模态框 ============ -->
 <div v-if="showMeetingModal" v-cloak class="modal-mask" @click.self="closeMeetingModal">
   <div class="modal-box">
     <h3 class="font-bold text-lg mb-4">{{ editingMeetingId ? '编辑会议纪要' : '新增会议纪要' }}</h3>
-
-    <div class="mb-3">
-      <label class="form-label">会议日期 *</label>
-      <input type="date" v-model="draftMeeting.date" class="form-input">
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">会议主题</label>
-      <input v-model="draftMeeting.title" placeholder="如：中秋节后第X次方案沟通" class="form-input">
-    </div>
-
+    <div class="mb-3"><label class="form-label">会议日期 *</label><input type="date" v-model="draftMeeting.date" class="form-input"></div>
+    <div class="mb-3"><label class="form-label">会议主题</label><input v-model="draftMeeting.title" placeholder="如：中秋节后第X次方案沟通" class="form-input"></div>
     <div class="mb-3">
       <label class="form-label">工作室参会人（可多选）</label>
       <div class="flex flex-wrap gap-2">
@@ -366,12 +380,7 @@ header{padding:1.5rem 1.75rem !important}
         </label>
       </div>
     </div>
-
-    <div class="mb-3">
-      <label class="form-label">其他参会人（甲方/顾问等）</label>
-      <input v-model="draftMeeting.otherParticipants" placeholder="如：甲方陈总、曲部、幕墙顾问李工" class="form-input">
-    </div>
-
+    <div class="mb-3"><label class="form-label">其他参会人（甲方/顾问等）</label><input v-model="draftMeeting.otherParticipants" placeholder="如：甲方陈总、曲部、幕墙顾问李工" class="form-input"></div>
     <div class="mb-3">
       <label class="form-label">已确认事项</label>
       <div v-for="(c,i) in draftMeeting.confirmed" :key="'dc'+i" class="form-row">
@@ -380,14 +389,14 @@ header{padding:1.5rem 1.75rem !important}
       </div>
       <button @click="draftMeeting.confirmed.push({text:''})" class="btn-sm">+ 添加已确认事项</button>
     </div>
-<div class="mb-3">
-  <label class="form-label">待进行事项</label>
-  <div v-for="(t,i) in draftMeeting.todo" :key="'dt'+i" class="form-row">
-    <input v-model="t.text" placeholder="待进行内容" class="form-input" style="flex:1">
-    <button @click="draftMeeting.todo.splice(i,1)" class="btn-sm text-red-500">删</button>
-  </div>
-  <button @click="draftMeeting.todo.push({text:''})" class="btn-sm">+ 添加待进行事项</button>
-</div>
+    <div class="mb-3">
+      <label class="form-label">待进行事项</label>
+      <div v-for="(t,i) in draftMeeting.todo" :key="'dt'+i" class="form-row">
+        <input v-model="t.text" placeholder="待进行内容" class="form-input" style="flex:1">
+        <button @click="draftMeeting.todo.splice(i,1)" class="btn-sm text-red-500">删</button>
+      </div>
+      <button @click="draftMeeting.todo.push({text:''})" class="btn-sm">+ 添加待进行事项</button>
+    </div>
     <div class="mb-3">
       <label class="form-label">待确认事项</label>
       <div v-for="(p,i) in draftMeeting.pending" :key="'dp'+i" class="flex flex-wrap gap-2 mb-2 p-2 rounded" style="background:var(--bg)">
@@ -406,7 +415,6 @@ header{padding:1.5rem 1.75rem !important}
       </div>
       <button @click="draftMeeting.pending.push({text:'',owner:'',dueDate:'',status:'待确认'})" class="btn-sm">+ 添加待确认事项</button>
     </div>
-
     <div class="mb-3">
       <label class="form-label">变更事项</label>
       <div v-for="(c,i) in draftMeeting.changes" :key="'dch'+i" class="form-row">
@@ -417,7 +425,6 @@ header{padding:1.5rem 1.75rem !important}
       </div>
       <button @click="draftMeeting.changes.push({text:'',from:'',to:''})" class="btn-sm">+ 添加变更事项</button>
     </div>
-
     <div class="flex justify-end gap-2 mt-5">
       <button @click="closeMeetingModal" class="btn-sm">取消</button>
       <button @click="saveMeeting" class="btn-primary">保存</button>
@@ -425,20 +432,18 @@ header{padding:1.5rem 1.75rem !important}
   </div>
 </div>
 
+<!-- 导入会议模态框 -->
 <div v-if="showImportModal" v-cloak class="modal-mask" @click.self="showImportModal=false">
   <div class="modal-box">
     <h3 class="font-bold text-lg mb-2">从 Word / 微信粘贴导入</h3>
-    <p class="text-xs opacity-70 mb-3">按以下格式粘贴，可识别三种事项。</p>
     <pre class="text-xs p-2 rounded mb-3" style="background:var(--bg);white-space:pre-wrap">已确认：
-- 活动中心篮球场按方案A执行
-- 10个办公室门拓宽到1500mm
-
+- xxx
+待进行：
+- yyy
 待确认：
-- 堆货区改羽毛球场 | 梁婷玉 | 2026-10-05
-- 陈总办公室金属门是否拓宽 | 刘文辉 | 2026-10-01
-
+- zzz | 负责人 | 日期
 变更：
-- 门洞宽度 | 原1200mm | 新1500mm</pre>
+- 内容 | 原 | 新</pre>
     <textarea v-model="importText" rows="12" placeholder="在此粘贴内容..." class="form-input" style="font-family:monospace"></textarea>
     <div class="flex justify-end gap-2 mt-3">
       <button @click="showImportModal=false" class="btn-sm">取消</button>
@@ -447,12 +452,13 @@ header{padding:1.5rem 1.75rem !important}
   </div>
 </div>
 
+<!-- 编辑阶段模态框 -->
 <div v-if="showStageModal" v-cloak class="modal-mask" @click.self="closeStageModal">
   <div class="modal-box" style="max-width:420px">
     <h3 class="font-bold text-lg mb-2">编辑当前阶段</h3>
-    <p class="text-xs opacity-70 mb-4">勾选这个项目正在进行的阶段（可多选）。前面的阶段会折叠并变浅灰，后面的阶段深灰折叠。</p>
+    <p class="text-xs opacity-70 mb-4">勾选这个项目正在进行的阶段（可多选）。</p>
     <div class="space-y-2">
-      <label v-for="s in stageOrder" :key="s" class="flex items-center gap-2 text-sm p-2 rounded cursor-pointer" style="background:var(--bg)">
+      <label v-for="s in allStages" :key="s" class="flex items-center gap-2 text-sm p-2 rounded cursor-pointer" style="background:var(--bg)">
         <input type="checkbox" :checked="draftStages.includes(s)" @change="toggleDraftStage(s)">
         <span>{{ s }}</span>
       </label>
@@ -464,16 +470,57 @@ header{padding:1.5rem 1.75rem !important}
   </div>
 </div>
 
+<!-- 编辑检查项模态框 -->
+<div v-if="editingCheckItem" v-cloak class="modal-mask" @click.self="editingCheckItem=null">
+  <div class="modal-box" style="max-width:480px">
+    <h3 class="font-bold text-lg mb-3">编辑检查项</h3>
+    <div class="mb-3"><label class="form-label">所属阶段</label><input v-model="editingCheckItem.stage" class="form-input"></div>
+    <div class="mb-3"><label class="form-label">检查项名称 *</label><input v-model="editingCheckItem.item" class="form-input" placeholder="如：门洞净宽"></div>
+    <div class="mb-3"><label class="form-label">判定标准</label><input v-model="editingCheckItem.standard" class="form-input" placeholder="如：扣除门套后≥900mm"></div>
+    <div class="mb-3">
+      <label class="form-label">严重等级</label>
+      <div class="flex gap-3 mt-1">
+        <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" value="P0" v-model="editingCheckItem.level" style="accent-color:var(--primary)"> P0</label>
+        <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" value="P1" v-model="editingCheckItem.level" style="accent-color:var(--primary)"> P1</label>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 mt-5">
+      <button @click="editingCheckItem=null" class="btn-sm">取消</button>
+      <button @click="saveCheckItemEdit" class="btn-primary">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新增检查项模态框 -->
+<div v-if="addingCheckItem" v-cloak class="modal-mask" @click.self="addingCheckItem=null">
+  <div class="modal-box" style="max-width:480px">
+    <h3 class="font-bold text-lg mb-3">新增检查项</h3>
+    <div class="mb-3"><label class="form-label">所属阶段</label><input v-model="addingCheckItem.stage" class="form-input"></div>
+    <div class="mb-3"><label class="form-label">检查项名称 *</label><input v-model="addingCheckItem.item" class="form-input" placeholder="如：门洞净宽"></div>
+    <div class="mb-3"><label class="form-label">判定标准</label><input v-model="addingCheckItem.standard" class="form-input" placeholder="如：扣除门套后≥900mm"></div>
+    <div class="mb-3">
+      <label class="form-label">严重等级</label>
+      <div class="flex gap-3 mt-1">
+        <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" value="P0" v-model="addingCheckItem.level" style="accent-color:var(--primary)"> P0</label>
+        <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" value="P1" v-model="addingCheckItem.level" style="accent-color:var(--primary)"> P1</label>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 mt-5">
+      <button @click="addingCheckItem=null" class="btn-sm">取消</button>
+      <button @click="saveNewCheckItem" class="btn-primary">保存</button>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <script>
-// Vue 全局检查
 if(typeof Vue==='undefined'){
   var el=document.getElementById('boot-splash');
   if(el) el.remove();
   var div=document.createElement('div');
   div.className='boot-error';
-  div.innerHTML='<div style="font-size:48px">⚠️</div><h3>核心库加载失败</h3><div class="msg">Vue 未能从 CDN 加载成功，请检查网络后重试</div><button>重新加载</button>';
+  div.innerHTML='<div style="font-size:48px">⚠️</div><h3>核心库加载失败</h3><div class="msg">Vue 未能从 CDN 加载成功</div><button>重新加载</button>';
   div.querySelector('button').onclick=function(){ location.reload(); };
   document.body.appendChild(div);
   throw new Error('Vue not loaded');
@@ -493,19 +540,9 @@ const projectNameMap={'sl4':'申菱四基地','slzb':'申菱总部改造','sl5':
 const stageOrder=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
 
 const projectStageMap={
-  'sl4':['三、方案深化'],
-  'slzb':['八、施工中'],
-  'sl5':['一、前期强排'],
-  'slgz':['八、施工中'],
-  'prsp':['五、施工图（含幕墙深化）'],
-  'yj':['八、施工中'],
-  'whg':['四、报建图'],
-  'stc':['四、报建图'],
-  'skwj':['五、施工图（含幕墙深化）'],
-  'spmy':['八、施工中'],
-  'fp':['一、前期强排'],
-  'rk':['一、前期强排'],
-  'sq':['三、方案深化']
+  'sl4':['三、方案深化'],'slzb':['八、施工中'],'sl5':['一、前期强排'],'slgz':['八、施工中'],
+  'prsp':['五、施工图（含幕墙深化）'],'yj':['八、施工中'],'whg':['四、报建图'],'stc':['四、报建图'],
+  'skwj':['五、施工图（含幕墙深化）'],'spmy':['八、施工中'],'fp':['一、前期强排'],'rk':['一、前期强排'],'sq':['三、方案深化']
 };
 
 const FALLBACK_USERS=[
@@ -518,19 +555,9 @@ const FALLBACK_USERS=[
 ];
 
 const FALLBACK_PROJECT_MEMBERS={
-  'sl4':['谢启欣'],
-  'slzb':['梁婷玉','谢启欣'],
-  'sl5':['谢启欣'],
-  'slgz':['黄建敏'],
-  'prsp':['谢启欣','梁婷玉','欧阳琳'],
-  'yj':['谢启欣'],
-  'whg':['欧阳琳'],
-  'stc':['欧阳琳'],
-  'skwj':['梁富成'],
-  'spmy':[],
-  'fp':[],
-  'rk':['梁婷玉','欧阳琳'],
-  'sq':['梁婷玉']
+  'sl4':['谢启欣'],'slzb':['梁婷玉','谢启欣'],'sl5':['谢启欣'],'slgz':['黄建敏'],
+  'prsp':['谢启欣','梁婷玉','欧阳琳'],'yj':['谢启欣'],'whg':['欧阳琳'],'stc':['欧阳琳'],
+  'skwj':['梁富成'],'spmy':[],'fp':[],'rk':['梁婷玉','欧阳琳'],'sq':['梁婷玉']
 };
 
 const seedData=[
@@ -572,7 +599,7 @@ const seedData=[
 {id:'CHK-03-007',stage:'三、方案深化',item:'主要节点大样表达清楚',standard:'女儿墙、檐口、雨棚、幕墙收口',level:'P0'},
 {id:'CHK-03-008',stage:'三、方案深化',item:'材料表与立面图一致',standard:'规格、颜色、位置对应',level:'P0'},
 {id:'CHK-03-009',stage:'三、方案深化',item:'消防楼梯方向问题',standard:'',level:'P0'},
-{id:'CHK-03-010',stage:'三、方案深化',item:'消防楼梯开窗面积计算与立面预留',standard:'最高部位：≥1.0 m²；建筑高度＞10m时，每5层内总面积≥2.0 m²，布置间隔≤3层；独立前室、消防电梯前室：≥2.0 m²；共用前室、合用前室：≥3.0 m²',level:'P0'},
+{id:'CHK-03-010',stage:'三、方案深化',item:'消防楼梯开窗面积计算与立面预留',standard:'最高部位：≥1.0 m²；建筑高度＞10m时，每5层内总面积≥2.0 m²，布置间隔≤3层',level:'P0'},
 {id:'CHK-03-011',stage:'三、方案深化',item:'停车位布置与车道复核',standard:'满足规范，与方案一致',level:'P1'},
 {id:'CHK-03-012',stage:'三、方案深化',item:'设备平台、空调机位、雨水管位置',standard:'不影响立面，位置合理',level:'P1'},
 {id:'CHK-03-013',stage:'三、方案深化',item:'屋面排水找坡方向',standard:'天沟、雨水口位置与建筑一致',level:'P1'},
@@ -661,7 +688,7 @@ const seedData=[
 {id:'CHK-06-022',stage:'六、室内设计',item:'立面图关系表达清楚',standard:'材质、分缝、开洞、标高',level:'P1'},
 {id:'CHK-06-023',stage:'六、室内设计',item:'平面图管线尺寸和标高已表达',standard:'复杂处有剖面图',level:'P1'},
 {id:'CHK-06-024',stage:'六、室内设计',item:'所有留洞有水平和竖向定位',standard:'结构图同步标注',level:'P0'},
-{id:'CHK-07-001',stage:'七、室内设计施工图',item:'开门大小与类型复核',standard:'领导办公室1500mm，普通办公室900mm，小空间≥700mm，不要开太小',level:'P0'},
+{id:'CHK-07-001',stage:'七、室内设计施工图',item:'开门大小与类型复核',standard:'领导办公室1500mm，普通办公室900mm，小空间≥700mm',level:'P0'},
 {id:'CHK-07-002',stage:'七、室内设计施工图',item:'门开启方向与消防疏散一致',standard:'平面、立面、疏散方向三方核对',level:'P0'},
 {id:'CHK-07-003',stage:'七、室内设计施工图',item:'天地墙结构分缝处理大样是否齐全',standard:'结构与装饰分缝对齐，有对应大样',level:'P0'},
 {id:'CHK-07-004',stage:'七、室内设计施工图',item:'室内间墙与玻璃幕墙交接处理大样',standard:'交接部位收口清晰，防水防火处理到位',level:'P0'},
@@ -675,7 +702,7 @@ const seedData=[
 {id:'CHK-07-012',stage:'七、室内设计施工图',item:'灯位与消防喷淋口是否成规律排布',standard:'线性、对称或与吊顶分缝对齐',level:'P0'},
 {id:'CHK-07-013',stage:'七、室内设计施工图',item:'室内各空间吊顶高度已标注',standard:'与结构梁、风管、喷淋、桥架综合后满足净高',level:'P0'},
 {id:'CHK-07-014',stage:'七、室内设计施工图',item:'彩色平面表达各空间材料',standard:'不同材质用不同颜色区分，图例齐全',level:'P1'},
-{id:'CHK-07-015',stage:'七、室内设计施工图',item:'材料颜色、厚度、表面做法表达准确',standard:'材料表与图纸一致，规格、工艺、收口说明清楚',level:'P1'},
+{id:'CHK-07-015',stage:'七、室内设计施工图',item:'材料颜色、厚度、表面做法表达准确',standard:'材料表与图纸一致',level:'P1'},
 {id:'CHK-07-016',stage:'七、室内设计施工图',item:'施工图中的圆角统一标准',standard:'墙体、柱子、吊顶的圆角半径有统一说明',level:'P1'},
 {id:'CHK-07-017',stage:'七、室内设计施工图',item:'门套、门垛、门楣处理大样',standard:'不同墙体材质处收口一致',level:'P1'},
 {id:'CHK-07-018',stage:'七、室内设计施工图',item:'天地墙对缝是否对齐',standard:'地面、墙面、吊顶缝对齐',level:'P1'},
@@ -694,16 +721,7 @@ const seedData=[
 const initData=()=>seedData.map(item=>({...item,status:'待检',note:'',showNote:false}));
 
 function makeEmptyMeeting(){
-  return {
-    date:new Date().toISOString().slice(0,10),
-    title:'',
-    memberParticipants:[],
-    otherParticipants:'',
-    confirmed:[{text:''}],
-    todo:[],
-    pending:[],
-    changes:[]
-  };
+  return {date:new Date().toISOString().slice(0,10),title:'',memberParticipants:[],otherParticipants:'',confirmed:[{text:''}],todo:[],pending:[],changes:[]};
 }
 
 const migrateMeetings=(arr)=>{
@@ -743,9 +761,7 @@ setup(){
     if(raw){
       try{
         const saved=JSON.parse(raw);
-        if(saved && typeof saved==='object' && typeof saved.pinyin==='string'){
-          currentUserPinyin.value=saved.pinyin;
-        }
+        if(saved && typeof saved==='object' && typeof saved.pinyin==='string') currentUserPinyin.value=saved.pinyin;
       }catch(_){}
     }
   }catch(e){}
@@ -781,8 +797,7 @@ setup(){
 
   const canSeeContract=computed(()=>isPrivileged.value);
   const canSeeChecklistTab=computed(()=>isPrivileged.value);
-  const canSeeChecks=computed(()=>isPrivileged.value);
-  const canEditStage=computed(()=>isPrivileged.value);
+  const canEditStage=computed(()=>isAdmin.value);
   const canComplete=computed(()=>isPrivileged.value);
 
   const projectMembers=computed(()=>{
@@ -843,11 +858,7 @@ setup(){
       if(!proj){ alert('项目不存在于总表'); return; }
       proj.completed=true;
       proj.completedDate=new Date().toISOString().slice(0,10);
-      const w=await fetchT('/api/sync?type=projects&project=global',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(list)
-      });
+      const w=await fetchT('/api/sync?type=projects&project=global',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(list)});
       if(!w.ok){ alert('保存失败'); return; }
       projects.value=list;
       projectCompleted.value=true;
@@ -859,33 +870,50 @@ setup(){
   };
 
   const openGroups=ref({});
-  const fileInput=ref(null);
   const checks=ref(initData());
   const projContracted=ref(false);
 
   const showStageModal=ref(false);
   const draftStages=ref([]);
 
+  // 欧阳琳：被指派的检查项 id
+  const assignedCheckIds=ref([]);
+
+  const loadAssignedCheckIds=async()=>{
+    if(isAdmin.value || !currentUser.value) return;
+    if(!isManager.value) return;
+    try{
+      const res=await fetchT('/api/sync?type=todos&project=global');
+      const data=await res.json();
+      if(Array.isArray(data)){
+        const me=currentUser.value.name;
+        const ids=[];
+        data.forEach(t=>{
+          if(t.isChecklist && t.projectId===projectKey){
+            const owners=(t.owner||'').split(/[,，\s]+/).filter(Boolean);
+            if(owners.includes(me)){
+              (t.items||[]).forEach(it=>{ if(it.id) ids.push(it.id); });
+            }
+          }
+        });
+        assignedCheckIds.value=ids;
+      }
+    }catch(e){}
+  };
+
   const loadStages=async()=>{
     try{
       const res=await fetchT(`/api/sync?project=${projectKey}&type=stage`);
       const data=await res.json();
-      if(Array.isArray(data)&&data.length){
-        projectStages.value=data;
-      }
-    }catch(e){console.warn('阶段读取失败',e)}
+      if(Array.isArray(data)&&data.length) projectStages.value=data;
+    }catch(e){}
   };
   const saveStages=async()=>{
     try{
-      await fetchT(`/api/sync?project=${projectKey}&type=stage`,{
-        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(projectStages.value)
-      });
-    }catch(e){console.warn('阶段保存失败',e)}
+      await fetchT(`/api/sync?project=${projectKey}&type=stage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(projectStages.value)});
+    }catch(e){}
   };
-  const openStageModal=()=>{
-    draftStages.value=projectStages.value.slice();
-    showStageModal.value=true;
-  };
+  const openStageModal=()=>{ draftStages.value=projectStages.value.slice(); showStageModal.value=true; };
   const closeStageModal=()=>{showStageModal.value=false};
   const toggleDraftStage=(s)=>{
     const i=draftStages.value.indexOf(s);
@@ -893,9 +921,7 @@ setup(){
     else draftStages.value.push(s);
   };
   const confirmStages=()=>{
-    if(draftStages.value.length===0){
-      if(!confirm('没有选择任何阶段，确认保存？'))return;
-    }
+    if(draftStages.value.length===0){ if(!confirm('没有选择任何阶段，确认保存？'))return; }
     projectStages.value=draftStages.value.slice();
     saveStages();
     initOpenGroups();
@@ -907,42 +933,74 @@ setup(){
   const editingMeetingId=ref(null);
   const showConfirmSummary=ref(false);
   const draftMeeting=ref(makeEmptyMeeting());
-
   const showImportModal=ref(false);
   const importText=ref('');
+  const selectedMeetingIds=ref([]);
 
   const loadFromCloud=async()=>{
     try{
       const res=await fetchT(`/api/sync?project=${projectKey}`);
       const data=await res.json();
       if(Array.isArray(data)&&data.length)checks.value=data;
-    }catch(e){console.warn('检查清单读取失败',e)}
+    }catch(e){}
   };
   const saveToCloud=async()=>{
     try{
-      await fetchT(`/api/sync?project=${projectKey}`,{
-        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(checks.value)
-      });
-    }catch(e){console.warn('检查清单保存失败',e)}
+      await fetchT(`/api/sync?project=${projectKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(checks.value)});
+    }catch(e){}
   };
   const saveData=()=>{saveToCloud()};
 
-  const groupedChecks=computed(()=>{
-    const groups={};
-    checks.value.forEach(item=>{
-      if(!groups[item.stage])groups[item.stage]=[];
-      groups[item.stage].push(item);
+  // 所有阶段（从 checks 派生，按 checks 首次出现顺序）
+  const allStages=computed(()=>{
+    const seen=new Set();
+    const ordered=[];
+    checks.value.forEach(c=>{
+      if(c.stage && !seen.has(c.stage)){
+        seen.add(c.stage);
+        ordered.push(c.stage);
+      }
     });
-    const sorted={};
-    stageOrder.forEach(s=>{sorted[s]=groups[s]||[]});
-    return sorted;
+    return ordered;
+  });
+
+  // 每个阶段的可见检查项
+  const checksForStage=(stageName)=>{
+    if(isAdmin.value){
+      return checks.value.filter(c=>c.stage===stageName);
+    }
+    if(isManager.value){
+      if(assignedCheckIds.value.length===0) return [];
+      return checks.value.filter(c=>c.stage===stageName && assignedCheckIds.value.includes(c.id));
+    }
+    return [];
+  };
+
+  const hasRawChecks=(stageName)=>{
+    return checks.value.some(c=>c.stage===stageName);
+  };
+
+  const visibleTotalCount=computed(()=>{
+    if(isAdmin.value) return checks.value.length;
+    if(isManager.value){
+      return checks.value.filter(c=>assignedCheckIds.value.includes(c.id)).length;
+    }
+    return 0;
+  });
+  const visibleDoneCount=computed(()=>{
+    if(isAdmin.value) return checks.value.filter(c=>c.status==='合格').length;
+    if(isManager.value){
+      return checks.value.filter(c=>assignedCheckIds.value.includes(c.id) && c.status==='合格').length;
+    }
+    return 0;
   });
 
   const isCurrentStage=(s)=>projectStages.value.includes(s);
 
   const getStageClass=(s)=>{
-    const thisIdx=stageOrder.indexOf(s);
-    const indices=projectStages.value.map(st=>stageOrder.indexOf(st)).filter(i=>i>=0);
+    const stages=allStages.value;
+    const thisIdx=stages.indexOf(s);
+    const indices=projectStages.value.map(st=>stages.indexOf(st)).filter(i=>i>=0);
     if(thisIdx<0||indices.length===0) return '';
     const minIdx=Math.min(...indices);
     const maxIdx=Math.max(...indices);
@@ -953,16 +1011,92 @@ setup(){
   };
 
   const initOpenGroups=()=>{
-    const indices=projectStages.value.map(st=>stageOrder.indexOf(st)).filter(i=>i>=0);
-    const firstIdx=indices.length?Math.min(...indices):0;
-    stageOrder.forEach((s,i)=>{
-      openGroups.value[s]=(i===firstIdx);
-    });
+    const stages=allStages.value;
+    if(stages.length===0) return;
+    const currentStage=projectStages.value[0];
+    const openStage=(currentStage && stages.includes(currentStage)) ? currentStage : stages[0];
+    stages.forEach(s=>{ openGroups.value[s]=(s===openStage); });
   };
 
-  const totalCount=computed(()=>checks.value.length);
-  const doneCount=computed(()=>checks.value.filter(i=>i.status==='合格').length);
-  const toggleGroup=(name)=>{openGroups.value[name]=!openGroups.value[name]};
+  const toggleGroup=(name)=>{ openGroups.value[name]=!openGroups.value[name]; };
+
+  // 阶段重命名
+  const renameStage=(stageName)=>{
+    if(!isAdmin.value) return;
+    const newName=prompt('输入新的阶段名称：', stageName);
+    if(!newName) return;
+    const name=newName.trim();
+    if(!name || name===stageName) return;
+    checks.value.forEach(item=>{
+      if(item.stage===stageName) item.stage=name;
+    });
+    const idx=projectStages.value.indexOf(stageName);
+    if(idx>=0){
+      projectStages.value=projectStages.value.map(s=>s===stageName?name:s);
+      saveStages();
+    }
+    // 同步 openGroups
+    if(openGroups.value[stageName]){
+      delete openGroups.value[stageName];
+      openGroups.value[name]=true;
+    }
+    saveData();
+  };
+
+  // 删除整个阶段
+  const deleteStage=(stageName)=>{
+    if(!isAdmin.value) return;
+    const count=checks.value.filter(c=>c.stage===stageName).length;
+    if(!confirm(`确定删除「${stageName}」整个阶段？\n该阶段下有 ${count} 个检查项，将一并删除。此操作不可撤销。`)) return;
+    checks.value=checks.value.filter(c=>c.stage!==stageName);
+    // 同步从当前阶段里移除
+    const idx=projectStages.value.indexOf(stageName);
+    if(idx>=0){
+      projectStages.value=projectStages.value.filter(s=>s!==stageName);
+      saveStages();
+    }
+    delete openGroups.value[stageName];
+    saveData();
+  };
+
+  // 编辑/删除/新增检查项
+  const editingCheckItem=ref(null);
+  const addingCheckItem=ref(null);
+
+  const editCheckItem=(item)=>{
+    if(!isAdmin.value) return;
+    editingCheckItem.value={id:item.id,stage:item.stage,item:item.item,standard:item.standard||'',level:item.level||'P0'};
+  };
+  const saveCheckItemEdit=()=>{
+    const e=editingCheckItem.value;
+    if(!e || !e.item.trim()){ alert('请填写检查项名称'); return; }
+    const idx=checks.value.findIndex(c=>c.id===e.id);
+    if(idx>=0){
+      checks.value[idx]={...checks.value[idx], item:e.item.trim(), standard:e.standard.trim(), level:e.level, stage:e.stage.trim()||checks.value[idx].stage};
+      saveData();
+    }
+    editingCheckItem.value=null;
+  };
+  const deleteCheckItem=(item)=>{
+    if(!isAdmin.value) return;
+    if(!confirm(`确定删除检查项「${item.item}」？`)) return;
+    checks.value=checks.value.filter(c=>c.id!==item.id);
+    saveData();
+  };
+  const addCheckItem=(stageName)=>{
+    if(!isAdmin.value) return;
+    addingCheckItem.value={stage:stageName,item:'',standard:'',level:'P0'};
+  };
+  const saveNewCheckItem=()=>{
+    const a=addingCheckItem.value;
+    if(!a || !a.item.trim()){ alert('请填写检查项名称'); return; }
+    const newId='CHK-'+Date.now()+'-'+Math.floor(Math.random()*1000);
+    checks.value.push({id:newId,stage:a.stage,item:a.item.trim(),standard:a.standard.trim(),level:a.level,status:'待检',note:'',showNote:false});
+    // 确保该阶段是展开状态
+    openGroups.value[a.stage]=true;
+    saveData();
+    addingCheckItem.value=null;
+  };
 
   const loadMeetings=async()=>{
     try{
@@ -976,15 +1110,13 @@ setup(){
         }
         meetings.value=mig;
       }
-    }catch(e){console.warn('会议读取失败',e)}
+    }catch(e){}
   };
   const saveMeetings=async()=>{
     try{
       const toSave=meetings.value.map(m=>{const {expanded,...rest}=m;return rest});
-      await fetchT(`/api/sync?project=${projectKey}&type=meeting`,{
-        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(toSave)
-      });
-    }catch(e){console.warn('会议保存失败',e)}
+      await fetchT(`/api/sync?project=${projectKey}&type=meeting`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(toSave)});
+    }catch(e){}
   };
 
   const sortedMeetings=computed(()=>[...meetings.value].sort((a,b)=>(b.date||'').localeCompare(a.date||'')));
@@ -1011,11 +1143,14 @@ setup(){
     return mt.recordedBy === currentUser.value.name;
   };
 
-  const openAddMeeting=()=>{
-    draftMeeting.value=makeEmptyMeeting();
-    editingMeetingId.value=null;
-    showMeetingModal.value=true;
+  const toggleMeetingSelect=(mt)=>{
+    const i=selectedMeetingIds.value.indexOf(mt.id);
+    if(i>=0) selectedMeetingIds.value.splice(i,1);
+    else selectedMeetingIds.value.push(mt.id);
   };
+  const clearMeetingSelection=()=>{ selectedMeetingIds.value=[]; };
+
+  const openAddMeeting=()=>{ draftMeeting.value=makeEmptyMeeting(); editingMeetingId.value=null; showMeetingModal.value=true; };
   const editMeeting=(mt)=>{
     if(!canManageMeeting(mt)){ alert('只能编辑自己记录的会议纪要'); return; }
     const copy=JSON.parse(JSON.stringify(mt));
@@ -1024,10 +1159,7 @@ setup(){
     editingMeetingId.value=mt.id;
     showMeetingModal.value=true;
   };
-  const closeMeetingModal=()=>{
-    showMeetingModal.value=false;
-    editingMeetingId.value=null;
-  };
+  const closeMeetingModal=()=>{showMeetingModal.value=false;editingMeetingId.value=null;};
   const saveMeeting=()=>{
     if(!draftMeeting.value.date){alert('请填写会议日期');return}
     const clean={
@@ -1046,194 +1178,98 @@ setup(){
         meetings.value[idx]={...orig, ...clean, recordedBy: orig.recordedBy || (currentUser.value?currentUser.value.name:'')};
       }
     }else{
-      meetings.value.push({
-        id:'m-'+Date.now(),
-        ...clean,
-        recordedBy: currentUser.value?currentUser.value.name:'',
-        expanded:false
-      });
+      meetings.value.push({id:'m-'+Date.now(),...clean,recordedBy:currentUser.value?currentUser.value.name:'',expanded:false});
     }
     saveMeetings();
     closeMeetingModal();
   };
-  // ============ 会议纪要批量选择/导出 ============
-const selectedMeetingIds=ref([]);
-
-const toggleMeetingSelect=(mt)=>{
-  const i=selectedMeetingIds.value.indexOf(mt.id);
-  if(i>=0) selectedMeetingIds.value.splice(i,1);
-  else selectedMeetingIds.value.push(mt.id);
-};
-
-const clearMeetingSelection=()=>{
-  selectedMeetingIds.value=[];
-};
-
-const exportSelectedMeetings=(mode)=>{
-  if(!selectedMeetingIds.value.length){ alert('请先选择要导出的会议'); return; }
-  const list=meetings.value.filter(m=>selectedMeetingIds.value.includes(m.id));
-  const sorted=[...list].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-
-  if(mode==='text'){
-    let text='';
-    sorted.forEach((mt,idx)=>{
-      if(idx>0) text+='\n────────────────────\n\n';
-      text+=`【会议纪要】${mt.date}${mt.title?' '+mt.title:''}\n`;
-      text+=`参与人：${formatParticipants(mt)}\n`;
-      if(mt.recordedBy) text+=`记录人：${mt.recordedBy}\n`;
-      text+='\n一、已确认事项\n';
-      if((mt.confirmed||[]).length){
-        mt.confirmed.forEach((c,i)=>{ text+=`${i+1}. ${c.text}\n`; });
-      }else{
-        text+='（暂无）\n';
-      }
-      text+='\n二、待进行事项\n';
-      if((mt.todo||[]).length){
-        mt.todo.forEach((t,i)=>{ text+=`${i+1}. ${t.text}\n`; });
-      }else{
-        text+='（暂无）\n';
-      }
-      text+='\n三、待确认事项\n';
-      if((mt.pending||[]).length){
-        mt.pending.forEach((p,i)=>{
-          text+=`${i+1}. ${p.text}`;
-          if(p.owner) text+=` — 负责人：${p.owner}`;
-          if(p.dueDate) text+=`，截止：${p.dueDate}`;
-          if(p.status) text+=`（${p.status}）`;
-          text+='\n';
-        });
-      }else{
-        text+='（暂无）\n';
-      }
-      text+='\n四、变更事项\n';
-      if((mt.changes||[]).length){
-        mt.changes.forEach((c,i)=>{
-          text+=`${i+1}. ${c.text}`;
-          if(c.from||c.to) text+=`（${c.from||''} → ${c.to||''}）`;
-          text+='\n';
-        });
-      }else{
-        text+='（暂无）\n';
-      }
-    });
-
-    const doCopy=()=>{
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(text).then(()=>{
-          alert(`✅ 已复制 ${sorted.length} 条会议纪要，可直接粘贴到微信`);
-        }).catch(()=>{ fallbackCopy(text); });
-      }else{
-        fallbackCopy(text);
-      }
-    };
-    const fallbackCopy=(t)=>{
-      const ta=document.createElement('textarea');
-      ta.value=t;
-      ta.style.position='fixed';
-      ta.style.left='-9999px';
-      document.body.appendChild(ta);
-      ta.select();
-      try{
-        document.execCommand('copy');
-        alert('✅ 已复制到剪贴板，可直接粘贴到微信');
-      }catch(e){
-        alert('复制失败，请手动复制：\n\n'+t);
-      }
-      document.body.removeChild(ta);
-    };
-    doCopy();
-    return;
-  }
-
-  // mode==='word'
-  const esc=(s)=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  let bodyHtml='';
-  sorted.forEach((mt,idx)=>{
-    if(idx>0) bodyHtml+='<div style="page-break-before:always"></div>';
-    bodyHtml+=`
-<h1>${esc(mt.title)||'会议纪要'}</h1>
-<div class="meta">
-<div><b>会议日期：</b>${esc(mt.date)}</div>
-<div><b>参与人：</b>${esc(formatParticipants(mt))}</div>
-${mt.recordedBy?'<div><b>记录人：</b>'+esc(mt.recordedBy)+'</div>':''}
-</div>
-<h2>一、已确认事项</h2>
-${(mt.confirmed||[]).length?`<ol>${mt.confirmed.map(c=>`<li>${esc(c.text)}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
-<h2>二、待进行事项</h2>
-${(mt.todo||[]).length?`<ol>${mt.todo.map(t=>`<li>${esc(t.text)}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
-<h2>三、待确认事项</h2>
-${(mt.pending||[]).length?`<ol>${mt.pending.map(p=>`<li>${esc(p.text)} — 负责人：${esc(p.owner)||'未指定'}${p.dueDate?'，截止：'+esc(p.dueDate):''}（${esc(p.status)}）</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
-<h2>四、变更事项</h2>
-${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||c.to?'（'+esc(c.from)+' → '+esc(c.to)+'）':''}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
-`;
-  });
-
-  const html=`
-<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-<head><meta charset='utf-8'><title>会议纪要合集</title>
-<style>
-body{font-family:"Microsoft YaHei",sans-serif;font-size:11pt;line-height:1.7;color:#333}
-h1{font-size:16pt;border-bottom:2px solid #7b8bb8;padding-bottom:8px}
-h2{font-size:13pt;color:#7b8bb8;margin-top:20px}
-li{margin-bottom:4px}
-.meta{color:#666;font-size:10pt;margin-bottom:14px}
-</style></head>
-<body>
-${bodyHtml}
-</body></html>`;
-
-  const blob=new Blob(['\ufeff',html],{type:'application/msword'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download=`会议纪要合集_${sorted.length}条_${new Date().toISOString().slice(0,10)}.doc`;
-  a.click();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
-};
-
-const deleteMeeting=(mt)=>{
-  if(!canManageMeeting(mt)){ alert('只能删除自己记录的会议纪要'); return; }
-  if(!confirm('确定删除此次会议纪要？'))return;
-  meetings.value=meetings.value.filter(m=>m.id!==mt.id);
-  const i=selectedMeetingIds.value.indexOf(mt.id);
-  if(i>=0) selectedMeetingIds.value.splice(i,1);
-  saveMeetings();
-};
+  const deleteMeeting=(mt)=>{
+    if(!canManageMeeting(mt)){ alert('只能删除自己记录的会议纪要'); return; }
+    if(!confirm('确定删除此次会议纪要？'))return;
+    meetings.value=meetings.value.filter(m=>m.id!==mt.id);
+    const i=selectedMeetingIds.value.indexOf(mt.id);
+    if(i>=0) selectedMeetingIds.value.splice(i,1);
+    saveMeetings();
+  };
 
   const exportMeetingToWord=(mt)=>{
     const esc=(s)=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     const participants=formatParticipants(mt);
-    const html=`
-<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-<head><meta charset='utf-8'><title>会议纪要</title>
-<style>
-body{font-family:"Microsoft YaHei",sans-serif;font-size:11pt;line-height:1.7;color:#333}
-h1{font-size:16pt;border-bottom:2px solid #7b8bb8;padding-bottom:8px}
-h2{font-size:13pt;color:#7b8bb8;margin-top:20px}
-li{margin-bottom:4px}
-.meta{color:#666;font-size:10pt;margin-bottom:14px}
-</style></head>
-<body>
-<h1>${esc(mt.title)||'会议纪要'}</h1>
-<div class="meta">
-<div><b>会议日期：</b>${esc(mt.date)}</div>
-<div><b>参与人：</b>${esc(participants)}</div>
-${mt.recordedBy?'<div><b>记录人：</b>'+esc(mt.recordedBy)+'</div>':''}
-</div>
-<h2>一、已确认事项</h2>
-${(mt.confirmed||[]).length?`<ol>${mt.confirmed.map(c=>`<li>${esc(c.text)}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
-<h2>二、待进行事项</h2>
-${(mt.todo||[]).length?`<ol>${mt.todo.map(t=>`<li>${esc(t.text)}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
-<h2>三、待确认事项</h2>
-${(mt.pending||[]).length?`<ol>${mt.pending.map(p=>`<li>${esc(p.text)} — 负责人：${esc(p.owner)||'未指定'}${p.dueDate?'，截止：'+esc(p.dueDate):''}（${esc(p.status)}）</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
-<h2>四、变更事项</h2>
-${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||c.to?'（'+esc(c.from)+' → '+esc(c.to)+'）':''}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}
-</body></html>`;
+    const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>会议纪要</title><style>body{font-family:"Microsoft YaHei",sans-serif;font-size:11pt;line-height:1.7;color:#333}h1{font-size:16pt;border-bottom:2px solid #7b8bb8;padding-bottom:8px}h2{font-size:13pt;color:#7b8bb8;margin-top:20px}li{margin-bottom:4px}.meta{color:#666;font-size:10pt;margin-bottom:14px}</style></head><body><h1>${esc(mt.title)||'会议纪要'}</h1><div class="meta"><div><b>会议日期：</b>${esc(mt.date)}</div><div><b>参与人：</b>${esc(participants)}</div>${mt.recordedBy?'<div><b>记录人：</b>'+esc(mt.recordedBy)+'</div>':''}</div><h2>一、已确认事项</h2>${(mt.confirmed||[]).length?`<ol>${mt.confirmed.map(c=>`<li>${esc(c.text)}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}<h2>二、待进行事项</h2>${(mt.todo||[]).length?`<ol>${mt.todo.map(t=>`<li>${esc(t.text)}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}<h2>三、待确认事项</h2>${(mt.pending||[]).length?`<ol>${mt.pending.map(p=>`<li>${esc(p.text)} — 负责人：${esc(p.owner)||'未指定'}${p.dueDate?'，截止：'+esc(p.dueDate):''}（${esc(p.status)}）</li>`).join('')}</ol>`:'<p>（暂无）</p>'}<h2>四、变更事项</h2>${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||c.to?'（'+esc(c.from)+' → '+esc(c.to)+'）':''}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}</body></html>`;
     const blob=new Blob(['\ufeff',html],{type:'application/msword'});
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
     a.href=url;
     a.download=`会议纪要_${mt.date}_${(mt.title||'未命名').replace(/[\\/:*?"<>|]/g,'_')}.doc`;
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+
+  const exportSelectedMeetings=(mode)=>{
+    if(!selectedMeetingIds.value.length){ alert('请先选择要导出的会议'); return; }
+    const list=meetings.value.filter(m=>selectedMeetingIds.value.includes(m.id));
+    const sorted=[...list].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+
+    if(mode==='text'){
+      let text='';
+      sorted.forEach((mt,idx)=>{
+        if(idx>0) text+='\n────────────────────\n\n';
+        text+=`【会议纪要】${mt.date}${mt.title?' '+mt.title:''}\n`;
+        text+=`参与人：${formatParticipants(mt)}\n`;
+        if(mt.recordedBy) text+=`记录人：${mt.recordedBy}\n`;
+        text+='\n一、已确认事项\n';
+        if((mt.confirmed||[]).length) mt.confirmed.forEach((c,i)=>{ text+=`${i+1}. ${c.text}\n`; });
+        else text+='（暂无）\n';
+        text+='\n二、待进行事项\n';
+        if((mt.todo||[]).length) mt.todo.forEach((t,i)=>{ text+=`${i+1}. ${t.text}\n`; });
+        else text+='（暂无）\n';
+        text+='\n三、待确认事项\n';
+        if((mt.pending||[]).length){
+          mt.pending.forEach((p,i)=>{
+            text+=`${i+1}. ${p.text}`;
+            if(p.owner) text+=` — 负责人：${p.owner}`;
+            if(p.dueDate) text+=`，截止：${p.dueDate}`;
+            if(p.status) text+=`（${p.status}）`;
+            text+='\n';
+          });
+        }else text+='（暂无）\n';
+        text+='\n四、变更事项\n';
+        if((mt.changes||[]).length){
+          mt.changes.forEach((c,i)=>{
+            text+=`${i+1}. ${c.text}`;
+            if(c.from||c.to) text+=`（${c.from||''} → ${c.to||''}）`;
+            text+='\n';
+          });
+        }else text+='（暂无）\n';
+      });
+      const doCopy=()=>{
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(()=>{ alert(`✅ 已复制 ${sorted.length} 条会议纪要`); }).catch(()=>{ fallbackCopy(text); });
+        }else fallbackCopy(text);
+      };
+      const fallbackCopy=(t)=>{
+        const ta=document.createElement('textarea');
+        ta.value=t; ta.style.position='fixed'; ta.style.left='-9999px';
+        document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); alert('✅ 已复制到剪贴板'); }catch(e){ alert('复制失败，请手动复制：\n\n'+t); }
+        document.body.removeChild(ta);
+      };
+      doCopy();
+      return;
+    }
+
+    const esc=(s)=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    let bodyHtml='';
+    sorted.forEach((mt,idx)=>{
+      if(idx>0) bodyHtml+='<div style="page-break-before:always"></div>';
+      bodyHtml+=`<h1>${esc(mt.title)||'会议纪要'}</h1><div class="meta"><div><b>会议日期：</b>${esc(mt.date)}</div><div><b>参与人：</b>${esc(formatParticipants(mt))}</div>${mt.recordedBy?'<div><b>记录人：</b>'+esc(mt.recordedBy)+'</div>':''}</div><h2>一、已确认事项</h2>${(mt.confirmed||[]).length?`<ol>${mt.confirmed.map(c=>`<li>${esc(c.text)}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}<h2>二、待进行事项</h2>${(mt.todo||[]).length?`<ol>${mt.todo.map(t=>`<li>${esc(t.text)}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}<h2>三、待确认事项</h2>${(mt.pending||[]).length?`<ol>${mt.pending.map(p=>`<li>${esc(p.text)} — 负责人：${esc(p.owner)||'未指定'}${p.dueDate?'，截止：'+esc(p.dueDate):''}（${esc(p.status)}）</li>`).join('')}</ol>`:'<p>（暂无）</p>'}<h2>四、变更事项</h2>${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||c.to?'（'+esc(c.from)+' → '+esc(c.to)+'）':''}</li>`).join('')}</ol>`:'<p>（暂无）</p>'}`;
+    });
+    const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>会议纪要合集</title><style>body{font-family:"Microsoft YaHei",sans-serif;font-size:11pt;line-height:1.7;color:#333}h1{font-size:16pt;border-bottom:2px solid #7b8bb8;padding-bottom:8px}h2{font-size:13pt;color:#7b8bb8;margin-top:20px}li{margin-bottom:4px}.meta{color:#666;font-size:10pt;margin-bottom:14px}</style></head><body>${bodyHtml}</body></html>`;
+    const blob=new Blob(['\ufeff',html],{type:'application/msword'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`会议纪要合集_${sorted.length}条_${new Date().toISOString().slice(0,10)}.doc`;
     a.click();
     setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
@@ -1252,11 +1288,9 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
       if(!section)continue;
       let content=line.replace(/^[-•·*\d\.、）)\s]+/,'').trim();
       if(!content)continue;
-      if(section==='confirmed'){
-        result.confirmed.push({text:content});
-      }else if(section==='todo'){
-        result.todo.push({text:content});
-      }else if(section==='pending'){
+      if(section==='confirmed') result.confirmed.push({text:content});
+      else if(section==='todo') result.todo.push({text:content});
+      else if(section==='pending'){
         const parts=content.split(/[|｜]/).map(s=>s.trim());
         result.pending.push({text:parts[0]||'',owner:parts[1]||'',dueDate:parts[2]||'',status:'待确认'});
       }else if(section==='changes'){
@@ -1265,14 +1299,11 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
       }
     }
     if(result.confirmed.length===0&&result.todo.length===0&&result.pending.length===0&&result.changes.length===0){
-      alert('未识别到内容，请检查格式（需要有「已确认」「待确认」「变更」字样）');
-      return;
+      alert('未识别到内容，请检查格式'); return;
     }
     draftMeeting.value={
       date:new Date().toISOString().slice(0,10),
-      title:'',
-      memberParticipants:[],
-      otherParticipants:'',
+      title:'',memberParticipants:[],otherParticipants:'',
       confirmed:result.confirmed.length?result.confirmed:[{text:''}],
       todo:result.todo,
       pending:result.pending,
@@ -1284,41 +1315,10 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
     showMeetingModal.value=true;
   };
 
-  const exportData=()=>{
-    const data={project:currentProject.value,projectKey,checks:checks.value,meetings:meetings.value};
-    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download=`检查清单_${currentProject.value}.json`;
-    a.click();
-  };
-  const importData=()=>{fileInput.value.click()};
-  const handleImport=(e)=>{
-    const file=e.target.files[0];
-    if(!file)return;
-    const reader=new FileReader();
-    reader.onload=(ev)=>{
-      try{
-        const data=JSON.parse(ev.target.result);
-        if(data.checks&&Array.isArray(data.checks)){
-          if(confirm('确认导入？将覆盖当前数据。')){
-            checks.value=data.checks;
-            saveData();
-            if(data.meetings){
-              meetings.value=migrateMeetings(data.meetings).map(m=>({...m,expanded:false}));
-              saveMeetings();
-            }
-          }
-        }
-      }catch(err){alert('导入失败：'+err.message)}
-    };
-    reader.readAsText(file);
-  };
-
   onMounted(async()=>{
     await Promise.all([loadUsers(),loadProjects(),loadFromCloud(),loadMeetings(),loadStages()]);
     await loadProjectCompletion();
+    await loadAssignedCheckIds();
     syncProjectName();
     initOpenGroups();
     nextTick(()=>{
@@ -1329,10 +1329,10 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
 
   return{
     currentProject,projectStages,activeTab,
-    groupedChecks,openGroups,fileInput,
-    totalCount,doneCount,
+    allStages,checksForStage,hasRawChecks,
+    openGroups,
+    visibleTotalCount,visibleDoneCount,
     getStageClass,isCurrentStage,toggleGroup,saveData,
-    exportData,importData,handleImport,
     members,
     meetings,sortedMeetings,showMeetingModal,editingMeetingId,draftMeeting,
     showConfirmSummary,allConfirmed,
@@ -1341,22 +1341,21 @@ ${(mt.changes||[]).length?`<ol>${mt.changes.map(c=>`<li>${esc(c.text)}${c.from||
     selectedMeetingIds,toggleMeetingSelect,clearMeetingSelection,exportSelectedMeetings,
     showImportModal,importText,doImport,
     projContracted,
-    showStageModal,draftStages,stageOrder,
+    showStageModal,draftStages,
     openStageModal,closeStageModal,toggleDraftStage,confirmStages,
     isAdmin,isManager,isPrivileged,
-    canSeeContract,canSeeChecklistTab,canSeeChecks,canEditStage,
+    canSeeContract,canSeeChecklistTab,canEditStage,
     canSeeMeetingTab,canSeeAny,
     projectMembers,currentUser,isProjectMember,
     canComplete,completeProject,
-    projectCompleted,projectCompletedDate
+    projectCompleted,projectCompletedDate,
+    renameStage,deleteStage,
+    editingCheckItem,addingCheckItem,editCheckItem,saveCheckItemEdit,deleteCheckItem,addCheckItem,saveNewCheckItem
   };
 }
 });
 
-app.config.errorHandler=function(err, instance, info){
-  console.error('[Vue Error]', err, info);
-};
-
+app.config.errorHandler=function(err, instance, info){ console.error('[Vue Error]', err, info); };
 app.mount('#app');
 </script>
 </body>
