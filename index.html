@@ -961,7 +961,92 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
       </div>
     </div>
   </div>
+    <!-- 审图清单 -->
+  <div v-if="currentView==='audit'" class="flex-1 min-h-0 overflow-y-auto">
+    <!-- 模块列表 -->
+    <div v-if="!auditActiveModule">
+      <div class="flex justify-between items-center mb-5 flex-wrap gap-2">
+        <h1 class="text-2xl font-bold" style="letter-spacing:-.5px">审图清单</h1>
+      </div>
+      <p class="text-xs opacity-55 mb-5">选择要查看的审图模块。目前仅开放「幕墙施工图审查」，其余模块持续建设中。</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div v-for="m in auditModules" :key="m.key" class="audit-module-card" @click="openAuditModule(m.key)">
+          <div class="audit-module-icon">{{ m.icon }}</div>
+          <div class="audit-module-body">
+            <div class="audit-module-title">{{ m.label }}</div>
+            <div class="audit-module-desc">{{ m.desc }}</div>
+            <div class="audit-module-progress">
+              <span class="count-circle">{{ getAuditProgressText(m.key) }}</span>
+              <span class="opacity-60">已确认</span>
+              <span v-if="m.key !== 'curtain'" class="opacity-40" style="font-size:.6875rem">（未开放）</span>
+            </div>
+          </div>
+          <div class="audit-module-arrow">→</div>
+        </div>
+      </div>
+    </div>
 
+    <!-- 模块内容 -->
+    <div v-else>
+      <div class="flex items-center gap-3 mb-4 flex-wrap">
+        <button @click="closeAuditModule" class="btn-ghost">← 返回模块列表</button>
+        <h1 class="text-2xl font-bold" style="letter-spacing:-.5px">{{ currentAuditModule.label }}</h1>
+        <span class="count-circle">{{ getAuditProgressText(auditActiveModule) }}</span>
+        <span class="text-xs opacity-50">已确认</span>
+      </div>
+      <p class="text-xs opacity-55 mb-5">{{ currentAuditModule.desc }}</p>
+
+      <div v-if="auditActiveModule !== 'curtain'" class="card p-8 text-center opacity-60 text-sm">
+        🚧 该模块正在建设中，敬请期待。
+      </div>
+
+      <div v-else>
+        <div v-for="stage in auditStages" :key="stage.key" class="mb-8">
+          <div class="audit-stage-header">
+            <div class="audit-stage-num">{{ stage.key }}</div>
+            <div class="flex-1 min-w-0">
+              <div class="audit-stage-title">{{ stage.title }}</div>
+              <div class="audit-stage-subtitle">{{ stage.subtitle }}</div>
+            </div>
+          </div>
+
+          <div v-for="group in stage.groups" :key="group.key" class="audit-group">
+            <div class="audit-group-title">{{ group.title }}</div>
+            <div v-if="group.desc" class="audit-group-desc">{{ group.desc }}</div>
+            <div v-if="group.note" class="audit-group-note">💡 {{ group.note }}</div>
+
+            <div v-if="group.items && group.items.length" class="audit-grid">
+              <button v-for="item in group.items" :key="item.key"
+                      type="button"
+                      class="audit-item"
+                      :class="{checked: isAuditItemChecked(stage.key, group.key, item.key)}"
+                      @click="toggleAuditItem(stage.key, group.key, item.key, item.text)">
+                <span class="audit-item-num">{{ item.key }}</span>
+                <span class="audit-item-text">
+                  {{ item.text }}
+                  <span v-if="item.tags && item.tags.length" class="audit-tags">
+                    <span v-for="t in item.tags" :key="t" class="audit-tag">{{ t }}</span>
+                  </span>
+                </span>
+              </button>
+            </div>
+            <div v-else class="audit-grid">
+              <button type="button"
+                      class="audit-item"
+                      :class="{checked: isAuditItemChecked(stage.key, group.key, 'main')}"
+                      @click="toggleAuditItem(stage.key, group.key, 'main', group.desc || group.title)">
+                <span class="audit-item-num">✓</span>
+                <span class="audit-item-text">{{ group.desc || group.title }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- 备忘录 -->
+  <div v-if="currentView==='memo'" class="flex-1 min-h-0 overflow-y-auto">
   <!-- 备忘录 -->
   <div v-if="currentView==='memo'" class="flex-1 min-h-0 overflow-y-auto">
     <h1 class="text-2xl font-bold mb-5" style="letter-spacing:-.5px">工作室备忘录</h1>
@@ -1307,6 +1392,7 @@ const adminNavItems=[
   {key:'home', label:'主页'},
   {key:'todos', label:'最近待办'},
   {key:'projects', label:'项目总览'},
+  {key:'audit', label:'审图清单'},
   {key:'memo', label:'备忘录'},
   {key:'archive', label:'已归档'},
   {key:'settings', label:'设置'}
@@ -1315,12 +1401,106 @@ const memberNavItems=[
   {key:'home', label:'主页'},
   {key:'todos', label:'我的待办'},
   {key:'meetings', label:'项目会议纪要'},
+  {key:'audit', label:'审图清单'},
   {key:'memo', label:'备忘录'},
   {key:'archive', label:'已归档'},
   {key:'settings', label:'设置'}
 ];
 
 const stageOrder=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
+/* ============ 审图清单 ============ */
+const auditModules=[
+  {key:'permit', label:'报建图审查', icon:'📋', desc:'规划报建阶段图纸审查'},
+  {key:'construction', label:'施工图审查', icon:'📐', desc:'建筑施工图审查'},
+  {key:'curtain', label:'幕墙施工图审查', icon:'🏢', desc:'幕墙深化施工图两段审图清单'},
+  {key:'interior', label:'室内施工图审查', icon:'🛋️', desc:'室内设计施工图审查'}
+];
+
+const CURTAIN_AUDIT_STAGES=[
+  {
+    key:'A',
+    title:'A 第一阶段 | 幕墙单位自检',
+    subtitle:'确认整套图纸已达到可提交、可查阅、可复核的基本条件。',
+    groups:[
+      { key:'A01', title:'01 图纸组织与可读性', desc:'图纸目录、分类、图号、版本、索引及图面表达清晰统一，能够顺利查阅。' },
+      { key:'A02', title:'02 图纸范围与对应关系', desc:'幕墙涉及区域均已表达，平面、立面、剖面和关键大样相互对应，不存在明显缺图。', note:'特别检查：建筑阴角空间及次要立面的吊顶、立面、地面，露台 / 阳台的吊顶、墙身、地面' },
+      {
+        key:'A03', title:'03 深化内容与专业接口', desc:'',
+        items:[
+          { key:'01', text:'玻璃部分：不同部位玻璃使用横明竖隐 / 竖明横隐，不同部位玻璃参数是否明确', tags:['玻璃','横明竖隐','竖明横隐','玻璃参数'] },
+          { key:'02', text:'金属材质：不同空间的单块尺寸是否合理，墙身与吊顶是否对缝，吊顶与墙身交接位置材质不一致是否设置分缝，金属吊顶灯位位置、数量以及预留开洞大小是否合理', tags:['金属','单块尺寸','对缝','分缝','灯位','开洞'] },
+          { key:'03', text:'外立面灯带：电源出线口是否考虑到位', tags:['灯带','电源出线'] },
+          { key:'04', text:'立面装饰件：滴水节点是否均有考虑', tags:['装饰件','滴水节点'] },
+          { key:'05', text:'外立面伸缩缝：大样是否齐全（玻璃、金属等）', tags:['伸缩缝','大样'] },
+          { key:'06', text:'露台 / 阳台排水口：位置是否预留合理', tags:['排水口','预留'] },
+          { key:'07', text:'横向构件：与结构以及室内吊顶关系是否已明确', tags:['横向构件','结构','室内吊顶'] },
+          { key:'08', text:'门、窗设置：大门、露台 / 阳台门样式、高度、位置复核', tags:['门','窗','样式','高度','位置'] },
+          { key:'09', text:'格栅（竖向 / 横向）：样式、大小、材料、间隙是否表达清楚', tags:['格栅','竖向','横向'] },
+          { key:'10', text:'冲孔板 / 拉网板（如有）是否已标注厚度与材料，并注明"具体样式需设计师后续签字确定"', tags:['冲孔板','拉网板','厚度','签字确认'] }
+        ]
+      },
+      { key:'A04', title:'04 内部校审与提交确认', desc:'已处理明显矛盾、错误索引和漏项；对设计变化、未决问题作出说明，并完成专业内部校审。' }
+    ]
+  },
+  {
+    key:'B',
+    title:'B 第二阶段 | 工作室审图',
+    subtitle:'主要关注设计意图、重点部位、可见品质和跨专业交接，不代替幕墙专业技术审。',
+    groups:[
+      { key:'B01', title:'01 整体覆盖与缺图', desc:'依据 SketchUp 模型及有效建筑图纸核查主要立面及非典型部位，重点确认是否缺少必要立面或特殊节点。' },
+      { key:'B02', title:'02 立面设计意图', desc:'检查玻璃分格、开窗节奏、横竖明隐形式、材料比例；合理深化可以调整，重要效果变化需确认。' },
+      { key:'B03', title:'03 关键节点与可见品质', desc:'重点看首层入口、转角、收口、封盖、金属板分缝等关键位置的尺度与完成效果。' },
+      { key:'B04', title:'04 专业交接与问题闭环', desc:'检查结构、室内、照明、电气、排水等接口；把问题标在图纸上，修改后针对性复核。' }
+    ]
+  },
+  {
+    key:'S',
+    title:'经验库 | 高频漏项补充检查',
+    subtitle:'持续补充区，可按项目实际情况勾选检查。',
+    groups:[
+      {
+        key:'M01', title:'01 容易漏画的部位与节点', desc:'',
+        items:[
+          { key:'M01', text:'阴角、退台、阳台及露台内侧等不显眼立面漏画' },
+          { key:'M02', text:'挑檐底面、雨篷吊顶、连廊端部及高低跨交界漏画' },
+          { key:'M03', text:'已有立面，但特殊转角、收边或交接位置缺少必要节点大样' }
+        ]
+      },
+      {
+        key:'M02', title:'02 立面分格与材料效果', desc:'',
+        items:[
+          { key:'M04', text:'玻璃分格局部过窄，或开启扇、横竖分格节奏偏离设计意图' },
+          { key:'M05', text:'横明竖隐、竖明横隐等表达方式在不同区域使用不当' },
+          { key:'M06', text:'玻璃或金属板材质、表面处理、分缝方向与确认效果不一致' }
+        ]
+      },
+      {
+        key:'M03', title:'03 节点尺寸与细部精致度', desc:'',
+        items:[
+          { key:'M07', text:'金属板收口、封盖或压边做得过宽、过厚，产生突兀的可见构件' },
+          { key:'M08', text:'墙身与吊顶交接、金属板转角、材料切换处的分缝和对缝不协调' },
+          { key:'M09', text:'滴水、排水及阴影缝的可见尺度与整体立面品质不协调' }
+        ]
+      },
+      {
+        key:'M04', title:'04 照明及跨专业交接', desc:'',
+        items:[
+          { key:'M10', text:'灯位与金属板分缝不对应，灯带漏出线位置或难以检修' },
+          { key:'M11', text:'连廊牛腿等结构构件凸出预期外墙完成面，未明确遮蔽处理' },
+          { key:'M12', text:'阳台、露台与幕墙、室内完成面交接处的排水或收口未衔接' }
+        ]
+      },
+      {
+        key:'M05', title:'05 大门、玻璃尺寸与预留', desc:'',
+        items:[
+          { key:'M13', text:'大门和露台 / 阳台门的样式、高度、位置是否合理（常犯错误：大门太矮、未设置自动门+两侧平开门、与室内设计冲突，如开在一侧 / 中央导致室内不好用）' },
+          { key:'M14', text:'玻璃分隔太小（宽度或高度过分考虑经济性，大堂或特殊空间应考虑使用大尺寸玻璃）' },
+          { key:'M15', text:'未把横向或竖向水管、排烟管、消防栓考虑到位' }
+        ]
+      }
+    ]
+  }
+];
 const CHECKLIST_SEED=[
 {id:'CHK-01-001',stage:'一、前期强排',item:'机动车出入口设置要求',standard:'结合规划条件，核实与路口距离'},
 {id:'CHK-01-002',stage:'一、前期强排',item:'室外地坪标高（国家高程）',standard:'结合周边路网与市政标高'},
@@ -1670,6 +1850,95 @@ setup(){
 
   const currentView=ref('home');
   const sidebarOpen=ref(false);
+  /* ========== 审图清单 ========== */
+  const auditActiveModule=ref(null);
+  const auditChecked=ref({});
+
+  const currentAuditModule=computed(()=>auditModules.find(m=>m.key===auditActiveModule.value)||null);
+  const auditStages=computed(()=>{
+    if(auditActiveModule.value!=='curtain') return [];
+    return CURTAIN_AUDIT_STAGES;
+  });
+
+  const loadAuditFromCloud=async()=>{
+    try{
+      const res=await fetchT('/api/sync?type=audit&project=global');
+      const data=await res.json();
+      if(data && typeof data==='object' && !Array.isArray(data) && !data.empty){
+        auditChecked.value=data;
+      }else{
+        auditChecked.value={};
+      }
+    }catch(e){
+      console.warn('审图清单读取失败，使用空数据',e);
+      auditChecked.value={};
+    }
+  };
+
+  const saveAuditToCloud=async()=>{
+    try{
+      await fetchT('/api/sync?type=audit&project=global',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(auditChecked.value)
+      });
+    }catch(e){console.warn('审图清单保存失败',e)}
+  };
+
+  const openAuditModule=(key)=>{
+    auditActiveModule.value=key;
+  };
+  const closeAuditModule=()=>{
+    auditActiveModule.value=null;
+  };
+
+  const isAuditItemChecked=(stageKey,groupKey,itemKey)=>{
+    const mod=auditActiveModule.value;
+    if(!mod) return false;
+    const m=auditChecked.value[mod];
+    if(!m) return false;
+    return !!m[`${stageKey}-${groupKey}-${itemKey}`];
+  };
+
+  const toggleAuditItem=(stageKey,groupKey,itemKey,text)=>{
+    const mod=auditActiveModule.value;
+    if(!mod) return;
+    if(!auditChecked.value[mod]) auditChecked.value[mod]={};
+    const k=`${stageKey}-${groupKey}-${itemKey}`;
+    const wasChecked=!!auditChecked.value[mod][k];
+    if(wasChecked){
+      if(!confirm('取消勾选此审图项？')) return;
+      delete auditChecked.value[mod][k];
+    }else{
+      if(!confirm(`确认完成「${(text||itemKey).slice(0,40)}${(text||'').length>40?'…':''}」？\n确认后按钮将变灰。`)) return;
+      auditChecked.value[mod][k]=true;
+    }
+    saveAuditToCloud();
+  };
+
+  const getAuditTotalCount=(moduleKey)=>{
+    if(moduleKey!=='curtain') return 0;
+    let n=0;
+    CURTAIN_AUDIT_STAGES.forEach(s=>{
+      s.groups.forEach(g=>{
+        n+=(g.items&&g.items.length)?g.items.length:1;
+      });
+    });
+    return n;
+  };
+
+  const getAuditCheckedCount=(moduleKey)=>{
+    if(!auditChecked.value[moduleKey]) return 0;
+    return Object.keys(auditChecked.value[moduleKey]).filter(k=>auditChecked.value[moduleKey][k]).length;
+  };
+
+  const getAuditProgressText=(moduleKey)=>{
+    const total=getAuditTotalCount(moduleKey);
+    const done=getAuditCheckedCount(moduleKey);
+    if(total===0) return '—';
+    return `${done}/${total}`;
+  };
+
   const showAddTodo=ref(false);
   const showAddProject=ref(false);
   const editingTodo=ref(null);
@@ -2620,6 +2889,7 @@ setup(){
     loadHeroes();
     loadEvents();
     loadProjectsAndTodosFromCloud().then(()=>{ loadRecentMeetings(); });
+    loadAuditFromCloud();
     nextTick(()=>updateHighlight());
     window.addEventListener('resize', updateHighlight);
     window.addEventListener('keydown', handleKeydown);
@@ -2635,6 +2905,11 @@ setup(){
     loginPinyin, loginPassword, loginError,
     doUserLogin, doLogout,
     currentView, sidebarOpen, visibleNavItems, switchView,
+    // 审图清单
+    auditModules, auditActiveModule, currentAuditModule, auditStages,
+    openAuditModule, closeAuditModule,
+    isAuditItemChecked, toggleAuditItem,
+    getAuditProgressText, getAuditTotalCount, getAuditCheckedCount,
     setNavRef, highlightStyle, highlightReady,
     projects, todos, events, members, stages, newTodo, newProject,
     sortedProjects, activeProjects, completedProjects, projectOrder, moveProject, moveTodoInProject, moveTodoGroup,
@@ -2680,6 +2955,103 @@ app.mount('#app');
 <style>
 .fade-enter-active,.fade-leave-active{transition:opacity .18s ease}
 .fade-enter-from,.fade-leave-to{opacity:0}
+/* ===== 审图清单 ===== */
+.audit-module-card{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-left:4px solid var(--primary);
+  border-radius:.75rem;
+  padding:1.125rem 1.25rem;
+  cursor:pointer;
+  transition:.15s;
+  display:flex;
+  align-items:flex-start;
+  gap:.875rem;
+}
+.audit-module-card:hover{
+  border-color:var(--primary);
+  transform:translateX(2px);
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.audit-module-icon{font-size:1.875rem;line-height:1;flex-shrink:0;margin-top:.125rem}
+.audit-module-body{flex:1;min-width:0}
+.audit-module-title{font-weight:700;font-size:1rem;margin-bottom:.25rem;letter-spacing:-.2px}
+.audit-module-desc{font-size:.75rem;opacity:.6;margin-bottom:.625rem;line-height:1.5}
+.audit-module-progress{display:flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:600;color:var(--primary)}
+.audit-module-arrow{font-size:1.125rem;opacity:.3;flex-shrink:0;align-self:center;transition:.15s}
+.audit-module-card:hover .audit-module-arrow{opacity:.7;transform:translateX(2px)}
+
+.audit-stage-header{
+  display:flex;align-items:flex-start;gap:.75rem;
+  padding:.875rem 1.125rem;border-radius:.75rem;margin-bottom:.875rem;
+  background:var(--tag-bg);color:var(--tag-text);
+}
+.audit-stage-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:1.875rem;height:1.875rem;border-radius:.5rem;
+  background:var(--primary);color:#fff;font-weight:700;font-size:.875rem;flex-shrink:0;
+}
+.audit-stage-title{font-weight:700;font-size:.9375rem;line-height:1.3}
+.audit-stage-subtitle{font-size:.75rem;opacity:.75;margin-top:.25rem;line-height:1.5}
+
+.audit-group{margin-bottom:1.25rem}
+.audit-group-title{font-size:.8125rem;font-weight:700;color:var(--primary);margin:0 0 .25rem;letter-spacing:-.1px}
+.audit-group-desc{font-size:.75rem;opacity:.65;margin-bottom:.625rem;line-height:1.5}
+.audit-group-note{
+  font-size:.75rem;padding:.5rem .75rem;border-radius:.5rem;
+  background:color-mix(in srgb, var(--warning) 12%, transparent);
+  color:var(--warning);margin-bottom:.625rem;line-height:1.5;font-weight:500;
+}
+
+.audit-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(18rem, 1fr));gap:.625rem}
+.audit-item{
+  display:flex;align-items:flex-start;gap:.5rem;
+  padding:.75rem .875rem;
+  background:var(--card);
+  border:1px solid var(--border-strong);
+  border-radius:.75rem;
+  cursor:pointer;
+  transition:all .15s;
+  text-align:left;
+  font-family:inherit;
+  color:var(--text);
+  font-size:.8125rem;
+  line-height:1.5;
+  box-shadow:0 2px 0 var(--border-strong);
+  user-select:none;
+  width:100%;
+}
+.audit-item:hover{border-color:var(--primary);transform:translateY(-1px);box-shadow:0 3px 0 var(--primary)}
+.audit-item:active{transform:translateY(1px);box-shadow:0 1px 0 var(--border-strong)}
+.audit-item.checked{
+  background:var(--bg);
+  border-color:var(--border);
+  color:var(--text-tertiary);
+  box-shadow:inset 0 1px 0 var(--border);
+  transform:translateY(1px);
+  opacity:.55;
+}
+.audit-item.checked .audit-item-num{background:var(--border);color:var(--text-tertiary)}
+.audit-item.checked .audit-item-text{text-decoration:line-through}
+.audit-item.checked .audit-tag{background:var(--bg);color:var(--text-tertiary);opacity:.6}
+.audit-item-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:2rem;height:1.25rem;padding:0 .375rem;border-radius:9999px;
+  background:var(--primary);color:#fff;font-size:.6875rem;font-weight:700;
+  flex-shrink:0;font-variant-numeric:tabular-nums;margin-top:.0625rem;letter-spacing:.3px;
+}
+.audit-item-text{flex:1;min-width:0;word-break:break-word}
+.audit-tags{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.375rem}
+.audit-tag{
+  font-size:.625rem;padding:1px 6px;border-radius:.25rem;
+  background:var(--tag-bg);color:var(--tag-text);font-weight:600;white-space:nowrap;
+}
+@media(max-width:640px){
+  .audit-grid{grid-template-columns:1fr}
+  .audit-module-card{padding:.875rem 1rem}
+  .audit-module-icon{font-size:1.5rem}
+}
 </style>
 </body>
 </html>
