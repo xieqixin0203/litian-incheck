@@ -1359,7 +1359,7 @@ const fetchT=(url,opts,ms=5000)=>{
 
 const members=['刘文辉','谢启欣','欧阳琳','梁婷玉','黄建敏','梁富成'];
 const stages=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
-const DATA_VERSION='2026-10-21-v31';
+const DATA_VERSION='2026-10-22-v32';
 
 const defaultUsers=[
   {name:'刘文辉', pinyin:'liuwenhui', password:'litian2026', role:'admin'},
@@ -1404,35 +1404,45 @@ const memberNavItems=[
 
 const stageOrder=['一、前期强排','二、方案设计','三、方案深化','四、报建图','五、施工图（含幕墙深化）','六、室内设计','七、室内设计施工图','八、施工中'];
 const CHECKLIST_SEED=[
-{id:'CHK-01-001',stage:'一、前期强排',item:'机动车出入口设置要求',standard:'结合规划条件，核实与路口距离'},
-{id:'CHK-01-002',stage:'一、前期强排',item:'室外地坪标高（国家高程）',standard:'结合周边路网与市政标高'},
-{id:'CHK-01-003',stage:'一、前期强排',item:'附属绿地、公园绿地是否可纳入绿化率',standard:'按规划条件核实'},
-{id:'CHK-01-004',stage:'一、前期强排',item:'配电房、开闭所、垃圾收集点、通信基站、物业用房是否有面积规定',standard:'核实规划条件'},
-{id:'CHK-01-005',stage:'一、前期强排',item:'垃圾收集点——咨询甲方是随便找地方放还是单独建筑',standard:'与甲方确认'},
-{id:'CHK-01-006',stage:'一、前期强排',item:'垃圾站——是否后续归市政管理',standard:'与甲方确认'},
-{id:'CHK-01-007',stage:'一、前期强排',item:'通风廊道',standard:'核实是否存在限制'},
-{id:'CHK-01-008',stage:'一、前期强排',item:'海绵城市、绿色建筑星级（仅针对民用建筑）',standard:'核实规划条件要求'},
-{id:'CHK-01-009',stage:'一、前期强排',item:'高架、城市轨道控制线/保护区、地铁控制线',standard:'核实规划限制条件'},
-{id:'CHK-01-010',stage:'一、前期强排',item:'场地周边路网、规划标高图',standard:'业主提供，提前第三方做测绘'},
-{id:'CHK-01-011',stage:'一、前期强排',item:'场地周边现存建筑及已报建建筑图',standard:'核实是否影响退距或日照'},
-{id:'CHK-01-012',stage:'一、前期强排',item:'土地勘察报告及管线接口定位',standard:'业主找第三方，我方可提供服务'},
-{id:'CHK-01-013',stage:'一、前期强排',item:'交评、交评评审',standard:'提前安排'},
-{id:'CHK-01-014',stage:'一、前期强排',item:'与甲方确认幕墙与窗墙范围',standard:'提前沟通设计界面'},
-{id:'CHK-01-015',stage:'一、前期强排',item:'与甲方确认玻璃型号使用',standard:'普通白玻 / low-e / 超白玻'},
-{id:'CHK-01-016',stage:'一、前期强排',item:'与甲方确认市政路灯灯光预留',standard:'确认是否需要预留'},
-{id:'CHK-01-017',stage:'一、前期强排',item:'与甲方确认围墙与门卫室设置',standard:'验收前还是后做；门卫室面积<15㎡'},
-{id:'CHK-02-001',stage:'二、方案设计',item:'民用建筑、民用非居住、非民用建筑三者遮挡/被遮挡关系',standard:'理清日照关系'},
-{id:'CHK-02-002',stage:'二、方案设计',item:'板式低层/多层短边间距',standard:'14m'},
-{id:'CHK-02-003',stage:'二、方案设计',item:'高层建筑消防扑救面宽度',standard:'15.5m / 16m（规范要求15m，预留尺寸方便布置车位）'},
-{id:'CHK-02-004',stage:'二、方案设计',item:'消防扑救面另一侧长边也需设通道',standard:'宽度不小于4m，转弯半径不应小于6m，宜为9m'},
-{id:'CHK-02-005',stage:'二、方案设计',item:'相邻地块建筑退让、民用建筑退让距离、地下室退让',standard:'注意特殊条件'},
-{id:'CHK-02-006',stage:'二、方案设计',item:'工业仓储类建筑退让',standard:'按规范要求'},
-{id:'CHK-02-007',stage:'二、方案设计',item:'四周道路宽度/等级→退让道路红线基本距离',standard:'道路等级+建筑类型+增加退缩'},
-{id:'CHK-02-008',stage:'二、方案设计',item:'日照分析（住宅/宿舍）',standard:'满足当地日照标准'},
-{id:'CHK-02-009',stage:'二、方案设计',item:'建筑高度（规划高度）平屋面计算',standard:'室外地坪至檐口顶；透空率>80%装饰构架不计入'},
-{id:'CHK-02-010',stage:'二、方案设计',item:'建筑高度（规划高度）坡屋面计算',standard:'角度≤45%算至檐口顶；>45%算至坡顶一半'},
-{id:'CHK-02-011',stage:'二、方案设计',item:'室内外高差',standard:'通常150mm，i=12%'},
-{id:'CHK-02-012',stage:'二、方案设计',item:'场地内外高差核实',standard:'明确排水方向'},
-{id:'CHK-03-001',stage:'三、方案深化',item:'与结构/机电/幕墙专业对图',standard:'确认梁柱位置、管井、净高不冲突'},
-{id:'CHK-03-002',stage:'三、方案深化',item:'核心筒/楼梯/电梯/管井位置复核',standard:'与方案阶段一致，尺寸满足规范'},
-{id
+  {id:'CHK-01-001',stage:'一、前期强排',item:'机动车出入口设置要求',standard:'结合规划条件，核实与路口距离'},
+  {id:'CHK-01-002',stage:'一、前期强排',item:'室外地坪标高（国家高程）',standard:'结合周边路网与市政标高'},
+  {id:'CHK-02-001',stage:'二、方案设计',item:'民用建筑、民用非居住、非民用建筑三者遮挡/被遮挡关系',standard:'理清日照关系'},
+  {id:'CHK-03-001',stage:'三、方案深化',item:'与结构/机电/幕墙专业对图',standard:'确认梁柱位置、管井、净高不冲突'},
+  {id:'CHK-04-001',stage:'四、报建图',item:'设计单位与规整单位项目诚信编号',standard:'网上提交申请给甲方'},
+  {id:'CHK-05-001',stage:'五、施工图（含幕墙深化）',item:'水土保持（甲方任务）',standard:'需甲方提前找第三方，过会后进入审图'},
+  {id:'CHK-06-001',stage:'六、室内设计',item:'阴角或者交接位的设计查缺',standard:'逐项核对'},
+  {id:'CHK-07-001',stage:'七、室内设计施工图',item:'开门大小与类型复核',standard:'领导办公室1500mm，普通办公室900mm，小空间≥700mm'}
+];
+
+const defaultProjects=[
+{id:'sl4',name:'申菱四基地',stage:['三、方案深化'],subStatus:'方案重做深化',owner:'刘文辉',note:'',filed:false,contracted:true,progress:40,startDate:'2026-03',members:['谢启欣'],completed:false,completedDate:''},
+{id:'slzb',name:'申菱总部改造',stage:['八、施工中'],subStatus:'施工收尾',owner:'谢启欣',note:'*有新增空间方案',filed:true,contracted:true,progress:85,startDate:'2025-08',members:['梁婷玉','谢启欣'],completed:false,completedDate:''},
+{id:'sl5',name:'申菱五基地',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:10,startDate:'2026-08',members:['谢启欣'],completed:false,completedDate:''},
+{id:'slgz',name:'申菱高州二期',stage:['八、施工中'],subStatus:'施工中',owner:'黄建敏',note:'',filed:true,contracted:true,progress:70,startDate:'2025-11',members:['黄建敏'],completed:false,completedDate:''},
+{id:'prsp',name:'屏荣食品顺德新厂',stage:['五、施工图（含幕墙深化）'],subStatus:'规划变更+施工图审图，准备室内深化',owner:'梁婷玉',note:'',filed:true,contracted:true,progress:60,startDate:'2025-06',members:['谢启欣','梁婷玉','欧阳琳'],completed:false,completedDate:''},
+{id:'yj',name:'远江幕墙南海新厂',stage:['八、施工中'],subStatus:'施工中',owner:'谢启欣',note:'',filed:true,contracted:true,progress:75,startDate:'2025-04',members:['谢启欣'],completed:false,completedDate:''},
+{id:'whg',name:'顺德文化馆修缮活化',stage:['四、报建图'],subStatus:'合同签订中',owner:'欧阳琳',note:'',filed:false,contracted:false,progress:20,startDate:'2026-05',members:['欧阳琳'],completed:false,completedDate:''},
+{id:'stc',name:'顺德糖厂',stage:['四、报建图'],subStatus:'合同签订中',owner:'欧阳琳',note:'',filed:false,contracted:false,progress:15,startDate:'2026-06',members:['欧阳琳'],completed:false,completedDate:''},
+{id:'skwj',name:'顺控危旧房',stage:['五、施工图（含幕墙深化）'],subStatus:'图纸绘制',owner:'梁富成',note:'',filed:true,contracted:true,progress:55,startDate:'2026-02',members:['梁富成'],completed:false,completedDate:''},
+{id:'spmy',name:'升平名扬里历史街区一期',stage:['八、施工中'],subStatus:'施工中',owner:'刘文辉',note:'',filed:true,contracted:true,progress:80,startDate:'2025-09',members:[],completed:false,completedDate:''},
+{id:'fp',name:'方普',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:5,startDate:'2026-09',members:[],completed:false,completedDate:''},
+{id:'rk',name:'容控小地块厂房加商业',stage:['一、前期强排'],subStatus:'前期方案',owner:'刘文辉',note:'',filed:false,contracted:false,progress:15,startDate:'2026-09',members:['梁婷玉','欧阳琳'],completed:false,completedDate:''},
+{id:'sq',name:'社-顺德本土文化策展',stage:['三、方案深化'],subStatus:'建模阶段',owner:'梁婷玉',note:'',filed:false,contracted:false,progress:30,startDate:'2026-07',members:['梁婷玉'],completed:false,completedDate:''}
+];
+
+const defaultTodos=[
+{id:1,projectName:'申菱总部改造',projectId:'slzb',task:'活动中心方案',important:true,subTasks:[{text:'室内篮球场设计',done:false}],done:false,employeeDone:false,owner:'刘文辉,梁婷玉'},
+{id:2,projectName:'申菱总部改造',projectId:'slzb',task:'10个办公室门需拓宽到1500mm',important:true,subTasks:[],done:false,employeeDone:false,owner:'刘文辉,梁婷玉'}
+];
+
+const defaultEvents=[
+  {id:'ev-default-1',title:'顺德"社"的观看、营造与地方实践',location:'顺德马岗微木艺术空间',date:'2026-10-01',timeStart:'15:00',timeEnd:'17:00',done:false}
+];
+
+const facadeChecklistData = [
+  {
+    id: 'stage1',
+    title: '第一阶段｜幕墙单位自检',
+    subtitle: '确认整套图纸已达到可提交、可查阅、可复核的基本条件。',
+    items: [
+      { id: 'A-01', title: '01 图纸组织与可读性', desc: '图纸目录、分类、图号、版本、索引及图面
