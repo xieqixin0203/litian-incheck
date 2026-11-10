@@ -934,6 +934,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
             <span class="project-progress-text">{{ getStageProgress(proj) }}%</span>
           </div>
           <div class="project-row-members">
+            <span v-if="(proj.stage||[]).length">📍 {{ (proj.stage||[]).join('、') }}</span>
+            <span v-else class="opacity-40">📍 未设置阶段</span>
+            <span class="opacity-40"> · </span>
             <span v-if="(proj.members||[]).length">👥 {{ (proj.members||[]).join('、') }}</span>
             <span v-else class="opacity-40">👥 —</span>
           </div>
@@ -1759,10 +1762,15 @@ setup(){
     try{
       const r2=await fetchT('/api/sync?type=todos&project=global');
       const d2=await r2.json();
-      if(Array.isArray(d2)){
+      if(Array.isArray(d2) && d2.length){
         todos.value=migrateTodos(d2);
         localStorage.setItem('studio_todos',JSON.stringify(todos.value));
-      }else{await saveTodosToCloud();}
+      }else if(!Array.isArray(d2)){
+        console.warn('todos 接口返回非数组，保留本地缓存');
+      }else{
+        // 云端为空：只有本地也为空时才上传默认数据，避免覆盖用户主动清空后的状态
+        if(!todos.value.length) await saveTodosToCloud();
+      }
     }catch(e){}
     try{
       const r3=await fetchT('/api/sync?type=projectOrder&project=global');
@@ -1932,7 +1940,7 @@ setup(){
     const indices=arr.map(s=>stageOrder.indexOf(s)).filter(i=>i>=0);
     if(indices.length===0) return 0;
     const maxIdx=Math.max(...indices);
-    return (maxIdx+1)*10;
+    return Math.round((maxIdx+1)/stageOrder.length*100);
   };
 
   const parseOwner=(str)=>{
@@ -2306,10 +2314,15 @@ setup(){
     if(!meetingsSearchLoaded.value) loadAllMeetingsForSearch();
     nextTick(()=>{ searchInput.value && searchInput.value.focus(); });
   };
+  const escapeHtml=(s)=>String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
   const highlightMatch=(text, kw)=>{
-    if(!kw) return text;
+    const safe=escapeHtml(text);
+    if(!kw) return safe;
     const esc=kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    try{ return text.replace(new RegExp(esc,'gi'),m=>`<mark>${m}</mark>`); }catch(e){ return text; }
+    try{ return safe.replace(new RegExp(esc,'gi'),m=>`<mark>${m}</mark>`); }catch(e){ return safe; }
   };
   const handleKeydown=(e)=>{
     if((e.metaKey||e.ctrlKey) && e.key==='k'){
